@@ -1,0 +1,7 @@
+Makefile
+bin
+*.make
+*.xcodeproj
+*.xcworkspace
+obj
+!ext
