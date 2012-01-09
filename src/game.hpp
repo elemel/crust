@@ -58,6 +58,7 @@ namespace crust {
         std::auto_ptr<b2Draw> physicsDraw_;
         ParticleEmitterVector particleEmitters_;
         BlockVector blocks_;
+        bool blockGrowthDone_;
         bool dungeonGenerationDone_;
         std::vector<Block *> blocksWithNeighbors_;
         CollisionMap particleToBlockCollisions_;

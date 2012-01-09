@@ -22,6 +22,7 @@ namespace crust {
         window_(0),
         context_(0),
         time_(0.0f),
+        blockGrowthDone_(false),
         dungeonGenerationDone_(false),
 
         cameraX_(0.0f),
@@ -193,7 +194,7 @@ namespace crust {
 
     void Game::initBlocks()
     {
-        for (int i = 0; i < 100; ++i) {
+        for (int i = 0; i < 1; ++i) {
             float x = bounds_.getX() + bounds_.getWidth() * getRandomFloat();
             float y = bounds_.getY() + bounds_.getHeight() * getRandomFloat();
             float angle = -M_PI + 2.0f * M_PI * getRandomFloat();
@@ -281,6 +282,7 @@ namespace crust {
             case SDLK_BACKSPACE:
                 blocks_.clear();
                 initBlocks();
+                blockGrowthDone_ = false;
                 dungeonGenerationDone_ = false;
                 break;
 
@@ -361,20 +363,24 @@ namespace crust {
 
     void Game::stepBlocks(float dt)
     {
-        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (i->getNeighborCount()) {
-                blocksWithNeighbors_.push_back(&*i);
-            }
-        }
-        if (!blocksWithNeighbors_.empty()) {
-            for (int i = 0; i < 10; ++i) {
-                int j = getRandomInt(blocksWithNeighbors_.size());
-                for (int k = 0; k < 50; ++k) {
-                    blocksWithNeighbors_[j]->absorbElement(1);
+        if (!blockGrowthDone_) {
+            for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
+                if (i->getNeighborCount()) {
+                    blocksWithNeighbors_.push_back(&*i);
                 }
             }
-            blocksWithNeighbors_.clear();
+            if (!blocksWithNeighbors_.empty()) {
+                for (int i = 0; i < 10; ++i) {
+                    int j = getRandomInt(blocksWithNeighbors_.size());
+                    for (int k = 0; k < 50; ++k) {
+                        blocksWithNeighbors_[j]->absorbElement(1);
+                    }
+                }
+                blocksWithNeighbors_.clear();
+            }
+            blockGrowthDone_ = true;
         } else if (!dungeonGenerationDone_) {
+#if 0
             DungeonGenerator generator(&random_, bounds_);
             generator.generate();
             for (int i = 0; i < generator.getRoomBoxCount(); ++i) {
@@ -383,6 +389,12 @@ namespace crust {
             for (int i = 0; i < generator.getCorridorBoxCount(); ++i) {
                 dig(generator.getCorridorBox(i));
             }
+#endif
+            
+            for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
+                i->fitPhysicsShapes();
+            }
+
             dungeonGenerationDone_ = true;
         }
     }
@@ -446,7 +458,7 @@ namespace crust {
             glColor3f(0.0f, 1.0f, 0.0f);
             drawParticleEmitters();
             physicsWorld_->DrawDebugData();
-            drawBlockBounds();
+            // drawBlockBounds();
             glPopAttrib();
         }
     }

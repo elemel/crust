@@ -206,7 +206,27 @@ namespace crust {
         }
         drawVerticesDirty_ = true;
     }
-    
+
+    void Block::fitPhysicsShapes()
+    {
+        while (body_->GetFixtureList()) {
+            body_->DestroyFixture(body_->GetFixtureList());
+        }
+        grid_.normalize();
+        if (!grid_.isEmpty()) {
+            float x = 0.1f * float(grid_.getX()) - 0.05f;
+            float y = 0.1f * float(grid_.getY()) - 0.05f;
+            float width = 0.1f * float(grid_.getWidth());
+            float height = 0.1f * float(grid_.getHeight());
+
+            b2Vec2 center(x + 0.5f * width, y + 0.5f * height);
+            b2PolygonShape shape;            
+            shape.SetAsBox(0.5f * width, 0.5f * height, center, 0.0f);
+
+            body_->CreateFixture(&shape, 1.0f);
+        }
+    }
+
     float Block::getColorOffset(int x, int y, int i)
     {
         std::size_t a = hashValue((x << 16) + (y << 8) + i);

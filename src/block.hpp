@@ -53,6 +53,8 @@ namespace crust {
 
         void dig(Box const &box);
 
+        void fitPhysicsShapes();
+
     private:
         Game *game_;
         Grid<unsigned char> grid_;
