@@ -25,19 +25,14 @@ namespace crust {
             p2(p2)
         { }
 
-        Box2(float x, float y, float width, float height) :
-            p1(x, y),
-            p2(x + width, y + height)
-        { }
-
         float getWidth() const
         {
-            return (p1.x < p2.x) ? p2.x - p1.x : 0.0f;
+            return p2.x - p1.x;
         }
         
         float getHeight() const
         {
-            return (p1.y < p2.y) ? p2.y - p1.y : 0.0f;
+            return p2.y - p1.y;
         }
         
         float getArea() const
@@ -48,6 +43,16 @@ namespace crust {
         bool isEmpty() const
         {
             return p2.x < p1.x || p2.y < p1.y;
+        }
+
+        Vector2 getSize() const
+        {
+            return p2 - p1;
+        }
+
+        Vector2 getCenter() const
+        {
+            return 0.5f * (p1 + p2);
         }
         
         bool contains(float x, float y) const

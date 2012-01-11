@@ -36,7 +36,7 @@ namespace crust {
         debugDrawEnabled_(false),
         lightingEnabled_(true),
 
-        bounds_(-10.0f, -10.0f, 20.0f, 20.0f),
+        bounds_(Vector2(-10.0f, -10.0f), Vector2(10.0f, 10.0f)),
 
         fpsTime_(0.0f),
         fpsCount_(0)

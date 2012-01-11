@@ -38,7 +38,9 @@ namespace crust {
         if (width < bounds_.getWidth() && height < bounds_.getHeight()) {
             float x = bounds_.p1.x + random_->getFloat() * (bounds_.getWidth() - width);
             float y = bounds_.p1.y + random_->getFloat() * (bounds_.getHeight() - height);
-            Box2 box(x, y, width, height);
+            Vector2 p1(x, y);
+            Vector2 p2(x + width, y + height);
+            Box2 box(p1, p2);
             if (!intersectsRoom(box)) {
                 roomBoxes_.push_back(box);
             }
@@ -87,13 +89,17 @@ namespace crust {
                 x = minX + 0.5f * (width - corridorWidth_);
             }
 
-            Box2 box(x, maxY, corridorWidth_, -height);
+            Vector2 p1(x, maxY);
+            Vector2 p2(x + corridorWidth_, maxY - height);
+            Box2 box(p1, p2);
             if (intersectsRoom(box) == 2) {
                 corridorBoxes_.push_back(box);
                 return true;
             }
         } else if (corridorHeight_ < height) {
-            Box2 box(maxX, minY, -width, corridorHeight_);
+            Vector2 p1(maxX, minY);
+            Vector2 p2(maxX - width, minY + corridorHeight_);
+            Box2 box(p1, p2);
             if (intersectsRoom(box) == 2) {
                 corridorBoxes_.push_back(box);
                 return true;
