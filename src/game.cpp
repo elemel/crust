@@ -1,12 +1,12 @@
 #include "game.hpp"
 
 #include "block.hpp"
-#include "box.hpp"
 #include "config.hpp"
 #include "dungeon_generator.hpp"
 #include "error.hpp"
 #include "font.hpp"
 #include "font_reader.hpp"
+#include "geometry.hpp"
 #include "particle_emitter.hpp"
 #include "physics_draw.hpp"
 #include "text_drawer.hpp"
@@ -194,9 +194,9 @@ namespace crust {
 
     void Game::initBlocks()
     {
-        for (int i = 0; i < 1; ++i) {
-            float x = bounds_.getX() + bounds_.getWidth() * getRandomFloat();
-            float y = bounds_.getY() + bounds_.getHeight() * getRandomFloat();
+        for (int i = 0; i < 50; ++i) {
+            float x = bounds_.p1.x + bounds_.getWidth() * getRandomFloat();
+            float y = bounds_.p1.y + bounds_.getHeight() * getRandomFloat();
             float angle = -M_PI + 2.0f * M_PI * getRandomFloat();
             blocks_.push_back(new Block(this, x, y, angle));
 
@@ -377,8 +377,9 @@ namespace crust {
                     }
                 }
                 blocksWithNeighbors_.clear();
+            } else {
+                blockGrowthDone_ = true;
             }
-            blockGrowthDone_ = true;
         } else if (!dungeonGenerationDone_) {
 #if 0
             DungeonGenerator generator(&random_, bounds_);
@@ -571,10 +572,10 @@ namespace crust {
     void Game::drawBlockBounds()
     {
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            Box bounds = i->getBounds();
+            Box2 bounds = i->getBounds();
             if (!bounds.isEmpty()) {
-                float x = bounds.getX();
-                float y = bounds.getY();
+                float x = bounds.p1.x;
+                float y = bounds.p1.y;
                 float width = bounds.getWidth();
                 float height = bounds.getHeight();
                 
@@ -595,7 +596,7 @@ namespace crust {
         }
     }
 
-    void Game::dig(Box const &box)
+    void Game::dig(Box2 const &box)
     {
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
             i->dig(box);

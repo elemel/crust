@@ -8,7 +8,7 @@
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
-    class Box;
+    class Box2;
     class Game;
     
     class Block {
@@ -48,10 +48,10 @@ namespace crust {
         
         void draw();
 
-        Box getBounds();
+        Box2 getBounds();
         int getNeighborCount();
 
-        void dig(Box const &box);
+        void dig(Box2 const &box);
 
         void fitPhysicsShapes();
 
@@ -71,7 +71,7 @@ namespace crust {
         float getColorOffset(int x, int y, int i);
         std::size_t hashValue(std::size_t a);
         Block *findOtherBlock(int x, int y);
-        void addGridPointToBounds(int x, int y, Box *bounds);
+        void addGridPointToBounds(int x, int y, Box2 *bounds);
         void updateDrawVertices();
         void getNormal(int x, int y, float *normalX, float *normalY);
     };

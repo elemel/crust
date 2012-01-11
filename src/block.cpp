@@ -1,7 +1,7 @@
 #include "block.hpp"
 
-#include "box.hpp"
 #include "game.hpp"
+#include "geometry.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -162,17 +162,17 @@ namespace crust {
         glPopAttrib();
     }
 
-    Box Block::getBounds()
+    Box2 Block::getBounds()
     {
         if (grid_.isEmpty()) {
-            return Box();
+            return Box2();
         } else {
             int x = grid_.getX();
             int y = grid_.getY();
             int width = grid_.getWidth();
             int height = grid_.getHeight();
 
-            Box bounds;
+            Box2 bounds;
             addGridPointToBounds(x, y, &bounds);
             addGridPointToBounds(x + width, y, &bounds);
             addGridPointToBounds(x + width, y + height, &bounds);
@@ -186,7 +186,7 @@ namespace crust {
         return int(neighbors_.size());
     }
     
-    void Block::dig(Box const &box)
+    void Block::dig(Box2 const &box)
     {
         int x = grid_.getX();
         int y = grid_.getY();
@@ -253,11 +253,11 @@ namespace crust {
         return game_->findBlockAtPosition(worldPosition.x, worldPosition.y, this);
     }
 
-    void Block::addGridPointToBounds(int x, int y, Box *bounds)
+    void Block::addGridPointToBounds(int x, int y, Box2 *bounds)
     {
         b2Vec2 localPoint = b2Vec2(0.1f * float(x), 0.1f * float(y));
         b2Vec2 worldPoint = body_->GetWorldPoint(localPoint);
-        bounds->add(worldPoint.x, worldPoint.y);
+        bounds->merge(worldPoint.x, worldPoint.y);
     }
 
     void Block::updateDrawVertices()

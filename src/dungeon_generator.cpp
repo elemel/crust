@@ -3,7 +3,7 @@
 #include "random.hpp"
 
 namespace crust {
-    DungeonGenerator::DungeonGenerator(Random *random, Box const &bounds) :
+    DungeonGenerator::DungeonGenerator(Random *random, Box2 const &bounds) :
         random_(random),
         bounds_(bounds),
         minRoomSize_(3.0f),
@@ -36,9 +36,9 @@ namespace crust {
         width = 0.5f * width + 0.5f * size;
         height = 0.5f * height + 0.5f * size;
         if (width < bounds_.getWidth() && height < bounds_.getHeight()) {
-            float x = bounds_.getX() + random_->getFloat() * (bounds_.getWidth() - width);
-            float y = bounds_.getY() + random_->getFloat() * (bounds_.getHeight() - height);
-            Box box(x, y, width, height);
+            float x = bounds_.p1.x + random_->getFloat() * (bounds_.getWidth() - width);
+            float y = bounds_.p1.y + random_->getFloat() * (bounds_.getHeight() - height);
+            Box2 box(x, y, width, height);
             if (!intersectsRoom(box)) {
                 roomBoxes_.push_back(box);
             }
@@ -56,24 +56,22 @@ namespace crust {
         }
     }
     
-    bool DungeonGenerator::generateCorridor(Box const &a, Box const &b)
+    bool DungeonGenerator::generateCorridor(Box2 const &a, Box2 const &b)
     {
-        float minX = std::max(a.getX(), b.getX());
-        float minY = std::max(a.getY(), b.getY());
-        float maxX = std::min(a.getX() + a.getWidth(),
-                              b.getX() + b.getWidth());
-        float maxY = std::min(a.getY() + a.getHeight(),
-                              b.getY() + b.getHeight());
+        float minX = std::max(a.p1.x, b.p1.x);
+        float minY = std::max(a.p1.y, b.p1.y);
+        float maxX = std::min(a.p2.x, b.p2.x);
+        float maxY = std::min(a.p2.y, b.p2.y);
         float width = maxX - minX;
         float height = maxY - minY;
         if (corridorWidth_ < width) {
-            Box const &top = a.getY() < b.getY() ? b : a;
-            Box const &bottom = a.getY() < b.getY() ? a : b;
+            Box2 const &top = a.p1.y < b.p1.y ? b : a;
+            Box2 const &bottom = a.p1.y < b.p1.y ? a : b;
 
-            float topMinX = top.getX();
-            float topMaxX = top.getX() + top.getWidth();
-            float bottomMinX = bottom.getX();
-            float bottomMaxX = bottom.getX() + bottom.getWidth();
+            float topMinX = top.p1.x;
+            float topMaxX = top.p2.x;
+            float bottomMinX = bottom.p1.x;
+            float bottomMaxX = bottom.p2.x;
 
             bool left = (topMinX < bottomMinX);
             bool right = (bottomMaxX < topMaxX);
@@ -89,13 +87,13 @@ namespace crust {
                 x = minX + 0.5f * (width - corridorWidth_);
             }
 
-            Box box(x, maxY, corridorWidth_, -height);
+            Box2 box(x, maxY, corridorWidth_, -height);
             if (intersectsRoom(box) == 2) {
                 corridorBoxes_.push_back(box);
                 return true;
             }
         } else if (corridorHeight_ < height) {
-            Box box(maxX, minY, -width, corridorHeight_);
+            Box2 box(maxX, minY, -width, corridorHeight_);
             if (intersectsRoom(box) == 2) {
                 corridorBoxes_.push_back(box);
                 return true;
@@ -104,9 +102,9 @@ namespace crust {
         return false;
     }
 
-    int DungeonGenerator::intersectsRoom(Box const &box)
+    int DungeonGenerator::intersectsRoom(Box2 const &box)
     {
-        Box paddedBox(box);
+        Box2 paddedBox(box);
         paddedBox.pad(wallSize_, wallSize_);
         int count = 0;
         for (std::size_t i = 0; i < roomBoxes_.size(); ++i) {

@@ -1,7 +1,7 @@
 #ifndef CRUST_GAME_HPP
 #define CRUST_GAME_HPP
 
-#include "box.hpp"
+#include "geometry.hpp"
 #include "random.hpp"
 
 #include <iostream>
@@ -77,7 +77,7 @@ namespace crust {
         std::auto_ptr<Font> font_;        
         std::auto_ptr<TextDrawer> textDrawer_;
         
-        Box bounds_;
+        Box2 bounds_;
         std::auto_ptr<Block> endBlock_;
 
         int fpsTime_;
@@ -127,7 +127,7 @@ namespace crust {
         void drawBlockBounds();
         void drawBlocks();
 
-        void dig(Box const &box);
+        void dig(Box2 const &box);
     };
 }
 
