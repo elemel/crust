@@ -366,7 +366,7 @@ namespace crust {
         return Matrix3(m) *= 1.0f / x;
     }
 
-    inline Vector2 operator*(Matrix3 const &m, Vector2 const &p)
+    inline Vector2 transformPoint(Matrix3 const &m, Vector2 const &p)
     {
         return Vector2(m.a * p.x + m.b * p.y + m.c,
                        m.d * p.x + m.e * p.y + m.f);
@@ -379,15 +379,15 @@ namespace crust {
 
     inline float Matrix3::getRotation() const
     {
-        Vector2 v = (*this * Vector2(1.0f, 0.0f) -
-                     *this * Vector2(0.0f, 0.0f));
+        Vector2 v = (transformPoint(*this, Vector2(1.0f, 0.0f)) -
+                     transformPoint(*this, Vector2(0.0f, 0.0f)));
         return std::atan2(v.y, v.x);
     }
     
     inline float Matrix3::getScale() const
     {
-        Vector2 v = (*this * Vector2(1.0f, 0.0f) -
-                     *this * Vector2(0.0f, 0.0f));
+        Vector2 v = (transformPoint(*this, Vector2(1.0f, 0.0f)) -
+                     transformPoint(*this, Vector2(0.0f, 0.0f)));
         return v.getLength();
     }
 }

@@ -34,6 +34,11 @@ namespace crust {
         {
             return p2.y - p1.y;
         }
+
+        float getPerimeter() const
+        {
+            return 2.0f * (getWidth() + getHeight());
+        }
         
         float getArea() const
         {
@@ -107,53 +112,50 @@ namespace crust {
             return getSquaredDistance(p1, p2);
         }
 
-        Box2 boundingBox() const;
+        Box2 getBoundingBox() const
+        {
+            return Box2(Vector2(std::min(p1.x, p2.x), std::min(p1.y, p2.y)),
+                        Vector2(std::max(p1.x, p2.x), std::max(p1.y, p2.y)));
+        }
     };
-
-    inline Box2 LineSegment2::boundingBox() const
-    {
-        return Box2(Vector2(std::min(p1.x, p2.x), std::min(p1.y, p2.y)),
-                    Vector2(std::max(p1.x, p2.x), std::max(p1.y, p2.y)));
-    }
 
     class Circle2 {
     public:
         Vector2 center;
         float radius;
 
-        Circle2();
-        Circle2(Vector2 const &center, float radius);
+        Circle2() :
+            radius(0.0f)
+        { }
 
-        float perimeter() const;
-        float area() const;
-        Box2 boundingBox() const;
+        Circle2(Vector2 const &center, float radius) :
+            center(center),
+            radius(radius)
+        { }
 
-        void transform(Matrix3 const &m);
+        float getPerimeter() const
+        {
+            return 2.0f * pi * radius;
+        }
+
+        float getArea() const
+        {
+            return pi * square(radius);
+        }
+
+        Box2 getBoundingBox() const
+        {
+            return Box2(center - Vector2(radius), center + Vector2(radius));
+        }
+
+        void transform(Matrix3 const &m)
+        {
+            Vector2 point = center + Vector2(radius, 0.0f);
+            center = transformPoint(m, center);
+            point = transformPoint(m, point);
+            radius = getDistance(center, point);
+        }
     };
-
-    inline Circle2::Circle2() :
-        radius(0.0f)
-    { }
-
-    inline Circle2::Circle2(Vector2 const &center, float radius) :
-        center(center),
-        radius(radius)
-    { }
-
-    inline float Circle2::perimeter() const
-    {
-        return 2.0f * pi * radius;
-    }
-
-    inline float Circle2::area() const
-    {
-        return pi * square(radius);
-    }
-
-    inline Box2 Circle2::boundingBox() const
-    {
-        return Box2(center - Vector2(radius), center + Vector2(radius));
-    }
 
     inline Circle2 transform(Circle2 const &c, Matrix3 const &m)
     {
@@ -189,14 +191,13 @@ namespace crust {
                           vertices[2] - vertices[1]) <= 0.0f);
         }
 
-        void reverse();
+        void reverse()
+        {
+            std::reverse(vertices.begin(), vertices.end());
+        }
+
         void transform(Matrix3 const &m);
     };
-
-    inline void Polygon2::reverse()
-    {
-        std::reverse(vertices.begin(), vertices.end());
-    }
 
     inline Polygon2 transform(Polygon2 const &p, Matrix3 const &m)
     {
@@ -214,14 +215,14 @@ namespace crust {
 
     inline bool intersects(Box2 const &b1, Box2 const &b2)
     {
-        return (b1.p1.x <= b2.p2.x && b2.p1.x <= b1.p2.x &&
-                b1.p1.y <= b2.p2.y && b2.p1.y <= b1.p2.y);
+        return (b1.p1.x < b2.p2.x && b2.p1.x < b1.p2.x &&
+                b1.p1.y < b2.p2.y && b2.p1.y < b1.p2.y);
     }
 
     inline bool intersects(Box2 const &b, Vector2 const &p)
     {
-        return (b.p1.x <= p.x && p.x <= b.p2.x &&
-                b.p1.y <= p.y && p.y <= b.p2.y);
+        return (b.p1.x < p.x && p.x < b.p2.x &&
+                b.p1.y < p.y && p.y < b.p2.y);
     }
 
     bool intersects(Box2 const &b, Circle2 const &c);
