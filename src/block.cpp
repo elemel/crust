@@ -198,7 +198,7 @@ namespace crust {
                     b2Vec2 localPosition(0.1f * float(x + dx),
                                          0.1f * float(y + dy));
                     b2Vec2 worldPosition = body_->GetWorldPoint(localPosition);
-                    if (box.contains(worldPosition.x, worldPosition.y)) {
+                    if (box.containsPoint(worldPosition.x, worldPosition.y)) {
                         grid_.setElement(x + dx, y + dy, 0);
                     }
                 }
@@ -257,7 +257,7 @@ namespace crust {
     {
         b2Vec2 localPoint = b2Vec2(0.1f * float(x), 0.1f * float(y));
         b2Vec2 worldPoint = body_->GetWorldPoint(localPoint);
-        bounds->merge(worldPoint.x, worldPoint.y);
+        bounds->mergePoint(worldPoint.x, worldPoint.y);
     }
 
     void Block::updateDrawVertices()

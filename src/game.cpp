@@ -89,7 +89,7 @@ namespace crust {
 
     Block *Game::findBlockAtPosition(float x, float y, Block *except)
     {
-        if (!bounds_.contains(x, y)) {
+        if (!bounds_.containsPoint(x, y)) {
             return endBlock_.get();
         }
 

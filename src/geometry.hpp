@@ -60,7 +60,7 @@ namespace crust {
             return 0.5f * (p1 + p2);
         }
         
-        bool contains(float x, float y) const
+        bool containsPoint(float x, float y) const
         {
             return p1.x < x && x < p2.x && p1.y < y && y < p2.y;
         }
@@ -81,7 +81,7 @@ namespace crust {
             p2.y += y;
         }
         
-        void merge(float x, float y)
+        void mergePoint(float x, float y)
         {
             p1.x = std::min(x, p1.x);
             p1.y = std::min(y, p1.y);
@@ -164,6 +164,15 @@ namespace crust {
         return result;
     }
 
+    class Triangle2 {
+    public:
+        Vector2 p1;
+        Vector2 p2;
+        Vector2 p3;
+
+        Circle2 getCircumcircle() const;
+    };
+    
     class Polygon2 {
     public:
         std::vector<Vector2> vertices;
