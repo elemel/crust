@@ -1,6 +1,7 @@
 #ifndef CRUST_GAME_HPP
 #define CRUST_GAME_HPP
 
+#include "delauney_triangulation.hpp"
 #include "geometry.hpp"
 #include "random.hpp"
 
@@ -83,7 +84,9 @@ namespace crust {
         int fpsTime_;
         int fpsCount_;
         std::string fpsText_;
-        
+
+        DelauneyTriangulation triangulation_;
+
         void init();
         void initSdl();
         void initWindow();
@@ -91,6 +94,7 @@ namespace crust {
         void initPhysics();
         void initBlocks();
         void initFont();
+        void initTriangulation();
 
         void run();
         float updateTime();
@@ -99,6 +103,7 @@ namespace crust {
         void handleEvents();
         void handleEvent(SDL_Event *event);
         void handleKeyDownEvent(SDL_Event *event);
+        void handleMouseButtonDownEvent(SDL_Event *event);
         void handleInput();
         void setBlockElementAtPosition(float x, float y, int type);
 

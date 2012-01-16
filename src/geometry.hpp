@@ -166,11 +166,21 @@ namespace crust {
 
     class Triangle2 {
     public:
-        Vector2 p1;
-        Vector2 p2;
-        Vector2 p3;
+        Vector2 v1;
+        Vector2 v2;
+        Vector2 v3;
+
+        Triangle2()
+        { }
+
+        Triangle2(Vector2 const &v1, Vector2 const &v2, Vector2 const &v3) :
+            v1(v1),
+            v2(v2),
+            v3(v3)
+        { }
 
         Circle2 getCircumcircle() const;
+        float getCircumcircleDeterminant(Vector2 const &p) const;
     };
     
     class Polygon2 {

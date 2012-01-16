@@ -33,13 +33,15 @@ namespace crust {
         targetY_(0.0f),
 
         drawEnabled_(true),
-        debugDrawEnabled_(false),
+        debugDrawEnabled_(true),
         lightingEnabled_(true),
 
         bounds_(Vector2(-10.0f, -10.0f), Vector2(10.0f, 10.0f)),
 
         fpsTime_(0.0f),
-        fpsCount_(0)
+        fpsCount_(0),
+    
+        triangulation_(bounds_)
     { }
     
     Game::~Game()
@@ -120,8 +122,9 @@ namespace crust {
         time_ = 0.001f * float(SDL_GetTicks());
         initPhysics();
         particleEmitters_.push_back(new ParticleEmitter(this));
-        initBlocks();
+        // initBlocks();
         initFont();
+        initTriangulation();
     }
     
     void Game::initSdl()
@@ -219,6 +222,15 @@ namespace crust {
         textDrawer_.reset(new TextDrawer(font_.get()));
     }
 
+    void Game::initTriangulation()
+    {
+        for (int i = 0; i < 100; ++i) {
+            float x = bounds_.p1.x + bounds_.getWidth() * getRandomFloat();
+            float y = bounds_.p1.y + bounds_.getHeight() * getRandomFloat();
+            triangulation_.addVertex(Vector2(x, y));
+        }
+    }
+
     void Game::run()
     {
         while (!quit_) {
@@ -254,9 +266,14 @@ namespace crust {
     void Game::handleEvents()
     {
         SDL_Event event;
+#if 0
         while (SDL_PollEvent(&event)) {
             handleEvent(&event);
         }
+#else
+        SDL_WaitEvent(&event);
+        handleEvent(&event);
+#endif
     }
 
     void Game::handleEvent(SDL_Event *event)
@@ -268,6 +285,10 @@ namespace crust {
                 
             case SDL_KEYDOWN:
                 handleKeyDownEvent(event);
+                break;
+
+            case SDL_MOUSEBUTTONDOWN:
+                handleMouseButtonDownEvent(event);
                 break;
         }
     }
@@ -319,6 +340,14 @@ namespace crust {
                 break;
         }
     }
+
+    void Game::handleMouseButtonDownEvent(SDL_Event *event)
+    {
+        float invScale = 2.0f / cameraScale_ / float(windowHeight_);
+        float x = cameraX_ + invScale * float(event->button.x - windowWidth_ / 2);
+        float y = cameraY_ + invScale * -float(event->button.y - windowHeight_ / 2);
+        triangulation_.addVertex(Vector2(x, y));
+    }
     
     void Game::handleInput()
     {
@@ -347,7 +376,7 @@ namespace crust {
     void Game::step(float dt)
     {
         stepParticleEmitters(dt);
-        stepBlocks(dt);
+        // stepBlocks(dt);
         physicsWorld_->Step(dt, 10, 10);
         handleCollisions();
     }
@@ -460,6 +489,7 @@ namespace crust {
             drawParticleEmitters();
             physicsWorld_->DrawDebugData();
             // drawBlockBounds();
+            triangulation_.draw();
             glPopAttrib();
         }
     }
