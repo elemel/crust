@@ -41,7 +41,7 @@ namespace crust {
         fpsTime_(0.0f),
         fpsCount_(0),
     
-        triangulation_(bounds_)
+        delauneyTriangulation_(Box2(Vector2(-20.0f, -20.0f), Vector2(20.0f, 20.0f)))
     { }
     
     Game::~Game()
@@ -124,7 +124,7 @@ namespace crust {
         particleEmitters_.push_back(new ParticleEmitter(this));
         // initBlocks();
         initFont();
-        initTriangulation();
+        initVoronoiDiagram();
     }
     
     void Game::initSdl()
@@ -222,13 +222,15 @@ namespace crust {
         textDrawer_.reset(new TextDrawer(font_.get()));
     }
 
-    void Game::initTriangulation()
+    void Game::initVoronoiDiagram()
     {
-        for (int i = 0; i < 100; ++i) {
+        delauneyTriangulation_ = DelauneyTriangulation(Box2(Vector2(-20.0f, -20.0f), Vector2(20.0f, 20.0f)));
+        for (int i = 0; i < 500; ++i) {
             float x = bounds_.p1.x + bounds_.getWidth() * getRandomFloat();
             float y = bounds_.p1.y + bounds_.getHeight() * getRandomFloat();
-            triangulation_.addVertex(Vector2(x, y));
+            delauneyTriangulation_.addVertex(Vector2(x, y));
         }
+        voronoiDiagram_.generate(delauneyTriangulation_);
     }
 
     void Game::run()
@@ -301,10 +303,7 @@ namespace crust {
                 break;
 
             case SDLK_BACKSPACE:
-                blocks_.clear();
-                initBlocks();
-                blockGrowthDone_ = false;
-                dungeonGenerationDone_ = false;
+                initVoronoiDiagram();
                 break;
 
             case SDLK_d:
@@ -346,7 +345,8 @@ namespace crust {
         float invScale = 2.0f / cameraScale_ / float(windowHeight_);
         float x = cameraX_ + invScale * float(event->button.x - windowWidth_ / 2);
         float y = cameraY_ + invScale * -float(event->button.y - windowHeight_ / 2);
-        triangulation_.addVertex(Vector2(x, y));
+        delauneyTriangulation_.addVertex(Vector2(x, y));
+        voronoiDiagram_.generate(delauneyTriangulation_);
     }
     
     void Game::handleInput()
@@ -489,7 +489,8 @@ namespace crust {
             drawParticleEmitters();
             physicsWorld_->DrawDebugData();
             // drawBlockBounds();
-            triangulation_.draw();
+            // delauneyTriangulation_.draw();
+            voronoiDiagram_.draw();
             glPopAttrib();
         }
     }

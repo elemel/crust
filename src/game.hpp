@@ -4,6 +4,7 @@
 #include "delauney_triangulation.hpp"
 #include "geometry.hpp"
 #include "random.hpp"
+#include "voronoi_diagram.hpp"
 
 #include <iostream>
 #include <map>
@@ -85,7 +86,8 @@ namespace crust {
         int fpsCount_;
         std::string fpsText_;
 
-        DelauneyTriangulation triangulation_;
+        DelauneyTriangulation delauneyTriangulation_;
+        VoronoiDiagram voronoiDiagram_;
 
         void init();
         void initSdl();
@@ -94,7 +96,7 @@ namespace crust {
         void initPhysics();
         void initBlocks();
         void initFont();
-        void initTriangulation();
+        void initVoronoiDiagram();
 
         void run();
         float updateTime();
