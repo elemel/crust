@@ -227,6 +227,35 @@ namespace crust {
         }
     }
 
+    void Block::rasterize(Polygon2 const &polygon)
+    {
+        Polygon2 localPolygon;
+        for (int i = 0; i < polygon.getSize(); ++i) {
+            b2Vec2 worldPoint(polygon.vertices[i].x, polygon.vertices[i].y);
+            b2Vec2 localPoint = body_->GetLocalPoint(worldPoint);
+            localPolygon.vertices.push_back(Vector2(localPoint.x, localPoint.y));
+        }
+        Box2 bounds = localPolygon.getBoundingBox();
+        int minX = int(10.0f * bounds.p1.x + 0.05f);
+        int minY = int(10.0f * bounds.p1.y + 0.05f);
+        int maxX = int(10.0f * bounds.p2.x + 0.05f);
+        int maxY = int(10.0f * bounds.p2.y + 0.05f);
+        for (int y = minY; y <= maxY; ++y) {
+            for (int x = minX; x <= maxX; ++x) {
+                Vector2 localPoint(0.1f * float(x), 0.1f * float(y));
+                if (localPolygon.containsPoint(localPoint)) {
+                    for (int dy = -1; dy <= 1; ++dy) {
+                        for (int dx = -1; dx <= 1; ++dx) {
+                            if (dx == 0 || dy == 0) {
+                                setElement(x + dx, y + dy, 1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     float Block::getColorOffset(int x, int y, int i)
     {
         std::size_t a = hashValue((x << 16) + (y << 8) + i);

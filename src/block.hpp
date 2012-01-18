@@ -10,6 +10,7 @@
 namespace crust {
     class Box2;
     class Game;
+    class Polygon2;
     
     class Block {
     public:
@@ -54,6 +55,8 @@ namespace crust {
         void dig(Box2 const &box);
 
         void fitPhysicsShapes();
+
+        void rasterize(Polygon2 const &polygon);
 
     private:
         Game *game_;

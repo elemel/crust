@@ -65,6 +65,11 @@ namespace crust {
             return p1.x < x && x < p2.x && p1.y < y && y < p2.y;
         }
 
+        bool containsPoint(Vector2 const &p) const
+        {
+            return p1.x < p.x && p.x < p2.x && p1.y < p.y && p.y < p2.y;
+        }
+
         void pad(float f)
         {
             p1.x -= f;
@@ -87,6 +92,14 @@ namespace crust {
             p1.y = std::min(y, p1.y);
             p2.x = std::max(x, p2.x);
             p2.y = std::max(y, p2.y);
+        }
+
+        void mergePoint(Vector2 const &p)
+        {
+            p1.x = std::min(p.x, p1.x);
+            p1.y = std::min(p.y, p1.y);
+            p2.x = std::max(p.x, p2.x);
+            p2.y = std::max(p.y, p2.y);
         }
     };
 
@@ -216,6 +229,12 @@ namespace crust {
         }
 
         void transform(Matrix3 const &m);
+
+        float getArea() const;
+        Vector2 getCentroid() const;
+        Box2 getBoundingBox() const;
+
+        bool containsPoint(Vector2 const &p) const;
     };
 
     inline Polygon2 transform(Polygon2 const &p, Matrix3 const &m)
@@ -271,6 +290,8 @@ namespace crust {
     {
         return intersects(b, c);
     }
+
+    bool contains(Box2 const &outer, Polygon2 const &inner);
 }
 
 #endif

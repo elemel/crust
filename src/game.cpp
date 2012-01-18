@@ -33,7 +33,7 @@ namespace crust {
         targetY_(0.0f),
 
         drawEnabled_(true),
-        debugDrawEnabled_(true),
+        debugDrawEnabled_(false),
         lightingEnabled_(true),
 
         bounds_(Vector2(-10.0f, -10.0f), Vector2(10.0f, 10.0f)),
@@ -122,9 +122,10 @@ namespace crust {
         time_ = 0.001f * float(SDL_GetTicks());
         initPhysics();
         particleEmitters_.push_back(new ParticleEmitter(this));
-        // initBlocks();
         initFont();
         initVoronoiDiagram();
+        initBlocks();
+        initDungeon();
     }
     
     void Game::initSdl()
@@ -195,24 +196,6 @@ namespace crust {
         endBlock_.reset(new Block(this, 0.0f, 0.0f, 0.0f));
     }
 
-    void Game::initBlocks()
-    {
-        for (int i = 0; i < 50; ++i) {
-            float x = bounds_.p1.x + bounds_.getWidth() * getRandomFloat();
-            float y = bounds_.p1.y + bounds_.getHeight() * getRandomFloat();
-            float angle = -M_PI + 2.0f * M_PI * getRandomFloat();
-            blocks_.push_back(new Block(this, x, y, angle));
-
-            float brightness = 0.5f + 0.3f * getRandomFloat();
-            float red = 0.3f + 0.1f * getRandomFloat();
-            float green = 0.5f + 0.1f * getRandomFloat();
-            float blue = 0.7f + 0.1f * getRandomFloat();
-            blocks_.back().setColor(brightness * red, brightness * green, brightness * blue);
-
-            blocks_.back().setElement(0, 0, 1);
-        }
-    }
-
     void Game::initFont()
     {
         font_.reset(new Font);
@@ -226,13 +209,50 @@ namespace crust {
     {
         delauneyTriangulation_ = DelauneyTriangulation(Box2(Vector2(-20.0f, -20.0f), Vector2(20.0f, 20.0f)));
         for (int i = 0; i < 500; ++i) {
-            float x = bounds_.p1.x + bounds_.getWidth() * getRandomFloat();
-            float y = bounds_.p1.y + bounds_.getHeight() * getRandomFloat();
+            float x = bounds_.p1.x - 5.0f + (bounds_.getWidth() + 10.0f) * getRandomFloat();
+            float y = bounds_.p1.y - 5.0f + (bounds_.getHeight() + 10.0f) * getRandomFloat();
             delauneyTriangulation_.addVertex(Vector2(x, y));
         }
         voronoiDiagram_.generate(delauneyTriangulation_);
     }
 
+    void Game::initBlocks()
+    {
+        blocks_.clear();
+        Box2 paddedBounds = bounds_;
+        paddedBounds.pad(5.0f);
+        for (int i = 0; i < voronoiDiagram_.getPolygonCount(); ++i) {
+            Polygon2 polygon = voronoiDiagram_.getPolygon(i);
+            if (contains(paddedBounds, polygon)) {
+                Vector2 centroid = polygon.getCentroid();
+                float angle = -M_PI + 2.0f * M_PI * getRandomFloat();
+                blocks_.push_back(new Block(this, centroid.x, centroid.y, angle));
+                
+                float brightness = 0.5f + 0.3f * getRandomFloat();
+                float red = 0.3f + 0.1f * getRandomFloat();
+                float green = 0.5f + 0.1f * getRandomFloat();
+                float blue = 0.7f + 0.1f * getRandomFloat();
+                blocks_.back().setColor(brightness * red, brightness * green, brightness * blue);
+                
+                blocks_.back().setElement(0, 0, 1);
+                blocks_.back().rasterize(polygon);
+            }
+        }
+    }
+
+    void Game::initDungeon()
+    {
+        DungeonGenerator generator(&random_, bounds_);
+        generator.generate();
+        for (int i = 0; i < generator.getRoomBoxCount(); ++i) {
+            dig(generator.getRoomBox(i));
+        }
+        for (int i = 0; i < generator.getCorridorBoxCount(); ++i) {
+            dig(generator.getCorridorBox(i));
+        }
+        dungeonGenerationDone_ = true;
+    }
+    
     void Game::run()
     {
         while (!quit_) {
@@ -304,6 +324,8 @@ namespace crust {
 
             case SDLK_BACKSPACE:
                 initVoronoiDiagram();
+                initBlocks();
+                initDungeon();
                 break;
 
             case SDLK_d:
@@ -376,7 +398,7 @@ namespace crust {
     void Game::step(float dt)
     {
         stepParticleEmitters(dt);
-        // stepBlocks(dt);
+        stepBlocks(dt);
         physicsWorld_->Step(dt, 10, 10);
         handleCollisions();
     }
@@ -391,43 +413,7 @@ namespace crust {
     }
 
     void Game::stepBlocks(float dt)
-    {
-        if (!blockGrowthDone_) {
-            for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-                if (i->getNeighborCount()) {
-                    blocksWithNeighbors_.push_back(&*i);
-                }
-            }
-            if (!blocksWithNeighbors_.empty()) {
-                for (int i = 0; i < 10; ++i) {
-                    int j = getRandomInt(blocksWithNeighbors_.size());
-                    for (int k = 0; k < 50; ++k) {
-                        blocksWithNeighbors_[j]->absorbElement(1);
-                    }
-                }
-                blocksWithNeighbors_.clear();
-            } else {
-                blockGrowthDone_ = true;
-            }
-        } else if (!dungeonGenerationDone_) {
-#if 0
-            DungeonGenerator generator(&random_, bounds_);
-            generator.generate();
-            for (int i = 0; i < generator.getRoomBoxCount(); ++i) {
-                dig(generator.getRoomBox(i));
-            }
-            for (int i = 0; i < generator.getCorridorBoxCount(); ++i) {
-                dig(generator.getCorridorBox(i));
-            }
-#endif
-            
-            for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-                i->fitPhysicsShapes();
-            }
-
-            dungeonGenerationDone_ = true;
-        }
-    }
+    { }
     
     void Game::addParticleToBlockCollision(b2Body *particleBody,
                                            b2Body *blockBody)
@@ -542,7 +528,7 @@ namespace crust {
     void Game::setTargetLight()
     {
         glEnable(GL_LIGHT2);
-        GLfloat diffuse[] = { 5.0f, 5.0f, 5.0f, 1.0f };
+        GLfloat diffuse[] = { 2.0f, 2.0f, 2.0f, 1.0f };
         GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
         glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse);
         glLightfv(GL_LIGHT2, GL_SPECULAR, specular);

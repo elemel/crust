@@ -94,9 +94,10 @@ namespace crust {
         void initWindow();
         void initContext();
         void initPhysics();
-        void initBlocks();
         void initFont();
         void initVoronoiDiagram();
+        void initBlocks();
+        void initDungeon();
 
         void run();
         float updateTime();

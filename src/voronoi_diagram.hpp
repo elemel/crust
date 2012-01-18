@@ -35,7 +35,7 @@ namespace crust {
         
         Polygon2 getPolygon(int index);
 
-        void generate(DelauneyTriangulation const &triangulation);
+        void generate(DelauneyTriangulation const &source);
 
         void draw();
         

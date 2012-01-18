@@ -40,4 +40,61 @@ namespace crust {
         float i = square(v3.x) - square(p.x) + square(v3.y) - square(p.y);
         return Matrix3(a, b, c, d, e, f, g, h, i).getDeterminant();
     }
+
+    // http://en.wikipedia.org/wiki/Centroid
+    float Polygon2::getArea() const
+    {
+        float area = 0.0f;
+        for (std::size_t i = 0; i < vertices.size(); ++i) {
+            Vector2 const &v1 = vertices[i];
+            Vector2 const &v2 = vertices[(i + 1) % vertices.size()];
+            area += v1.x * v2.y - v2.x * v1.y;
+        }
+        return 0.5f * area;
+    }
+
+    // http://en.wikipedia.org/wiki/Centroid
+    Vector2 Polygon2::getCentroid() const
+    {
+        Vector2 centroid;
+        for (std::size_t i = 0; i < vertices.size(); ++i) {
+            Vector2 const &v1 = vertices[i];
+            Vector2 const &v2 = vertices[(i + 1) % vertices.size()];
+            centroid.x += (v1.x + v2.x) * (v1.x * v2.y - v2.x * v1.y);
+            centroid.y += (v1.y + v2.y) * (v1.x * v2.y - v2.x * v1.y);
+        }
+        centroid /= 6.0f * getArea();
+        return centroid;
+    }
+
+    Box2 Polygon2::getBoundingBox() const
+    {
+        Box2 bounds;
+        for (std::size_t i = 0; i < vertices.size(); ++i) {
+            bounds.mergePoint(vertices[i]);
+        }
+        return bounds;
+    }
+
+    bool Polygon2::containsPoint(Vector2 const &p) const
+    {
+        for (std::size_t i = 0; i < vertices.size(); ++i) {
+            Vector2 const &v1 = vertices[i];
+            Vector2 const &v2 = vertices[(i + 1) % vertices.size()];
+            if (cross(p - v1, v2 - v1) > 0.0f) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool contains(Box2 const &outer, Polygon2 const &inner)
+    {
+        for (int i = 0; i < inner.getSize(); ++i) {
+            if (!outer.containsPoint(inner.vertices[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

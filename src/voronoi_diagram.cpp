@@ -17,7 +17,7 @@ namespace crust {
         return result;
     }
 
-    void VoronoiDiagram::generate(DelauneyTriangulation const &triangulation)
+    void VoronoiDiagram::generate(DelauneyTriangulation const &source)
     {
         typedef std::map<int, IndexVector> TriangleMap;
 
@@ -25,30 +25,33 @@ namespace crust {
         vertices_.clear();
         polygons_.clear();
 
-        for (int i = 0; i < triangulation.getTriangleCount(); ++i) {
-            Triangle2 triangle = triangulation.getTriangle(i);
+        // Store the circumcenter of each source triangle.
+        for (int i = 0; i < source.getTriangleCount(); ++i) {
+            Triangle2 triangle = source.getTriangle(i);
             Vector2 circumcenter = triangle.getCircumcircle().center;
             vertices_.push_back(circumcenter);
         }
 
+        // Map each source vertex to its adjacent source triangles.
         TriangleMap triangles;
-        for (int i = 0; i < triangulation.getTriangleCount(); ++i) {
+        for (int i = 0; i < source.getTriangleCount(); ++i) {
             DelauneyTriangulation::IndexArray indices =
-                triangulation.getTriangleIndices(i);
+                source.getTriangleIndices(i);
             triangles[indices[0]].push_back(i);
             triangles[indices[1]].push_back(i);
             triangles[indices[2]].push_back(i);
         }
 
+        // Generate a polygon for each source vertex.
         for (TriangleMap::iterator i = triangles.begin(); i != triangles.end();
              ++i)
         {
             typedef std::multimap<float, int> SortedIndexMap;
 
-            Vector2 vertex = triangulation.getVertex(i->first);
+            Vector2 vertex = source.getVertex(i->first);
             IndexVector const &triangleIndices = i->second;
             
-            // Sort the indices by angle relative to the new vertex.
+            // Sort the circumcenters by angle relative to the source vertex.
             SortedIndexMap sortedIndices;
             for (IndexVector::const_iterator j = triangleIndices.begin();
                  j != triangleIndices.end(); ++j)
@@ -58,6 +61,7 @@ namespace crust {
                 sortedIndices.insert(std::make_pair(angle, *j));
             }
 
+            // Create polygon.
             IndexVector polygonIndices;
             for (SortedIndexMap::iterator i = sortedIndices.begin();
                  i != sortedIndices.end(); ++i)
