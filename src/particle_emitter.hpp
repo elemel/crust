@@ -14,7 +14,6 @@ namespace crust {
         void setTargetPosition(float x, float y);
         
         void step(float dt);
-
         void draw();
         
     private:

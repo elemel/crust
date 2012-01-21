@@ -25,8 +25,8 @@ namespace crust {
         bodyDef.userData = this;
         body_ = game_->getPhysicsWorld()->CreateBody(&bodyDef);
 
-        normalX_ = -0.03f + 0.06f * game->getRandomFloat();
-        normalY_ = -0.03f + 0.06f * game->getRandomFloat();
+        normalX_ = -0.05f + 0.1f * game->getRandomFloat();
+        normalY_ = -0.05f + 0.1f * game->getRandomFloat();
     }
 
     Block::~Block()
@@ -149,12 +149,23 @@ namespace crust {
         glScalef(0.1f, 0.1f, 1.0f);
         glTranslatef(-0.5f, -0.5f, 0.0f);
         glEnableClientState(GL_COLOR_ARRAY);
-        glColorPointer(3, GL_FLOAT, sizeof(DrawVertex), &drawVertices_[0].red);
         glEnableClientState(GL_NORMAL_ARRAY);
-        glNormalPointer(GL_FLOAT, sizeof(DrawVertex), &drawVertices_[0].normalX);
         glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(2, GL_FLOAT, sizeof(DrawVertex), &drawVertices_[0].x);
-        glDrawArrays(GL_QUADS, 0, GLsizei(drawVertices_.size()));
+        
+        if (!quadDrawVertices_.empty()) {
+            glColorPointer(3, GL_FLOAT, sizeof(DrawVertex), &quadDrawVertices_[0].red);
+            glNormalPointer(GL_FLOAT, sizeof(DrawVertex), &quadDrawVertices_[0].normalX);
+            glVertexPointer(2, GL_FLOAT, sizeof(DrawVertex), &quadDrawVertices_[0].x);
+            glDrawArrays(GL_QUADS, 0, GLsizei(quadDrawVertices_.size()));
+        }
+        
+        if (!lineDrawVertices_.empty()) {
+            glColorPointer(3, GL_FLOAT, sizeof(DrawVertex), &lineDrawVertices_[0].red);
+            glNormalPointer(GL_FLOAT, sizeof(DrawVertex), &lineDrawVertices_[0].normalX);
+            glVertexPointer(2, GL_FLOAT, sizeof(DrawVertex), &lineDrawVertices_[0].x);
+            glDrawArrays(GL_LINES, 0, GLsizei(lineDrawVertices_.size()));
+        }
+        
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_COLOR_ARRAY);
@@ -292,77 +303,86 @@ namespace crust {
     void Block::updateDrawVertices()
     {
         if (drawVerticesDirty_) {
-            drawVertices_.clear();
-            for (int y = 0; y < grid_.getHeight(); ++y) {
-                for (int x = 0; x < grid_.getWidth(); ++x) {
-                    int type = grid_.getElement(x + grid_.getX(), y + grid_.getY());
-                    if (type) {
-                        DrawVertex vertex;
-                        vertex.red = red_ + getColorOffset(x + grid_.getX(), y + grid_.getY(), 0);
-                        vertex.green = green_ + getColorOffset(x + grid_.getX(), y + grid_.getY(), 1);
-                        vertex.blue = blue_ + getColorOffset(x + grid_.getX(), y + grid_.getY(), 2);
-                        if (!neighbors_.empty()) {
-                            std::swap(vertex.red, vertex.blue);
-                        }
-
-                        float normalX = 0.0f;
-                        float normalY = 0.0f;
-                        getNormal(x + grid_.getX(), y + grid_.getY(), &normalX, &normalY);
-                        vertex.normalX = normalX_ + normalX;
-                        vertex.normalY = normalY_ + normalY;
-                        vertex.normalZ = 1.0f;
-                        
-                        vertex.x = float(x + grid_.getX());
-                        vertex.y = float(y + grid_.getY());
-                        
-                        drawVertices_.push_back(vertex);
-                        
-                        drawVertices_.push_back(vertex);
-                        drawVertices_.back().x += 1;
-                        
-                        drawVertices_.push_back(vertex);
-                        drawVertices_.back().x += 1;
-                        drawVertices_.back().y += 1;
-                        
-                        drawVertices_.push_back(vertex);
-                        drawVertices_.back().y += 1;
-                    }
-                }
-            }
+            updateQuadDrawVertices();
+            updateLineDrawVertices();
             drawVerticesDirty_ = false;
         }
     }
 
-    void Block::getNormal(int x, int y, float *normalX, float *normalY)
+    void Block::updateQuadDrawVertices()
     {
-        bool north = grid_.getElement(x + 0, y + 1);
-        bool west = grid_.getElement(x - 1, y + 0);
-        bool south = grid_.getElement(x + 0, y - 1);
-        bool east = grid_.getElement(x + 1, y + 0);
-
-        if (!north || !west || !south || !east) {
-            *normalX = -0.03f * (!east ? -1.0f : !west ? 1.0f : 0.0f);
-            *normalY = -0.03f * (!north ? -1.0f : !south ? 1.0f : 0.0f);
-            return;
+        quadDrawVertices_.clear();
+        for (int y = 0; y < grid_.getHeight(); ++y) {
+            for (int x = 0; x < grid_.getWidth(); ++x) {
+                int type = grid_.getElement(x + grid_.getX(), y + grid_.getY());
+                if (type) {
+                    DrawVertex vertex;
+                    vertex.red = red_ + getColorOffset(x + grid_.getX(), y + grid_.getY(), 0);
+                    vertex.green = green_ + getColorOffset(x + grid_.getX(), y + grid_.getY(), 1);
+                    vertex.blue = blue_ + getColorOffset(x + grid_.getX(), y + grid_.getY(), 2);
+                    if (!neighbors_.empty()) {
+                        std::swap(vertex.red, vertex.blue);
+                    }
+                    
+                    vertex.normalX = normalX_ - 0.025f + 0.5f * getColorOffset(x + grid_.getX(), y + grid_.getY(), 3);
+                    vertex.normalY = normalY_ - 0.025f + 0.5f * getColorOffset(x + grid_.getX(), y + grid_.getY(), 4);
+                    vertex.normalZ = 1.0f;
+                    
+                    vertex.x = float(x + grid_.getX());
+                    vertex.y = float(y + grid_.getY());
+                    
+                    quadDrawVertices_.push_back(vertex);
+                    
+                    quadDrawVertices_.push_back(vertex);
+                    quadDrawVertices_.back().x += 1;
+                    
+                    quadDrawVertices_.push_back(vertex);
+                    quadDrawVertices_.back().x += 1;
+                    quadDrawVertices_.back().y += 1;
+                    
+                    quadDrawVertices_.push_back(vertex);
+                    quadDrawVertices_.back().y += 1;
+                }
+            }
         }
+    }
 
-        bool northwest = grid_.getElement(x - 1, y + 1);
-        bool southwest = grid_.getElement(x - 1, y - 1);
-        bool southeast = grid_.getElement(x + 1, y - 1);
-        bool northeast = grid_.getElement(x + 1, y + 1);
+    void Block::updateLineDrawVertices()
+    {
+        lineDrawVertices_.clear();
 
-        if (!northwest || !southwest || !southeast || !northeast) {
-            *normalX = -0.02f * float(int(southeast) + int(northeast) - int(northwest) - int(southwest));
-            *normalY = -0.02f * float(int(northwest) + int(northeast) - int(southwest) - int(southeast));
-            return;
+        DrawVertex vertex;
+        vertex.red = 0.0f;
+        vertex.green = 0.0f;
+        vertex.blue = 0.0f;
+        vertex.normalX = 0.0f;
+        vertex.normalY = 0.0f;
+        vertex.normalZ = 1.0f;
+        vertex.x = 0.0f;
+        vertex.y = 0.0f;
+
+        for (int y = 0; y < grid_.getHeight() + 1; ++y) {
+            for (int x = 0; x < grid_.getWidth() + 1; ++x) {
+                bool center = (grid_.getElement(x + grid_.getX(), y + grid_.getY())) != 0;
+                bool left = (grid_.getElement(x + grid_.getX() - 1, y + grid_.getY())) != 0;
+                bool bottom = (grid_.getElement(x + grid_.getX(), y + grid_.getY() - 1)) != 0;
+                if (center != left) {
+                    lineDrawVertices_.push_back(vertex);
+                    lineDrawVertices_.back().x = float(x + grid_.getX());
+                    lineDrawVertices_.back().y = float(y + grid_.getY());
+                    lineDrawVertices_.push_back(vertex);
+                    lineDrawVertices_.back().x = float(x + grid_.getX());
+                    lineDrawVertices_.back().y = float(y + grid_.getY() + 1);
+                }
+                if (center != bottom) {
+                    lineDrawVertices_.push_back(vertex);
+                    lineDrawVertices_.back().x = float(x + grid_.getX());
+                    lineDrawVertices_.back().y = float(y + grid_.getY());
+                    lineDrawVertices_.push_back(vertex);
+                    lineDrawVertices_.back().x = float(x + grid_.getX() + 1);
+                    lineDrawVertices_.back().y = float(y + grid_.getY());
+                }
+            }
         }
-        
-        bool farNorth = grid_.getElement(x + 0, y + 2) && grid_.getElement(x - 1, y + 2) && grid_.getElement(x + 1, y + 2);
-        bool farWest = grid_.getElement(x - 2, y + 0) && grid_.getElement(x - 2, y - 1) && grid_.getElement(x - 2, y + 1);
-        bool farSouth = grid_.getElement(x + 0, y - 2) && grid_.getElement(x - 1, y - 2) && grid_.getElement(x + 1, y - 2);
-        bool farEast = grid_.getElement(x + 2, y + 0) && grid_.getElement(x + 2, y - 1) && grid_.getElement(x + 2, y + 1);
-        
-        *normalX = -0.01f * float(int(farEast) - int(farWest));
-        *normalY = -0.01f * float(int(farNorth) - int(farSouth));
     }
 }

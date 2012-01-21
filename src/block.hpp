@@ -68,15 +68,18 @@ namespace crust {
         float normalX_;
         float normalY_;
         std::vector<std::pair<int, int> > neighbors_;
-        std::vector<DrawVertex> drawVertices_;
+        std::vector<DrawVertex> quadDrawVertices_;
+        std::vector<DrawVertex> lineDrawVertices_;
         bool drawVerticesDirty_;
 
         float getColorOffset(int x, int y, int i);
         std::size_t hashValue(std::size_t a);
         Block *findOtherBlock(int x, int y);
         void addGridPointToBounds(int x, int y, Box2 *bounds);
+
         void updateDrawVertices();
-        void getNormal(int x, int y, float *normalX, float *normalY);
+        void updateQuadDrawVertices();
+        void updateLineDrawVertices();
     };
 }
 

@@ -514,7 +514,7 @@ namespace crust {
     void Game::setCameraLight()
     {
         glEnable(GL_LIGHT1);
-        GLfloat diffuse[] = { 10.0f, 10.0f, 10.0f, 1.0f };
+        GLfloat diffuse[] = { 5.0f, 5.0f, 5.0f, 1.0f };
         GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
         glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
         glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
@@ -528,7 +528,7 @@ namespace crust {
     void Game::setTargetLight()
     {
         glEnable(GL_LIGHT2);
-        GLfloat diffuse[] = { 2.0f, 2.0f, 2.0f, 1.0f };
+        GLfloat diffuse[] = { 5.0f, 5.0f, 5.0f, 1.0f };
         GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
         glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse);
         glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
