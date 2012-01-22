@@ -52,7 +52,7 @@ namespace crust {
         Box2 getBounds();
         int getNeighborCount();
 
-        void dig(Box2 const &box);
+        bool dig(Box2 const &box);
 
         void fitPhysicsShapes();
 

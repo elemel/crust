@@ -41,7 +41,7 @@ namespace crust {
         fpsTime_(0.0f),
         fpsCount_(0),
     
-        delauneyTriangulation_(Box2(Vector2(-20.0f, -20.0f), Vector2(20.0f, 20.0f)))
+        delauneyTriangulation_(Box2(Vector2(-15.0f, -15.0f), Vector2(15.0f, 15.0f)))
     { }
     
     Game::~Game()
@@ -207,8 +207,8 @@ namespace crust {
 
     void Game::initVoronoiDiagram()
     {
-        delauneyTriangulation_ = DelauneyTriangulation(Box2(Vector2(-20.0f, -20.0f), Vector2(20.0f, 20.0f)));
-        for (int i = 0; i < 500; ++i) {
+        delauneyTriangulation_ = DelauneyTriangulation(Box2(Vector2(-15.0f, -15.0f), Vector2(15.0f, 15.0f)));
+        for (int i = 0; i < 1000; ++i) {
             float x = bounds_.p1.x - 5.0f + (bounds_.getWidth() + 10.0f) * getRandomFloat();
             float y = bounds_.p1.y - 5.0f + (bounds_.getHeight() + 10.0f) * getRandomFloat();
             delauneyTriangulation_.addVertex(Vector2(x, y));
@@ -220,7 +220,7 @@ namespace crust {
     {
         blocks_.clear();
         Box2 paddedBounds = bounds_;
-        paddedBounds.pad(5.0f);
+        paddedBounds.pad(2.0f);
         for (int i = 0; i < voronoiDiagram_.getPolygonCount(); ++i) {
             Polygon2 polygon = voronoiDiagram_.getPolygon(i);
             if (contains(paddedBounds, polygon)) {
@@ -616,7 +616,11 @@ namespace crust {
     void Game::dig(Box2 const &box)
     {
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            i->dig(box);
+            if (i->dig(box)) {
+                int j = i - blocks_.begin();
+                blocks_.erase(i);
+                i = blocks_.begin() + j - 1;
+            }
         }
     }
 }

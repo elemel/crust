@@ -197,8 +197,9 @@ namespace crust {
         return int(neighbors_.size());
     }
     
-    void Block::dig(Box2 const &box)
+    bool Block::dig(Box2 const &box)
     {
+        bool modified = false;
         int x = grid_.getX();
         int y = grid_.getY();
         int width = grid_.getWidth();
@@ -210,12 +211,16 @@ namespace crust {
                                          0.1f * float(y + dy));
                     b2Vec2 worldPosition = body_->GetWorldPoint(localPosition);
                     if (box.containsPoint(worldPosition.x, worldPosition.y)) {
-                        grid_.setElement(x + dx, y + dy, 0);
+                        if (grid_.getElement(x + dx, y + dy)) {
+                            grid_.setElement(x + dx, y + dy, 0);
+                            modified = true;
+                        }
                     }
                 }
             }
         }
         drawVerticesDirty_ = true;
+        return modified;
     }
 
     void Block::fitPhysicsShapes()
