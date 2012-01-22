@@ -6,11 +6,11 @@ namespace crust {
     DungeonGenerator::DungeonGenerator(Random *random, Box2 const &bounds) :
         random_(random),
         bounds_(bounds),
-        minRoomSize_(4.0f),
-        maxRoomSize_(6.0f),
-        wallSize_(2.0f),
-        corridorWidth_(1.0f),
-        corridorHeight_(1.0f)
+        minRoomSize_(5.0f),
+        maxRoomSize_(7.0f),
+        wallSize_(1.0f),
+        corridorWidth_(2.0f),
+        corridorHeight_(2.0f)
     {
         bounds_.pad(-wallSize_, -wallSize_);
     }

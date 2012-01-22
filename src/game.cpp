@@ -593,7 +593,7 @@ namespace crust {
     void Game::dig(Box2 const &box)
     {
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (i->dig(box)) {
+            if (box.containsPoint(i->getPosition())) {
                 int j = i - blocks_.begin();
                 blocks_.erase(i);
                 i = blocks_.begin() + j - 1;

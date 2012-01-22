@@ -11,6 +11,7 @@ namespace crust {
     class Box2;
     class Game;
     class Polygon2;
+    class Vector2;
     
     class Block {
     public:
@@ -33,6 +34,7 @@ namespace crust {
 
         typedef std::pair<int, int> Key;
 
+        Vector2 getPosition() const;
         void setPosition(float x, float y);
         void setAngle(float angle);
         void setColor(float red, float green, float blue);
@@ -47,8 +49,6 @@ namespace crust {
         void draw();
 
         Box2 getBounds();
-
-        bool dig(Box2 const &box);
 
     private:
         Game *game_;

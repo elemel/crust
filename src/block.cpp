@@ -39,6 +39,12 @@ namespace crust {
         game_->getPhysicsWorld()->DestroyBody(body_);
     }
 
+    Vector2 Block::getPosition() const
+    {
+        b2Vec2 position = body_->GetPosition();
+        return Vector2(position.x, position.y);
+    }
+
     void Block::setPosition(float x, float y)
     {
         body_->SetTransform(b2Vec2(x, y), body_->GetAngle());
@@ -149,32 +155,6 @@ namespace crust {
             addGridPointToBounds(x, y + height, &bounds);
             return bounds;
         }
-    }
-
-    bool Block::dig(Box2 const &box)
-    {
-        bool modified = false;
-        int x = grid_.getX();
-        int y = grid_.getY();
-        int width = grid_.getWidth();
-        int height = grid_.getHeight();
-        for (int dy = 0; dy < height; ++dy) {
-            for (int dx = 0; dx < width; ++dx) {
-                if (grid_.getElement(x + dx, y + dy)) {
-                    b2Vec2 localPosition(0.1f * float(x + dx),
-                                         0.1f * float(y + dy));
-                    b2Vec2 worldPosition = body_->GetWorldPoint(localPosition);
-                    if (box.containsPoint(worldPosition.x, worldPosition.y)) {
-                        if (grid_.getElement(x + dx, y + dy)) {
-                            grid_.setElement(x + dx, y + dy, 0);
-                            modified = true;
-                        }
-                    }
-                }
-            }
-        }
-        drawVerticesDirty_ = true;
-        return modified;
     }
 
     void Block::rasterize(Polygon2 const &polygon)
