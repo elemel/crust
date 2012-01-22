@@ -80,7 +80,6 @@ namespace crust {
         std::auto_ptr<TextDrawer> textDrawer_;
         
         Box2 bounds_;
-        std::auto_ptr<Block> endBlock_;
 
         int fpsTime_;
         int fpsCount_;

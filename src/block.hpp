@@ -28,7 +28,7 @@ namespace crust {
             GLfloat y;
         };
 
-        explicit Block(Game *game, float x, float y, float angle);
+        explicit Block(Game *game, Polygon2 const &polygon);
         ~Block(); 
 
         typedef std::pair<int, int> Key;
@@ -44,19 +44,11 @@ namespace crust {
         int getElementAtPosition(float x, float y);
         void setElementAtPosition(float x, float y, int type);
         
-        void absorbElement(int type);
-        int emitElement();
-        
         void draw();
 
         Box2 getBounds();
-        int getNeighborCount();
 
         bool dig(Box2 const &box);
-
-        void fitPhysicsShapes();
-
-        void rasterize(Polygon2 const &polygon);
 
     private:
         Game *game_;
@@ -67,19 +59,19 @@ namespace crust {
         float blue_;
         float normalX_;
         float normalY_;
-        std::vector<std::pair<int, int> > neighbors_;
         std::vector<DrawVertex> quadDrawVertices_;
         std::vector<DrawVertex> lineDrawVertices_;
         bool drawVerticesDirty_;
 
         float getColorOffset(int x, int y, int i);
         std::size_t hashValue(std::size_t a);
-        Block *findOtherBlock(int x, int y);
         void addGridPointToBounds(int x, int y, Box2 *bounds);
 
         void updateDrawVertices();
         void updateQuadDrawVertices();
         void updateLineDrawVertices();
+
+        void rasterize(Polygon2 const &polygon);
     };
 }
 

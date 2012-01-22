@@ -9,7 +9,7 @@
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
-    Block::Block(Game *game, float x, float y, float angle) :
+    Block::Block(Game *game, Polygon2 const &polygon) :
         game_(game),
         body_(0),
         red_(1.0f),
@@ -19,14 +19,19 @@ namespace crust {
         normalY_(0.0f),
         drawVerticesDirty_(false)
     {
+        Vector2 centroid = polygon.getCentroid();
+        float angle = -M_PI + 2.0f * M_PI * game->getRandomFloat();
+
         b2BodyDef bodyDef;
-        bodyDef.position.Set(x, y);
+        bodyDef.position.Set(centroid.x, centroid.y);
         bodyDef.angle = angle;
         bodyDef.userData = this;
         body_ = game_->getPhysicsWorld()->CreateBody(&bodyDef);
 
         normalX_ = -0.05f + 0.1f * game->getRandomFloat();
         normalY_ = -0.05f + 0.1f * game->getRandomFloat();
+
+        rasterize(polygon);
     }
 
     Block::~Block()
@@ -58,20 +63,6 @@ namespace crust {
 
     void Block::setElement(int x, int y, int type)
     {
-        if (getElement(x, y) == 0) {
-            if (getElement(x - 1, y) == 0) {
-                neighbors_.push_back(std::make_pair(x - 1, y));
-            }
-            if (getElement(x + 1, y) == 0) {
-                neighbors_.push_back(std::make_pair(x + 1, y));
-            }
-            if (getElement(x, y - 1) == 0) {
-                neighbors_.push_back(std::make_pair(x, y - 1));
-            }
-            if (getElement(x, y + 1) == 0) {
-                neighbors_.push_back(std::make_pair(x, y + 1));
-            }
-        }
         grid_.setElement(x, y, type);
         drawVerticesDirty_ = true;
     }
@@ -104,38 +95,6 @@ namespace crust {
         setElement(xIndex, yIndex, type);
     }
 
-    void Block::absorbElement(int type)
-    {
-        if (!neighbors_.empty()) {
-            int i = game_->getRandomInt(neighbors_.size());
-            int x = neighbors_[i].first;
-            int y = neighbors_[i].second;
-            neighbors_[i] = neighbors_.back();
-            neighbors_.pop_back();
-            if (findOtherBlock(x, y) == 0) {
-                setElement(x, y, type);
-            } else if ((getElement(x - 1, y) && findOtherBlock(x - 1, y) == 0) ||
-                       (getElement(x + 1, y) && findOtherBlock(x + 1, y) == 0) ||
-                       (getElement(x, y - 1) && findOtherBlock(x, y - 1) == 0) ||
-                       (getElement(x, y + 1) && findOtherBlock(x, y + 1) == 0))
-            {
-                setElement(x, y, type);
-            } else if ((getElement(x - 1, y - 1) && findOtherBlock(x - 1, y - 1) == 0) ||
-                       (getElement(x + 1, y - 1) && findOtherBlock(x + 1, y - 1) == 0) ||
-                       (getElement(x + 1, y + 1) && findOtherBlock(x + 1, y + 1) == 0) ||
-                       (getElement(x - 1, y + 1) && findOtherBlock(x - 1, y + 1) == 0))
-            {
-                setElement(x, y, type);
-            }
-            drawVerticesDirty_ = true;
-        }
-    }
-    
-    int Block::emitElement()
-    {
-        return 0;
-    }
-    
     void Block::draw()
     {
         updateDrawVertices();
@@ -192,11 +151,6 @@ namespace crust {
         }
     }
 
-    int Block::getNeighborCount()
-    {
-        return int(neighbors_.size());
-    }
-    
     bool Block::dig(Box2 const &box)
     {
         bool modified = false;
@@ -221,26 +175,6 @@ namespace crust {
         }
         drawVerticesDirty_ = true;
         return modified;
-    }
-
-    void Block::fitPhysicsShapes()
-    {
-        while (body_->GetFixtureList()) {
-            body_->DestroyFixture(body_->GetFixtureList());
-        }
-        grid_.normalize();
-        if (!grid_.isEmpty()) {
-            float x = 0.1f * float(grid_.getX()) - 0.05f;
-            float y = 0.1f * float(grid_.getY()) - 0.05f;
-            float width = 0.1f * float(grid_.getWidth());
-            float height = 0.1f * float(grid_.getHeight());
-
-            b2Vec2 center(x + 0.5f * width, y + 0.5f * height);
-            b2PolygonShape shape;            
-            shape.SetAsBox(0.5f * width, 0.5f * height, center, 0.0f);
-
-            body_->CreateFixture(&shape, 1.0f);
-        }
     }
 
     void Block::rasterize(Polygon2 const &polygon)
@@ -291,13 +225,6 @@ namespace crust {
         return a;
     }
 
-    Block *Block::findOtherBlock(int x, int y)
-    {
-        b2Vec2 localPosition(0.1f * float(x), 0.1f * float(y));
-        b2Vec2 worldPosition = body_->GetWorldPoint(localPosition);
-        return game_->findBlockAtPosition(worldPosition.x, worldPosition.y, this);
-    }
-
     void Block::addGridPointToBounds(int x, int y, Box2 *bounds)
     {
         b2Vec2 localPoint = b2Vec2(0.1f * float(x), 0.1f * float(y));
@@ -325,9 +252,6 @@ namespace crust {
                     vertex.red = red_ + getColorOffset(x + grid_.getX(), y + grid_.getY(), 0);
                     vertex.green = green_ + getColorOffset(x + grid_.getX(), y + grid_.getY(), 1);
                     vertex.blue = blue_ + getColorOffset(x + grid_.getX(), y + grid_.getY(), 2);
-                    if (!neighbors_.empty()) {
-                        std::swap(vertex.red, vertex.blue);
-                    }
                     
                     vertex.normalX = normalX_ - 0.025f + 0.5f * getColorOffset(x + grid_.getX(), y + grid_.getY(), 3);
                     vertex.normalY = normalY_ - 0.025f + 0.5f * getColorOffset(x + grid_.getX(), y + grid_.getY(), 4);

@@ -89,21 +89,6 @@ namespace crust {
     void Game::EndContact(b2Contact* contact)
     { }
 
-    Block *Game::findBlockAtPosition(float x, float y, Block *except)
-    {
-        if (!bounds_.containsPoint(x, y)) {
-            return endBlock_.get();
-        }
-
-        Block *block = 0;
-        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (&*i != except && i->getElementAtPosition(x, y)) {
-                block = &*i;
-            }
-        }
-        return block;
-    }
-
     float Game::getRandomFloat()
     {
         return random_.getFloat();
@@ -193,7 +178,6 @@ namespace crust {
         physicsWorld_->SetContactListener(this);
         physicsDraw_.reset(new PhysicsDraw);
         physicsWorld_->SetDebugDraw(physicsDraw_.get());
-        endBlock_.reset(new Block(this, 0.0f, 0.0f, 0.0f));
     }
 
     void Game::initFont()
@@ -224,18 +208,13 @@ namespace crust {
         for (int i = 0; i < voronoiDiagram_.getPolygonCount(); ++i) {
             Polygon2 polygon = voronoiDiagram_.getPolygon(i);
             if (contains(paddedBounds, polygon)) {
-                Vector2 centroid = polygon.getCentroid();
-                float angle = -M_PI + 2.0f * M_PI * getRandomFloat();
-                blocks_.push_back(new Block(this, centroid.x, centroid.y, angle));
+                blocks_.push_back(new Block(this, polygon));
                 
                 float brightness = 0.5f + 0.3f * getRandomFloat();
                 float red = 0.3f + 0.1f * getRandomFloat();
                 float green = 0.5f + 0.1f * getRandomFloat();
                 float blue = 0.7f + 0.1f * getRandomFloat();
                 blocks_.back().setColor(brightness * red, brightness * green, brightness * blue);
-                
-                blocks_.back().setElement(0, 0, 1);
-                blocks_.back().rasterize(polygon);
             }
         }
     }
@@ -434,9 +413,7 @@ namespace crust {
     void Game::handleParticleToBlockCollision(b2Body *particleBody,
                                               b2Body *blockBody)
     {
-        Block *block = reinterpret_cast<Block *>(blockBody->GetUserData());
-        block->absorbElement(1);
-        physicsWorld_->DestroyBody(particleBody);
+        // Block *block = reinterpret_cast<Block *>(blockBody->GetUserData());
     }
 
     void Game::redraw()
