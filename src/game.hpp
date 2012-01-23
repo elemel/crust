@@ -2,6 +2,7 @@
 #define CRUST_GAME_HPP
 
 #include "delauney_triangulation.hpp"
+#include "dungeon_generator.hpp"
 #include "geometry.hpp"
 #include "random.hpp"
 #include "voronoi_diagram.hpp"
@@ -19,18 +20,18 @@ namespace crust {
     class Block;
     class Config;
     class Font;
-    class ParticleEmitter;
+    class Monster;
     class TextDrawer;
 
     class Game : public b2ContactListener {
     public:
-        typedef boost::ptr_vector<ParticleEmitter> ParticleEmitterVector;
-        typedef ParticleEmitterVector::iterator ParticleEmitterIterator;
         typedef boost::ptr_vector<Block> BlockVector;
         typedef BlockVector::iterator BlockIterator;
         typedef std::map<b2Body *, b2Body *> CollisionMap;
         typedef CollisionMap::iterator CollisionIterator;
-        
+        typedef boost::ptr_vector<Monster> MonsterVector;
+        typedef MonsterVector::iterator MonsterIterator;
+
         explicit Game(Config const *config);
         ~Game();
         
@@ -58,12 +59,12 @@ namespace crust {
         float time_;
         std::auto_ptr<b2World> physicsWorld_;
         std::auto_ptr<b2Draw> physicsDraw_;
-        ParticleEmitterVector particleEmitters_;
         BlockVector blocks_;
         bool blockGrowthDone_;
         bool dungeonGenerationDone_;
         std::vector<Block *> blocksWithNeighbors_;
         CollisionMap particleToBlockCollisions_;
+        MonsterVector monsters_;
 
         float cameraStep_;
         float cameraX_;
@@ -87,6 +88,7 @@ namespace crust {
 
         DelauneyTriangulation delauneyTriangulation_;
         VoronoiDiagram voronoiDiagram_;
+        DungeonGenerator dungeonGenerator_;
 
         void init();
         void initSdl();
@@ -97,6 +99,7 @@ namespace crust {
         void initVoronoiDiagram();
         void initBlocks();
         void initDungeon();
+        void initMonsters();
 
         void run();
         float updateTime();
@@ -110,13 +113,8 @@ namespace crust {
         void setBlockElementAtPosition(float x, float y, int type);
 
         void step(float dt);
-        void stepParticleEmitters(float dt);
-        void stepBlocks(float dt);
-        void addParticleToBlockCollision(b2Body *particleBody,
-                                         b2Body *blockBody);
+        void stepMonsters(float dt);
         void handleCollisions();
-        void handleParticleToBlockCollision(b2Body *particleBody,
-                                            b2Body *blockBody);
         
         void redraw();
         void clear();
@@ -130,7 +128,6 @@ namespace crust {
         void drawFps();
         void setWorldProjection();
         void setOverlayProjection();
-        void drawParticleEmitters();
         void drawBlockBounds();
         void drawBlocks();
 

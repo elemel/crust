@@ -7,6 +7,7 @@
 #include "font.hpp"
 #include "font_reader.hpp"
 #include "geometry.hpp"
+#include "monster.hpp"
 #include "particle_emitter.hpp"
 #include "physics_draw.hpp"
 #include "text_drawer.hpp"
@@ -22,8 +23,6 @@ namespace crust {
         window_(0),
         context_(0),
         time_(0.0f),
-        blockGrowthDone_(false),
-        dungeonGenerationDone_(false),
 
         cameraX_(0.0f),
         cameraY_(0.0f),
@@ -41,7 +40,8 @@ namespace crust {
         fpsTime_(0.0f),
         fpsCount_(0),
     
-        delauneyTriangulation_(Box2(Vector2(-15.0f, -15.0f), Vector2(15.0f, 15.0f)))
+        delauneyTriangulation_(Box2(Vector2(-15.0f, -15.0f), Vector2(15.0f, 15.0f))),
+        dungeonGenerator_(&random_, bounds_)
     { }
     
     Game::~Game()
@@ -74,16 +74,10 @@ namespace crust {
 
     void Game::BeginContact(b2Contact* contact)
     {
-        b2Body *bodyA = contact->GetFixtureA()->GetBody();
-        b2Body *bodyB = contact->GetFixtureB()->GetBody();
-        void *userDataA = bodyA->GetUserData();
-        void *userDataB = bodyB->GetUserData();
-        if (userDataA == 0 && userDataB != 0) {
-            addParticleToBlockCollision(bodyA, bodyB);
-        }
-        if (userDataA != 0 && userDataB == 0) {
-            addParticleToBlockCollision(bodyB, bodyA);
-        }
+        // b2Body *bodyA = contact->GetFixtureA()->GetBody();
+        // b2Body *bodyB = contact->GetFixtureB()->GetBody();
+        // void *userDataA = bodyA->GetUserData();
+        // void *userDataB = bodyB->GetUserData();
     }
     
     void Game::EndContact(b2Contact* contact)
@@ -106,11 +100,11 @@ namespace crust {
         initContext();
         time_ = 0.001f * float(SDL_GetTicks());
         initPhysics();
-        particleEmitters_.push_back(new ParticleEmitter(this));
         initFont();
         initVoronoiDiagram();
         initBlocks();
         initDungeon();
+        initMonsters();
     }
     
     void Game::initSdl()
@@ -221,17 +215,24 @@ namespace crust {
 
     void Game::initDungeon()
     {
-        DungeonGenerator generator(&random_, bounds_);
-        generator.generate();
-        for (int i = 0; i < generator.getRoomBoxCount(); ++i) {
-            dig(generator.getRoomBox(i));
+        dungeonGenerator_.generate();
+        for (int i = 0; i < dungeonGenerator_.getRoomBoxCount(); ++i) {
+            dig(dungeonGenerator_.getRoomBox(i));
         }
-        for (int i = 0; i < generator.getCorridorBoxCount(); ++i) {
-            dig(generator.getCorridorBox(i));
+        for (int i = 0; i < dungeonGenerator_.getCorridorBoxCount(); ++i) {
+            dig(dungeonGenerator_.getCorridorBox(i));
         }
-        dungeonGenerationDone_ = true;
     }
-    
+
+    void Game::initMonsters()
+    {
+        monsters_.clear();
+        if (dungeonGenerator_.getRoomBoxCount()) {
+            Vector2 position = dungeonGenerator_.getRoomBox(0).getCenter();
+            monsters_.push_back(new Monster(this, position));
+        }
+    }
+
     void Game::run()
     {
         while (!quit_) {
@@ -267,7 +268,7 @@ namespace crust {
     void Game::handleEvents()
     {
         SDL_Event event;
-#if 0
+#if 1
         while (SDL_PollEvent(&event)) {
             handleEvent(&event);
         }
@@ -305,13 +306,14 @@ namespace crust {
                 initVoronoiDiagram();
                 initBlocks();
                 initDungeon();
+                initMonsters();
                 break;
 
-            case SDLK_d:
+            case SDLK_1:
                 debugDrawEnabled_ = !debugDrawEnabled_;
                 break;
 
-            case SDLK_l:
+            case SDLK_2:
                 lightingEnabled_ = !lightingEnabled_;
                 break;
 
@@ -359,6 +361,17 @@ namespace crust {
         float invScale = 2.0f / cameraScale_ / float(windowHeight_);
         targetX_ = cameraX_ + invScale * float(x - windowWidth_ / 2);
         targetY_ = cameraY_ + invScale * -float(y - windowHeight_ / 2);
+
+        Uint8 *state = SDL_GetKeyboardState(0);
+        if (!monsters_.empty()) {
+            bool leftControl = bool(state[SDL_SCANCODE_A]);
+            bool rightControl = bool(state[SDL_SCANCODE_D]);
+            bool jumpControl = bool(state[SDL_SCANCODE_SPACE]);
+
+            monsters_.front().setLeftControl(leftControl);
+            monsters_.front().setRightControl(rightControl);
+            monsters_.front().setJumpControl(jumpControl);
+        }
     }
 
     void Game::setBlockElementAtPosition(float x, float y, int type)
@@ -376,48 +389,30 @@ namespace crust {
     
     void Game::step(float dt)
     {
-        stepParticleEmitters(dt);
-        stepBlocks(dt);
+        stepMonsters(dt);
         physicsWorld_->Step(dt, 10, 10);
         handleCollisions();
     }
-    
-    void Game::stepParticleEmitters(float dt)
+
+    void Game::stepMonsters(float dt)
     {
-        for (ParticleEmitterIterator i = particleEmitters_.begin();
-             i != particleEmitters_.end(); ++i)
+        for (MonsterIterator i = monsters_.begin(); i != monsters_.end(); ++i) 
         {
             i->step(dt);
         }
     }
-
-    void Game::stepBlocks(float dt)
-    { }
     
-    void Game::addParticleToBlockCollision(b2Body *particleBody,
-                                           b2Body *blockBody)
-    {
-        particleToBlockCollisions_[particleBody] = blockBody;
-    }
-
     void Game::handleCollisions()
-    {
-        for (CollisionIterator i = particleToBlockCollisions_.begin();
-             i != particleToBlockCollisions_.end(); ++i)
-        {
-            handleParticleToBlockCollision(i->first, i->second);
-        }
-        particleToBlockCollisions_.clear();
-    }
-
-    void Game::handleParticleToBlockCollision(b2Body *particleBody,
-                                              b2Body *blockBody)
-    {
-        // Block *block = reinterpret_cast<Block *>(blockBody->GetUserData());
-    }
+    { }
 
     void Game::redraw()
     {
+        if (!monsters_.empty()) {
+            Vector2 position = monsters_.front().getPosition();
+            cameraX_ = position.x;
+            cameraY_ = position.y;
+        }
+        
         clear();
         draw();
         SDL_GL_SwapWindow(window_);
@@ -449,11 +444,12 @@ namespace crust {
         if (debugDrawEnabled_) {
             glPushAttrib(GL_CURRENT_BIT);
             glColor3f(0.0f, 1.0f, 0.0f);
-            drawParticleEmitters();
             physicsWorld_->DrawDebugData();
             // drawBlockBounds();
+            // glColor3f(0.0f, 0.5f, 1.0f);
             // delauneyTriangulation_.draw();
-            voronoiDiagram_.draw();
+            // glColor3f(1.0f, 0.5f, 0.0f);
+            // voronoiDiagram_.draw();
             glPopAttrib();
         }
     }
@@ -552,15 +548,6 @@ namespace crust {
         glOrtho(0.0, double(windowWidth_), 0.0, double(windowHeight_),
                 -1.0, 1.0);
         glMatrixMode(GL_MODELVIEW);
-    }
-
-    void Game::drawParticleEmitters()
-    {
-        for (ParticleEmitterIterator i = particleEmitters_.begin();
-             i != particleEmitters_.end(); ++i)
-        {
-            i->draw();
-        }
     }
 
     void Game::drawBlockBounds()

@@ -1,6 +1,7 @@
 #ifndef CRUST_BLOCK_HPP
 #define CRUST_BLOCK_HPP
 
+#include "actor.hpp"
 #include "grid.hpp"
 
 #include <vector>
@@ -13,7 +14,7 @@ namespace crust {
     class Polygon2;
     class Vector2;
     
-    class Block {
+    class Block : public Actor {
     public:
         // With 4 bytes per float, adds up to 32 bytes.
         struct DrawVertex {

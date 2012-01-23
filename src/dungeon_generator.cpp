@@ -17,6 +17,8 @@ namespace crust {
 
     void DungeonGenerator::generate()
     {
+        roomBoxes_.clear();
+        corridorBoxes_.clear();
         generateRooms();
         generateCorridors();
     }

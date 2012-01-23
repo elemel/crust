@@ -25,9 +25,20 @@ namespace crust {
         b2BodyDef bodyDef;
         bodyDef.position.Set(centroid.x, centroid.y);
         bodyDef.angle = angle;
-        bodyDef.userData = this;
+        bodyDef.userData = static_cast<Actor *>(this);
         body_ = game_->getPhysicsWorld()->CreateBody(&bodyDef);
 
+        b2Vec2 vertices[b2_maxPolygonVertices];
+        int32 vertexCount = std::min(int32(polygon.vertices.size()),
+                                     b2_maxPolygonVertices);
+        for (int32 i = 0; i < vertexCount; ++i) {
+            b2Vec2 vertex(polygon.vertices[i].x, polygon.vertices[i].y);
+            vertices[i] = body_->GetLocalPoint(vertex);
+        }
+        b2PolygonShape polygonShape;
+        polygonShape.Set(vertices, vertexCount);
+        body_->CreateFixture(&polygonShape, 1.0f);
+        
         normalX_ = -0.05f + 0.1f * game->getRandomFloat();
         normalY_ = -0.05f + 0.1f * game->getRandomFloat();
 
