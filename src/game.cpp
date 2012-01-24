@@ -438,7 +438,10 @@ namespace crust {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             setLighting();
-            drawBlocks();            
+            drawBlocks();
+            if (!monsters_.empty()) {
+                monsters_.front().debugDraw();
+            }
             glPopAttrib();
         }
         if (debugDrawEnabled_) {

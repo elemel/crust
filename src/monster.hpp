@@ -3,10 +3,12 @@
 
 #include "actor.hpp"
 
+#include <boost/ptr_container/ptr_array.hpp>
 #include <Box2D/Box2D.h>
 
 namespace crust {
     class Game;
+    class RaySpring;
     class Vector2;
 
     class Monster : public Actor {
@@ -33,10 +35,13 @@ namespace crust {
             jumpControl_ = control;
         }
 
+        void debugDraw() const;
+        
     private:
         Game *game_;
         b2Body *body_;
-
+        boost::ptr_array<RaySpring, 5> raySprings_;
+        
         bool leftControl_;
         bool rightControl_;
         bool jumpControl_;
