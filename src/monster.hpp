@@ -8,7 +8,6 @@
 
 namespace crust {
     class Game;
-    class RaySpring;
     class Vector2;
 
     class Monster : public Actor {
@@ -40,7 +39,11 @@ namespace crust {
     private:
         Game *game_;
         b2Body *body_;
-        boost::ptr_array<RaySpring, 5> raySprings_;
+        b2Body *wheelBody_;
+        b2RevoluteJoint *joint_;
+
+        float wheelRadius_;
+        float maxVelocity_;
         
         bool leftControl_;
         bool rightControl_;
