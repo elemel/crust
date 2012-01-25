@@ -40,14 +40,24 @@ namespace crust {
         Game *game_;
         b2Body *body_;
         b2Body *wheelBody_;
-        b2RevoluteJoint *joint_;
+        b2RevoluteJoint *wheelJoint_;
+        b2Fixture *floorSensorFixture_;
 
         float wheelRadius_;
         float maxVelocity_;
+        float jumpImpulse_;
+        float jumpDuration_;
+        float maxDriftVelocity_;
+        float driftForce_;
+        float boostDuration_;
+        float boostForce_;
+        float jumpTime_;
         
         bool leftControl_;
         bool rightControl_;
         bool jumpControl_;
+
+        bool isStanding();
     };
 }
 
