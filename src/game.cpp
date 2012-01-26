@@ -185,7 +185,7 @@ namespace crust {
 
     void Game::initVoronoiDiagram()
     {
-        delauneyTriangulation_ = DelauneyTriangulation(Box2(Vector2(-15.0f, -15.0f), Vector2(15.0f, 15.0f)));
+        delauneyTriangulation_ = DelauneyTriangulation(Box2(Vector2(-20.0f, -20.0f), Vector2(20.0f, 20.0f)));
         for (int i = 0; i < 1000; ++i) {
             float x = bounds_.p1.x - 5.0f + (bounds_.getWidth() + 10.0f) * getRandomFloat();
             float y = bounds_.p1.y - 5.0f + (bounds_.getHeight() + 10.0f) * getRandomFloat();
