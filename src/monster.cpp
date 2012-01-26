@@ -14,10 +14,11 @@ namespace crust {
         maxVelocity_(5.0f),
         jumpImpulse_(6.0f),
         jumpDuration_(0.2f),
-        maxDriftVelocity_(2.0f),
+        maxDriftVelocity_(3.0f),
         driftForce_(10.0f),
+        maxBoostVelocity_(7.0f),
         boostDuration_(0.3f),
-        boostForce_(10.0f),
+        boostForce_(15.0f),
         jumpTime_(0.0f),
 
         leftControl_(false),
@@ -77,6 +78,7 @@ namespace crust {
     {
         bool standing = isStanding();
         int xControl = int(rightControl_) - int(leftControl_);
+        b2Vec2 velocity = body_->GetLinearVelocity();
 
         // Run.
         wheelJoint_->SetMotorSpeed(maxVelocity_ * float(xControl)
@@ -92,7 +94,8 @@ namespace crust {
         }
 
         // Boost.
-        if (!standing && jumpControl_ && body_->GetLinearVelocity().y > 0.0f &&
+        if (!standing && jumpControl_ && 0.0f < velocity.y &&
+            velocity.y < maxBoostVelocity_ &&
             game_->getTime() < jumpTime_ + boostDuration_)
         {
             body_->ApplyForce(b2Vec2(0.0f, boostForce_), body_->GetPosition());
