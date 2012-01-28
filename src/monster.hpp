@@ -42,7 +42,10 @@ namespace crust {
         b2Body *body_;
         b2Body *wheelBody_;
         b2RevoluteJoint *wheelJoint_;
-        b2Fixture *floorSensorFixture_;
+        b2Fixture *topSensorFixture_;
+        b2Fixture *leftSensorFixture_;
+        b2Fixture *bottomSensorFixture_;
+        b2Fixture *rightSensorFixture_;
         Sprite sprite_;
 
         float wheelRadius_;
@@ -61,6 +64,9 @@ namespace crust {
         bool rightControl_;
         bool jumpControl_;
 
+        void initPhysics(Vector2 const &position);
+        void initSprite();
+        
         bool isStanding();
     };
 }
