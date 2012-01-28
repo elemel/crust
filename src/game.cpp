@@ -461,7 +461,7 @@ namespace crust {
     {
         if (lightingEnabled_) {
             glEnable(GL_LIGHTING);
-            GLfloat ambient[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+            GLfloat ambient[] = { 0.05f, 0.05f, 0.05f, 1.0f };
             glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient);
             glEnable(GL_COLOR_MATERIAL);
             glColorMaterial(GL_FRONT, GL_DIFFUSE);
@@ -476,7 +476,7 @@ namespace crust {
     void Game::setWorldLight()
     { 
         glEnable(GL_LIGHT0);
-        GLfloat diffuse[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+        GLfloat diffuse[] = { 0.1f, 0.1f, 0.1f, 1.0f };
         GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
         glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
         glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
