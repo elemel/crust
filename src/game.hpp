@@ -37,8 +37,15 @@ namespace crust {
         
         int main(int argc, char **argv);
 
-        float getTime();
-        b2World *getPhysicsWorld();
+        double getTime() const
+        {
+            return time_;
+        }
+        
+        b2World *getPhysicsWorld()
+        {
+            return physicsWorld_.get();
+        }
 
         void BeginContact(b2Contact* contact);
         void EndContact(b2Contact* contact);
@@ -56,7 +63,10 @@ namespace crust {
         int windowHeight_;
         SDL_Window *window_;
         SDL_GLContext context_;
-        float time_;
+
+        double appTime_;
+        double time_;
+
         std::auto_ptr<b2World> physicsWorld_;
         std::auto_ptr<b2Draw> physicsDraw_;
         BlockVector blocks_;
@@ -80,7 +90,7 @@ namespace crust {
         
         Box2 bounds_;
 
-        int fpsTime_;
+        double fpsTime_;
         int fpsCount_;
         std::string fpsText_;
 
@@ -100,7 +110,7 @@ namespace crust {
         void initMonsters();
 
         void run();
-        float updateTime();
+        void runStep(float dt);
         void updateFps();
 
         void handleEvents();

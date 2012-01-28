@@ -39,8 +39,8 @@ namespace crust {
         if (key_ == "window_height") {
             target_->windowHeight = parseInt(value_.c_str());
         }
-        if (key_ == "vertical_sync") {
-            target_->verticalSync = parseBool(value_.c_str());
+        if (key_ == "vsync") {
+            target_->vsync = parseBool(value_.c_str());
         }
         if (key_ == "camera_zoom") {
             target_->cameraZoom = parseFloat(value_.c_str());
@@ -53,6 +53,9 @@ namespace crust {
         }
         if (key_ == "draw_fps") {
             target_->drawFps = parseBool(value_.c_str());
+        }
+        if (key_ == "fps") {
+            target_->fps = parseInt(value_.c_str());
         }
     }
 

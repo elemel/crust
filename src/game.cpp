@@ -22,7 +22,9 @@ namespace crust {
         windowHeight_(config->windowHeight),
         window_(0),
         context_(0),
-        time_(0.0f),
+
+        appTime_(0.0),
+        time_(0.0),
 
         cameraScale_(config_->cameraScale),
 
@@ -32,7 +34,7 @@ namespace crust {
 
         bounds_(Vector2(-10.0f, -10.0f), Vector2(10.0f, 10.0f)),
 
-        fpsTime_(0.0f),
+        fpsTime_(0.0),
         fpsCount_(0),
     
         delauneyTriangulation_(Box2(Vector2(-15.0f, -15.0f), Vector2(15.0f, 15.0f))),
@@ -55,16 +57,6 @@ namespace crust {
         init();
         run();
         return 0;
-    }
-
-    float Game::getTime()
-    {
-        return time_;
-    }
-
-    b2World *Game::getPhysicsWorld()
-    {
-        return physicsWorld_.get();
     }
 
     void Game::BeginContact(b2Contact* contact)
@@ -93,7 +85,6 @@ namespace crust {
         initSdl();
         initWindow();
         initContext();
-        time_ = 0.001f * float(SDL_GetTicks());
         initPhysics();
         initFont();
         initVoronoiDiagram();
@@ -154,7 +145,7 @@ namespace crust {
             }
         }
         context_ = SDL_GL_CreateContext(window_);
-        SDL_GL_SetSwapInterval(config_->verticalSync ? 1 : 0);
+        SDL_GL_SetSwapInterval(config_->vsync ? 1 : 0);
         if (config_->multisampling) {
             glEnable(GL_MULTISAMPLE);
         }
@@ -231,32 +222,44 @@ namespace crust {
     void Game::run()
     {
         while (!quit_) {
-            float dt = updateTime();
-            updateFps();
-            handleEvents();
-            handleInput();
-            step(dt);
-            redraw();
+            double newAppTime = 0.001 * double(SDL_GetTicks());
+            if (0.1 < newAppTime - appTime_) {
+                appTime_ = newAppTime;
+            }
+
+            if (config_->fps) {
+                double dt = 1.0 / double(config_->fps);
+                while (dt < float(newAppTime - appTime_)) {
+                    runStep(float(dt));
+                }
+            } else {
+                runStep(float(newAppTime - appTime_));
+            }
         }
     }
-    
-    float Game::updateTime()
-    {
-        float time = 0.001f * float(SDL_GetTicks());
-        float dt = time - time_;
-        time_ = time;
-        return dt;
-    }
 
+    void Game::runStep(float dt)
+    {
+        appTime_ += dt;
+        time_ += dt;
+        
+        updateFps();
+        handleEvents();
+        handleInput();
+        step(float(dt));
+        redraw();
+    }
+    
     void Game::updateFps()
     {
-        if (fpsTime_ < time_) {
+        if (fpsTime_ < appTime_) {
             char buffer[64];
             sprintf(buffer, "%g FPS", float(fpsCount_));
             fpsText_ = buffer;
-            fpsTime_ = time_ + 1.0f;
+            fpsTime_ = appTime_ + 1.0f;
             fpsCount_ = 0;
         }
+
         ++fpsCount_;
     }
     
