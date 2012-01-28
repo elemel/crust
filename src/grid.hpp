@@ -12,7 +12,8 @@ namespace crust {
     public:
         typedef T Element;
 
-        Grid() :
+        explicit Grid(Element const &defaultValue = Element()) :
+            defaultValue_(defaultValue),
             elements_(0),
             normalized_(true)
         { }
@@ -57,15 +58,18 @@ namespace crust {
             return normalized_;
         }
 
-        Element getElement(int x, int y) const
+        Element const &getElement(int x, int y) const
         {
-            return innerBox_.contains(x, y) ? elements_[getIndex(x, y)] :
-                Element();
+            if (innerBox_.contains(x, y)) {
+                return elements_[getIndex(x, y)];
+            } else {
+                return defaultValue_;
+            }
         }
 
-        void setElement(int x, int y, Element value)
+        void setElement(int x, int y, Element const &value)
         {
-            if (value) {
+            if (value != defaultValue_) {
                 addElement(x, y, value);
             } else {
                 removeElement(x, y);
@@ -76,6 +80,7 @@ namespace crust {
         {
             std::swap(innerBox_, other.innerBox_);
             std::swap(outerBox_, other.outerBox_);
+            std::swap(defaultValue_, other.defaultValue_);
             std::swap(elements_, other.elements_);
             std::swap(normalized_, other.normalized_);
         }
@@ -86,7 +91,7 @@ namespace crust {
                 GridBox box;
                 for (int y = innerBox_.getY(); y < innerBox_.getY() + innerBox_.getHeight(); ++y) {
                     for (int x = innerBox_.getX(); x < innerBox_.getX() + innerBox_.getWidth(); ++x) {
-                        if (elements_[getIndex(x, y)]) {
+                        if (elements_[getIndex(x, y)] != defaultValue_) {
                             box.add(x, y);
                         }
                     }
@@ -97,9 +102,10 @@ namespace crust {
         }
 
     private:
-        explicit Grid(GridBox const &box) :
+        explicit Grid(GridBox const &box, Element const &defaultValue) :
             innerBox_(box),
             outerBox_(box),
+            defaultValue_(defaultValue),
             elements_(0),
             normalized_(true)
         {
@@ -107,7 +113,7 @@ namespace crust {
             int dy = std::max(1, int(0.5f * M_SQRT2 * float(box.getHeight()) + 0.5f));
             outerBox_.pad(dx, dy);
             elements_ = new Element[outerBox_.getSize()];
-            std::fill(elements_, elements_ + outerBox_.getSize(), Element());
+            std::fill(elements_, elements_ + outerBox_.getSize(), defaultValue);
         }
 
         // Noncopyable.
@@ -118,10 +124,11 @@ namespace crust {
 
         GridBox innerBox_;
         GridBox outerBox_;
+        Element defaultValue_;
         Element *elements_;
         bool normalized_;
 
-        void addElement(int x, int y, Element value)
+        void addElement(int x, int y, Element const &value)
         {
             if (innerBox_.contains(x, y)) {
                 elements_[getIndex(x, y)] = value;
@@ -134,7 +141,7 @@ namespace crust {
                 GridBox box(innerBox_);
                 box.add(x, y);
                 
-                Grid other(box);
+                Grid other(box, defaultValue_);
                 copyElements(other);
                 swap(other);
                 
@@ -145,7 +152,7 @@ namespace crust {
         void removeElement(int x, int y)
         {
             if (innerBox_.contains(x, y)) {
-                elements_[getIndex(x, y)] = Element();
+                elements_[getIndex(x, y)] = defaultValue_;
                 normalized_ = false;
             }
         }

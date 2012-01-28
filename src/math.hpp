@@ -275,7 +275,7 @@ namespace crust {
                     c * d * h - c * e * g);
         }
         
-        void inverse()
+        void invert()
         {
             float det = getDeterminant();
             float invDet = 1.0f / det;

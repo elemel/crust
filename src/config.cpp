@@ -6,8 +6,8 @@ namespace crust {
         windowHeight(600),
         fullscreen(false),
         multisampling(true),
-        verticalSync(false),
-        cameraScale(0.08f),
+        verticalSync(true),
+        cameraScale(0.15f),
         cameraPan(0.1f),
         cameraZoom(1.5f),
         drawFps(true)

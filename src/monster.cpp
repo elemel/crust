@@ -9,6 +9,9 @@ namespace crust {
     Monster::Monster(Game *game, Vector2 const &position) :
         game_(game),
         body_(0),
+        wheelBody_(0),
+        wheelJoint_(0),
+        floorSensorFixture_(0),
 
         wheelRadius_(0.3f),
         maxVelocity_(5.0f),
@@ -20,6 +23,7 @@ namespace crust {
         boostDuration_(0.3f),
         boostForce_(15.0f),
         jumpTime_(0.0f),
+        faceDirection_(1),
 
         leftControl_(false),
         rightControl_(false),
@@ -59,6 +63,134 @@ namespace crust {
         floorSensorFixture_ = wheelBody_->CreateFixture(&floorSensorShape,
                                                         0.0f);
         floorSensorFixture_->SetSensor(true);
+
+        sprite_.setScale(0.1f);
+
+        Color4 skinColor = parseColor4("#fc9");
+        Color4 eyeColor = parseColor4("#000");
+        Color4 noseColor = parseColor4("#c96");
+        Color4 earColor = parseColor4("#c96");
+        Color4 shirtColor = parseColor4("#f30");
+        Color4 leggingsColor = parseColor4("#930");
+        Color4 bootsColor = parseColor4("#960");
+
+        sprite_.setPixel(Vector2(-0.2f, 0.6f), skinColor);
+        sprite_.setPixel(Vector2(-0.1f, 0.6f), skinColor);
+        sprite_.setPixel(Vector2(0.0f, 0.6f), skinColor);
+        sprite_.setPixel(Vector2(0.1f, 0.6f), skinColor);
+        sprite_.setPixel(Vector2(0.2f, 0.6f), skinColor);
+
+        sprite_.setPixel(Vector2(-0.3f, 0.5f), skinColor);
+        sprite_.setPixel(Vector2(-0.2f, 0.5f), skinColor);
+        sprite_.setPixel(Vector2(-0.1f, 0.5f), skinColor);
+        sprite_.setPixel(Vector2(0.0f, 0.5f), skinColor);
+        sprite_.setPixel(Vector2(0.1f, 0.5f), skinColor);
+        sprite_.setPixel(Vector2(0.2f, 0.5f), skinColor);
+        sprite_.setPixel(Vector2(0.3f, 0.5f), skinColor);
+
+        sprite_.setPixel(Vector2(-0.3f, 0.4f), skinColor);
+        sprite_.setPixel(Vector2(-0.2f, 0.4f), skinColor);
+        sprite_.setPixel(Vector2(-0.1f, 0.4f), skinColor);
+        sprite_.setPixel(Vector2(0.0f, 0.4f), skinColor);
+        sprite_.setPixel(Vector2(0.1f, 0.4f), skinColor);
+        sprite_.setPixel(Vector2(0.2f, 0.4f), skinColor);
+        sprite_.setPixel(Vector2(0.3f, 0.4f), skinColor);
+
+        sprite_.setPixel(Vector2(-0.2f, 0.3f), skinColor);
+        sprite_.setPixel(Vector2(-0.1f, 0.3f), skinColor);
+        sprite_.setPixel(Vector2(0.0f, 0.3f), skinColor);
+        sprite_.setPixel(Vector2(0.1f, 0.3f), skinColor);
+        sprite_.setPixel(Vector2(0.2f, 0.3f), skinColor);
+
+        sprite_.setPixel(Vector2(0.0f, 0.5f), eyeColor);
+        sprite_.setPixel(Vector2(0.2f, 0.5f), eyeColor);
+
+        sprite_.setPixel(Vector2(0.1f, 0.5f), noseColor);
+        sprite_.setPixel(Vector2(0.1f, 0.4f), noseColor);
+
+        sprite_.setPixel(Vector2(-0.2f, 0.5f), earColor);
+        sprite_.setPixel(Vector2(-0.2f, 0.4f), earColor);
+
+        sprite_.setPixel(Vector2(-0.4f, 0.2f), shirtColor);
+        sprite_.setPixel(Vector2(-0.3f, 0.2f), shirtColor);
+        sprite_.setPixel(Vector2(-0.2f, 0.2f), shirtColor);
+        sprite_.setPixel(Vector2(-0.1f, 0.2f), shirtColor);
+        sprite_.setPixel(Vector2(0.0f, 0.2f), shirtColor);
+        sprite_.setPixel(Vector2(0.1f, 0.2f), shirtColor);
+        sprite_.setPixel(Vector2(0.2f, 0.2f), shirtColor);
+        sprite_.setPixel(Vector2(0.3f, 0.2f), shirtColor);
+        sprite_.setPixel(Vector2(0.4f, 0.2f), shirtColor);
+
+        sprite_.setPixel(Vector2(-0.5f, 0.1f), shirtColor);
+        sprite_.setPixel(Vector2(-0.4f, 0.1f), shirtColor);
+        sprite_.setPixel(Vector2(-0.3f, 0.1f), shirtColor);
+        sprite_.setPixel(Vector2(-0.2f, 0.1f), shirtColor);
+        sprite_.setPixel(Vector2(-0.1f, 0.1f), shirtColor);
+        sprite_.setPixel(Vector2(0.0f, 0.1f), shirtColor);
+        sprite_.setPixel(Vector2(0.1f, 0.1f), shirtColor);
+        sprite_.setPixel(Vector2(0.2f, 0.1f), shirtColor);
+        sprite_.setPixel(Vector2(0.3f, 0.1f), shirtColor);
+        sprite_.setPixel(Vector2(0.4f, 0.1f), shirtColor);
+        sprite_.setPixel(Vector2(0.5f, 0.1f), shirtColor);
+
+        sprite_.setPixel(Vector2(-0.5f, 0.0f), shirtColor);
+        sprite_.setPixel(Vector2(-0.3f, 0.0f), shirtColor);
+        sprite_.setPixel(Vector2(-0.2f, 0.0f), shirtColor);
+        sprite_.setPixel(Vector2(-0.1f, 0.0f), shirtColor);
+        sprite_.setPixel(Vector2(0.0f, 0.0f), shirtColor);
+        sprite_.setPixel(Vector2(0.1f, 0.0f), shirtColor);
+        sprite_.setPixel(Vector2(0.2f, 0.0f), shirtColor);
+        sprite_.setPixel(Vector2(0.3f, 0.0f), shirtColor);
+        sprite_.setPixel(Vector2(0.5f, 0.0f), shirtColor);
+
+        sprite_.setPixel(Vector2(-0.5f, -0.1f), shirtColor);
+        sprite_.setPixel(Vector2(-0.3f, -0.1f), shirtColor);
+        sprite_.setPixel(Vector2(-0.2f, -0.1f), shirtColor);
+        sprite_.setPixel(Vector2(-0.1f, -0.1f), shirtColor);
+        sprite_.setPixel(Vector2(0.0f, -0.1f), shirtColor);
+        sprite_.setPixel(Vector2(0.1f, -0.1f), shirtColor);
+        sprite_.setPixel(Vector2(0.2f, -0.1f), shirtColor);
+        sprite_.setPixel(Vector2(0.3f, -0.1f), shirtColor);
+        sprite_.setPixel(Vector2(0.5f, -0.1f), shirtColor);
+
+        sprite_.setPixel(Vector2(-0.5f, -0.2f), skinColor);
+        sprite_.setPixel(Vector2(-0.3f, -0.2f), shirtColor);
+        sprite_.setPixel(Vector2(-0.2f, -0.2f), shirtColor);
+        sprite_.setPixel(Vector2(-0.1f, -0.2f), shirtColor);
+        sprite_.setPixel(Vector2(0.0f, -0.2f), shirtColor);
+        sprite_.setPixel(Vector2(0.1f, -0.2f), shirtColor);
+        sprite_.setPixel(Vector2(0.2f, -0.2f), shirtColor);
+        sprite_.setPixel(Vector2(0.3f, -0.2f), shirtColor);
+        sprite_.setPixel(Vector2(0.5f, -0.2f), skinColor);
+
+        sprite_.setPixel(Vector2(-0.5f, -0.3f), skinColor);
+        sprite_.setPixel(Vector2(-0.3f, -0.3f), leggingsColor);
+        sprite_.setPixel(Vector2(-0.2f, -0.3f), leggingsColor);
+        sprite_.setPixel(Vector2(-0.1f, -0.3f), leggingsColor);
+        sprite_.setPixel(Vector2(0.0f, -0.3f), leggingsColor);
+        sprite_.setPixel(Vector2(0.1f, -0.3f), leggingsColor);
+        sprite_.setPixel(Vector2(0.2f, -0.3f), leggingsColor);
+        sprite_.setPixel(Vector2(0.3f, -0.3f), leggingsColor);
+        sprite_.setPixel(Vector2(0.5f, -0.3f), skinColor);
+
+        sprite_.setPixel(Vector2(-0.3f, -0.4f), leggingsColor);
+        sprite_.setPixel(Vector2(-0.2f, -0.4f), leggingsColor);
+        sprite_.setPixel(Vector2(0.2f, -0.4f), leggingsColor);
+        sprite_.setPixel(Vector2(0.3f, -0.4f), leggingsColor);
+
+        sprite_.setPixel(Vector2(-0.3f, -0.5f), bootsColor);
+        sprite_.setPixel(Vector2(-0.2f, -0.5f), bootsColor);
+        sprite_.setPixel(Vector2(0.2f, -0.5f), bootsColor);
+        sprite_.setPixel(Vector2(0.3f, -0.5f), bootsColor);
+
+        sprite_.setPixel(Vector2(-0.3f, -0.6f), bootsColor);
+        sprite_.setPixel(Vector2(-0.2f, -0.6f), bootsColor);
+        sprite_.setPixel(Vector2(-0.1f, -0.6f), bootsColor);
+        sprite_.setPixel(Vector2(0.2f, -0.6f), bootsColor);
+        sprite_.setPixel(Vector2(0.3f, -0.6f), bootsColor);
+        sprite_.setPixel(Vector2(0.4f, -0.6f), bootsColor);
+
+        sprite_.setPosition(Vector2(0.0f, -0.15f));
     }
 
     Monster::~Monster()
@@ -78,6 +210,9 @@ namespace crust {
     {
         bool standing = isStanding();
         int xControl = int(rightControl_) - int(leftControl_);
+        if (xControl) {
+            faceDirection_ = xControl;
+        }
         b2Vec2 velocity = body_->GetLinearVelocity();
 
         // Run.
@@ -114,15 +249,20 @@ namespace crust {
         }
     }
 
-    void Monster::debugDraw() const
+    void Monster::draw() const
     {
-        b2Vec2 position = body_->GetPosition();
-        debugDrawCircle(position.x, position.y, 0.5f);
-
-        b2Vec2 wheelPosition = wheelBody_->GetPosition();
-        debugDrawCircle(wheelPosition.x, wheelPosition.y, wheelRadius_);
+        glPushMatrix();
+        b2Vec2 const &position = body_->GetPosition();
+        float angle = body_->GetAngle();
+        glTranslatef(position.x, position.y, 0.0f);
+        glRotatef((180.0f / M_PI) * angle, 0.0f, 0.0f, 1.0f);
+        if (faceDirection_ == -1) {
+            glScalef(-1.0f, 1.0f, 1.0f);
+        }
+        sprite_.draw();
+        glPopMatrix();
     }
-
+    
     bool Monster::isStanding()
     {
         for (b2ContactEdge *edge = wheelBody_->GetContactList(); edge;

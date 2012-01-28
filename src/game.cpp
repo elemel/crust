@@ -435,12 +435,12 @@ namespace crust {
         setWorldProjection();
         if (drawEnabled_) {
             glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_LIGHTING_BIT);
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            // glEnable(GL_BLEND);
+            // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             setLighting();
             drawBlocks();
             if (!monsters_.empty()) {
-                monsters_.front().debugDraw();
+                monsters_.front().draw();
             }
             glPopAttrib();
         }
@@ -490,7 +490,7 @@ namespace crust {
     void Game::setCameraLight()
     {
         glEnable(GL_LIGHT1);
-        GLfloat diffuse[] = { 5.0f, 5.0f, 5.0f, 1.0f };
+        GLfloat diffuse[] = { 4.0f, 4.0f, 4.0f, 1.0f };
         GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
         glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
         glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
@@ -504,11 +504,11 @@ namespace crust {
     void Game::setTargetLight()
     {
         glEnable(GL_LIGHT2);
-        GLfloat diffuse[] = { 5.0f, 5.0f, 5.0f, 1.0f };
+        GLfloat diffuse[] = { 2.0f, 2.0f, 2.0f, 1.0f };
         GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
         glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse);
         glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
-        GLfloat position[] = { targetX_, targetY_, 2.0f, 1.0f };
+        GLfloat position[] = { targetX_, targetY_, 1.0f, 1.0f };
         glLightfv(GL_LIGHT2, GL_POSITION, position);
         glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1.0f);
         glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 1.0f);
