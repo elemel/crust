@@ -24,12 +24,7 @@ namespace crust {
         context_(0),
         time_(0.0f),
 
-        cameraX_(0.0f),
-        cameraY_(0.0f),
         cameraScale_(config_->cameraScale),
-    
-        targetX_(0.0f),
-        targetY_(0.0f),
 
         drawEnabled_(true),
         debugDrawEnabled_(false),
@@ -326,19 +321,19 @@ namespace crust {
                 break;
 
             case SDLK_UP:
-                cameraY_ += config_->cameraPan / cameraScale_;
+                cameraPosition_.y += config_->cameraPan / cameraScale_;
                 break;
 
             case SDLK_LEFT:
-                cameraX_ -= config_->cameraPan / cameraScale_;
+                cameraPosition_.x -= config_->cameraPan / cameraScale_;
                 break;
 
             case SDLK_RIGHT:
-                cameraX_ += config_->cameraPan / cameraScale_;
+                cameraPosition_.x += config_->cameraPan / cameraScale_;
                 break;
 
             case SDLK_DOWN:
-                cameraY_ -= config_->cameraPan / cameraScale_;
+                cameraPosition_.y -= config_->cameraPan / cameraScale_;
                 break;
         }
     }
@@ -346,8 +341,8 @@ namespace crust {
     void Game::handleMouseButtonDownEvent(SDL_Event *event)
     {
         float invScale = 2.0f / cameraScale_ / float(windowHeight_);
-        float x = cameraX_ + invScale * float(event->button.x - windowWidth_ / 2);
-        float y = cameraY_ + invScale * -float(event->button.y - windowHeight_ / 2);
+        float x = cameraPosition_.x + invScale * float(event->button.x - windowWidth_ / 2);
+        float y = cameraPosition_.y + invScale * -float(event->button.y - windowHeight_ / 2);
         delauneyTriangulation_.addVertex(Vector2(x, y));
         voronoiDiagram_.generate(delauneyTriangulation_);
     }
@@ -359,8 +354,8 @@ namespace crust {
         Uint8 buttons = SDL_GetMouseState(&x, &y);
         (void) buttons;
         float invScale = 2.0f / cameraScale_ / float(windowHeight_);
-        targetX_ = cameraX_ + invScale * float(x - windowWidth_ / 2);
-        targetY_ = cameraY_ + invScale * -float(y - windowHeight_ / 2);
+        targetPosition_.x = cameraPosition_.x + invScale * float(x - windowWidth_ / 2);
+        targetPosition_.y = cameraPosition_.y + invScale * -float(y - windowHeight_ / 2);
 
         Uint8 *state = SDL_GetKeyboardState(0);
         if (!monsters_.empty()) {
@@ -407,17 +402,29 @@ namespace crust {
 
     void Game::redraw()
     {
-        if (!monsters_.empty()) {
-            Vector2 position = monsters_.front().getPosition();
-            cameraX_ = position.x;
-            cameraY_ = position.y;
-        }
-        
+        updateCamera();
+        updateFrustum();
         clear();
         draw();
         SDL_GL_SwapWindow(window_);
     }
+
+    void Game::updateCamera()
+    {
+        if (!monsters_.empty()) {
+            Vector2 position = monsters_.front().getPosition();
+            cameraPosition_.x = position.x;
+            cameraPosition_.y = position.y;
+        }
+    }
     
+    void Game::updateFrustum()
+    {
+        int windowWidth;
+        int windowHeight;
+        SDL_GetWindowSize(window_, &windowWidth, &windowHeight);
+    }
+
     void Game::clear()
     {
         glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -438,10 +445,10 @@ namespace crust {
             // glEnable(GL_BLEND);
             // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             setLighting();
-            drawBlocks();
             if (!monsters_.empty()) {
                 monsters_.front().draw();
             }
+            drawBlocks();
             glPopAttrib();
         }
         if (debugDrawEnabled_) {
@@ -494,7 +501,7 @@ namespace crust {
         GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
         glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
         glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
-        GLfloat position[] = { cameraX_, cameraY_, 5.0f, 1.0f };
+        GLfloat position[] = { cameraPosition_.x, cameraPosition_.y, 5.0f, 1.0f };
         glLightfv(GL_LIGHT1, GL_POSITION, position);
         glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.0f);
         glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 1.0f);
@@ -508,7 +515,7 @@ namespace crust {
         GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
         glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse);
         glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
-        GLfloat position[] = { targetX_, targetY_, 1.0f, 1.0f };
+        GLfloat position[] = { targetPosition_.x, targetPosition_.y, 1.0f, 1.0f };
         glLightfv(GL_LIGHT2, GL_POSITION, position);
         glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1.0f);
         glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 1.0f);
@@ -539,8 +546,10 @@ namespace crust {
         float aspectRatio = float(windowWidth_) / float(windowHeight_);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(cameraX_ - invScale * aspectRatio, cameraX_ + invScale * aspectRatio,
-                cameraY_ - invScale, cameraY_ + invScale, -1.0f, 1.0f);
+        glOrtho(cameraPosition_.x - invScale * aspectRatio,
+                cameraPosition_.x + invScale * aspectRatio,
+                cameraPosition_.y - invScale,
+                cameraPosition_.y + invScale, -1.0f, 1.0f);
         glMatrixMode(GL_MODELVIEW);
     }
 

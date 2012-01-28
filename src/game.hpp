@@ -66,13 +66,10 @@ namespace crust {
         CollisionMap particleToBlockCollisions_;
         MonsterVector monsters_;
 
-        float cameraStep_;
-        float cameraX_;
-        float cameraY_;
+        Vector2 cameraPosition_;
         float cameraScale_;
 
-        float targetX_;
-        float targetY_;
+        Vector2 targetPosition_;
         
         bool drawEnabled_;
         bool debugDrawEnabled_;
@@ -117,6 +114,8 @@ namespace crust {
         void handleCollisions();
         
         void redraw();
+        void updateCamera();
+        void updateFrustum();
         void clear();
         void draw();
         void drawWorld();
