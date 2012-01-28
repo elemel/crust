@@ -68,6 +68,7 @@ namespace crust {
 
         Vector2 cameraPosition_;
         float cameraScale_;
+        Box2 frustum_;
 
         Vector2 targetPosition_;
         

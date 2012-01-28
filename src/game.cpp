@@ -420,9 +420,12 @@ namespace crust {
     
     void Game::updateFrustum()
     {
-        int windowWidth;
-        int windowHeight;
-        SDL_GetWindowSize(window_, &windowWidth, &windowHeight);
+        float invScale = 1.0f / cameraScale_;
+        float aspectRatio = float(windowWidth_) / float(windowHeight_);
+        frustum_ = Box2(Vector2(cameraPosition_.x - invScale * aspectRatio,
+                                cameraPosition_.y - invScale),
+                        Vector2(cameraPosition_.x + invScale * aspectRatio,
+                                cameraPosition_.y + invScale));
     }
 
     void Game::clear()
@@ -542,14 +545,10 @@ namespace crust {
 
     void Game::setWorldProjection()
     {
-        float invScale = 1.0f / cameraScale_;
-        float aspectRatio = float(windowWidth_) / float(windowHeight_);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(cameraPosition_.x - invScale * aspectRatio,
-                cameraPosition_.x + invScale * aspectRatio,
-                cameraPosition_.y - invScale,
-                cameraPosition_.y + invScale, -1.0f, 1.0f);
+        glOrtho(frustum_.p1.x, frustum_.p2.x, frustum_.p1.y, frustum_.p2.y,
+                -1.0f, 1.0f);
         glMatrixMode(GL_MODELVIEW);
     }
 
@@ -585,7 +584,11 @@ namespace crust {
     void Game::drawBlocks()
     {
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            i->draw();
+            if (intersects(frustum_, i->getBounds())) {
+                i->draw();
+            } else {
+                int foo = 0;
+            }
         }
     }
 
