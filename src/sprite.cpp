@@ -27,7 +27,7 @@ namespace crust {
         glPushMatrix();
         glTranslatef(position_.x, position_.y, 0.0f);
         glRotatef((180.0f / M_PI) * angle_, 0.0f, 0.0f, 1.0f);
-        glScalef(scale_, scale_, 1.0f);
+        glScalef(scale_.x, scale_.y, 1.0f);
         glTranslatef(-0.5f, -0.5f, 0.0f);
 
         glBegin(GL_QUADS);

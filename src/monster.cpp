@@ -96,6 +96,7 @@ namespace crust {
         int xControl = int(rightControl_) - int(leftControl_);
         if (xControl) {
             bodyDirection_ = xControl;
+            bodySprite_.setScale(Vector2(0.1f * float(bodyDirection_), 0.1f));
         }
         b2Vec2 localEyePosition = b2Vec2(0.0f, 0.35f);
         b2Vec2 localTargetPosition = body_->GetLocalPoint(b2Vec2(targetPosition_.x, targetPosition_.y));
@@ -108,8 +109,9 @@ namespace crust {
         }
         b2Vec2 eyeToTargetOffset = localTargetPosition - localEyePosition;
         float targetAngle = std::atan2(eyeToTargetOffset.y, eyeToTargetOffset.x);
-        float headAngle = 0.5f * targetAngle;
+        float headAngle = 0.5f * float(headDirection_) * targetAngle;
         headSprite_.setAngle(headAngle);
+        headSprite_.setScale(Vector2(0.1f * float(headDirection_), 0.1f));
     }
 
     void Monster::draw() const
@@ -119,13 +121,7 @@ namespace crust {
         float angle = body_->GetAngle();
         glTranslatef(position.x, position.y, 0.0f);
         glRotatef((180.0f / M_PI) * angle, 0.0f, 0.0f, 1.0f);
-        if (bodyDirection_ == -1) {
-            glScalef(-1.0f, 1.0f, 1.0f);
-        }
         bodySprite_.draw();
-        if (headDirection_ != bodyDirection_) {
-            glScalef(-1.0f, 1.0f, 1.0f);
-        }
         headSprite_.draw();
         glPopMatrix();
     }
@@ -206,8 +202,8 @@ namespace crust {
     
     void Monster::initSprites()
     {
-        headSprite_.setScale(0.1f);
-        bodySprite_.setScale(0.1f);
+        headSprite_.setScale(Vector2(0.1f));
+        bodySprite_.setScale(Vector2(0.1f));
         
         Color4 skinColor = parseColor4("#fc9");
         Color4 eyeColor = parseColor4("#000");

@@ -37,12 +37,12 @@ namespace crust {
             angle_ = angle;
         }
 
-        float getScale() const
+        Vector2 const &getScale() const
         {
             return scale_;
         }
         
-        void setScale(float scale)
+        void setScale(Vector2 const &scale)
         {
             scale_ = scale;
         }
@@ -54,7 +54,7 @@ namespace crust {
     private:
         Vector2 position_;
         float angle_;
-        float scale_;
+        Vector2 scale_;
 
         Grid<Color4> pixels_;
     };
