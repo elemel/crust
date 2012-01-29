@@ -80,8 +80,6 @@ namespace crust {
         float cameraScale_;
         Box2 frustum_;
 
-        Vector2 targetPosition_;
-        
         bool drawEnabled_;
         bool debugDrawEnabled_;
         bool lightingEnabled_;

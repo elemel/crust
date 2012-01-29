@@ -356,9 +356,13 @@ namespace crust {
         int y = 0;
         Uint8 buttons = SDL_GetMouseState(&x, &y);
         (void) buttons;
-        float invScale = 2.0f / cameraScale_ / float(windowHeight_);
-        targetPosition_.x = cameraPosition_.x + invScale * float(x - windowWidth_ / 2);
-        targetPosition_.y = cameraPosition_.y + invScale * -float(y - windowHeight_ / 2);
+        if (!monsters_.empty()) {
+            float invScale = 2.0f / cameraScale_ / float(windowHeight_);
+            Vector2 targetPosition;
+            targetPosition.x = cameraPosition_.x + invScale * float(x - windowWidth_ / 2);
+            targetPosition.y = cameraPosition_.y + invScale * -float(y - windowHeight_ / 2);
+            monsters_.front().setTargetPosition(targetPosition);
+        }
 
         Uint8 *state = SDL_GetKeyboardState(0);
         if (!monsters_.empty()) {
@@ -516,16 +520,19 @@ namespace crust {
 
     void Game::setTargetLight()
     {
-        glEnable(GL_LIGHT2);
-        GLfloat diffuse[] = { 2.0f, 2.0f, 2.0f, 1.0f };
-        GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-        glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse);
-        glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
-        GLfloat position[] = { targetPosition_.x, targetPosition_.y, 1.0f, 1.0f };
-        glLightfv(GL_LIGHT2, GL_POSITION, position);
-        glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1.0f);
-        glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 1.0f);
-        glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0f);
+        if (!monsters_.empty()) {
+            glEnable(GL_LIGHT2);
+            GLfloat diffuse[] = { 2.0f, 2.0f, 2.0f, 1.0f };
+            GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+            glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse);
+            glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
+            Vector2 const &targetPosition = monsters_.front().getTargetPosition();
+            GLfloat position[] = { targetPosition.x, targetPosition.y, 1.0f, 1.0f };
+            glLightfv(GL_LIGHT2, GL_POSITION, position);
+            glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1.0f);
+            glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 1.0f);
+            glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0f);
+        }
     }
 
     void Game::drawOverlay()
@@ -589,8 +596,6 @@ namespace crust {
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
             if (intersects(frustum_, i->getBounds())) {
                 i->draw();
-            } else {
-                int foo = 0;
             }
         }
     }

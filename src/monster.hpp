@@ -17,6 +17,16 @@ namespace crust {
         ~Monster();
 
         Vector2 getPosition() const;
+
+        Vector2 const &getTargetPosition() const
+        {
+            return targetPosition_;
+        }
+
+        void setTargetPosition(Vector2 const &position)
+        {
+            targetPosition_ = position;
+        }
         
         void step(float dt);
 
@@ -48,6 +58,8 @@ namespace crust {
         b2Fixture *rightSensorFixture_;
         Sprite sprite_;
 
+        Vector2 targetPosition_;
+        
         float wheelRadius_;
         float maxVelocity_;
         float jumpImpulse_;
