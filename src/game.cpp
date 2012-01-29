@@ -32,12 +32,12 @@ namespace crust {
         debugDrawEnabled_(false),
         lightingEnabled_(true),
 
-        bounds_(Vector2(-10.0f, -10.0f), Vector2(10.0f, 10.0f)),
+        bounds_(Vector2(-15.0f, -15.0f), Vector2(15.0f, 15.0f)),
 
         fpsTime_(0.0),
         fpsCount_(0),
     
-        delauneyTriangulation_(Box2(Vector2(-15.0f, -15.0f), Vector2(15.0f, 15.0f))),
+        delauneyTriangulation_(bounds_),
         dungeonGenerator_(&random_, bounds_)
     { }
     
@@ -171,10 +171,14 @@ namespace crust {
 
     void Game::initVoronoiDiagram()
     {
-        delauneyTriangulation_ = DelauneyTriangulation(Box2(Vector2(-20.0f, -20.0f), Vector2(20.0f, 20.0f)));
-        for (int i = 0; i < 1000; ++i) {
-            float x = bounds_.p1.x - 5.0f + (bounds_.getWidth() + 10.0f) * getRandomFloat();
-            float y = bounds_.p1.y - 5.0f + (bounds_.getHeight() + 10.0f) * getRandomFloat();
+        Box2 vertexBounds = bounds_;
+        vertexBounds.pad(5.0f);
+        Box2 triangulationBounds = vertexBounds;
+        triangulationBounds.pad(5.0f);
+        delauneyTriangulation_ = DelauneyTriangulation(triangulationBounds);
+        for (int i = 0; i < 2000; ++i) {
+            float x = vertexBounds.p1.x + vertexBounds.getWidth() * getRandomFloat();
+            float y = vertexBounds.p1.y + vertexBounds.getHeight() * getRandomFloat();
             delauneyTriangulation_.addVertex(Vector2(x, y));
         }
         voronoiDiagram_.generate(delauneyTriangulation_);
