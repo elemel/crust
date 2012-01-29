@@ -28,7 +28,8 @@ namespace crust {
             targetPosition_ = position;
         }
         
-        void step(float dt);
+        void stepPhysics(float dt);
+        void stepAnimation(float dt);
 
         void setLeftControl(bool control)
         {
@@ -56,7 +57,9 @@ namespace crust {
         b2Fixture *leftSensorFixture_;
         b2Fixture *bottomSensorFixture_;
         b2Fixture *rightSensorFixture_;
-        Sprite sprite_;
+
+        Sprite headSprite_;
+        Sprite bodySprite_;
 
         Vector2 targetPosition_;
         
@@ -70,14 +73,16 @@ namespace crust {
         float boostDuration_;
         float boostForce_;
         float jumpTime_;
-        int faceDirection_;
+
+        int headDirection_;
+        int bodyDirection_;
         
         bool leftControl_;
         bool rightControl_;
         bool jumpControl_;
 
         void initPhysics(Vector2 const &position);
-        void initSprite();
+        void initSprites();
         
         bool isStanding();
     };

@@ -119,7 +119,6 @@ namespace crust {
         void setBlockElementAtPosition(float x, float y, int type);
 
         void step(float dt);
-        void stepMonsters(float dt);
         void handleCollisions();
         
         void redraw();

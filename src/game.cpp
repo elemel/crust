@@ -391,19 +391,18 @@ namespace crust {
     
     void Game::step(float dt)
     {
-        stepMonsters(dt);
-        physicsWorld_->Step(dt, 10, 10);
-        handleCollisions();
-    }
-
-    void Game::stepMonsters(float dt)
-    {
         for (MonsterIterator i = monsters_.begin(); i != monsters_.end(); ++i) 
         {
-            i->step(dt);
+            i->stepPhysics(dt);
+        }
+        physicsWorld_->Step(dt, 10, 10);
+        handleCollisions();
+        for (MonsterIterator i = monsters_.begin(); i != monsters_.end(); ++i) 
+        {
+            i->stepAnimation(dt);
         }
     }
-    
+
     void Game::handleCollisions()
     { }
 
