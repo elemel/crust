@@ -51,6 +51,11 @@ namespace crust {
 
         Box2 getBounds();
 
+        void makeDynamic()
+        {
+            body_->SetType(b2_dynamicBody);
+        }
+        
     private:
         Game *game_;
         Grid<unsigned char> grid_;

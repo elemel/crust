@@ -347,11 +347,24 @@ namespace crust {
 
     void Game::handleMouseButtonDownEvent(SDL_Event *event)
     {
-        float invScale = 2.0f / cameraScale_ / float(windowHeight_);
-        float x = cameraPosition_.x + invScale * float(event->button.x - windowWidth_ / 2);
-        float y = cameraPosition_.y + invScale * -float(event->button.y - windowHeight_ / 2);
-        delauneyTriangulation_.addVertex(Vector2(x, y));
-        voronoiDiagram_.generate(delauneyTriangulation_);
+        if (event->type == SDL_MOUSEBUTTONDOWN) {
+            float invScale = 2.0f / cameraScale_ / float(windowHeight_);
+            float x = cameraPosition_.x + invScale * float(event->button.x - windowWidth_ / 2);
+            float y = cameraPosition_.y + invScale * -float(event->button.y - windowHeight_ / 2);
+            Vector2 point(x, y);
+            BlockIterator j = blocks_.end();
+            for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
+                if (i == blocks_.begin() ||
+                    getSquaredDistance(i->getPosition(), point) <
+                    getSquaredDistance(j->getPosition(), point))
+                {
+                    j = i;
+                }
+            }
+            if (j != blocks_.end()) {
+                j->makeDynamic();
+            }
+        }
     }
     
     void Game::handleInput()
