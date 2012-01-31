@@ -431,6 +431,9 @@ namespace crust {
         {
             i->stepAnimation(dt);
         }
+        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
+            i->makeStaticIfSleeping();
+        }
     }
 
     void Game::handleCollisions()
