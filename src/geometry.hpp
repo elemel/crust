@@ -291,6 +291,12 @@ namespace crust {
         return intersects(b, c);
     }
 
+    inline bool contains(Box2 const &outer, Box2 const &inner)
+    {
+        return (outer.p1.x < inner.p1.x && inner.p2.x < outer.p2.x &&
+                outer.p1.y < inner.p1.y && inner.p2.y < outer.p2.y);
+    }
+    
     bool contains(Box2 const &outer, Polygon2 const &inner);
 }
 
