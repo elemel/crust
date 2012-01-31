@@ -31,14 +31,29 @@ namespace crust {
         b2Vec2 vertices[b2_maxPolygonVertices];
         int32 vertexCount = std::min(int32(polygon.vertices.size()),
                                      b2_maxPolygonVertices);
+
         for (int32 i = 0; i < vertexCount; ++i) {
             b2Vec2 vertex(polygon.vertices[i].x, polygon.vertices[i].y);
             vertices[i] = body_->GetLocalPoint(vertex);
         }
-        b2PolygonShape polygonShape;
-        polygonShape.Set(vertices, vertexCount);
-        body_->CreateFixture(&polygonShape, 1.0f);
-        
+        b2PolygonShape shape;
+        shape.Set(vertices, vertexCount);
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &shape;
+        fixtureDef.density = 2.5f;
+        fixtureDef.filter.groupIndex = -1;
+        body_->CreateFixture(&fixtureDef);
+
+        Polygon2 innerPolygon = polygon;
+        innerPolygon.pad(-0.15f);
+        for (int32 i = 0; i < vertexCount; ++i) {
+            b2Vec2 vertex(innerPolygon.vertices[i].x, innerPolygon.vertices[i].y);
+            vertices[i] = body_->GetLocalPoint(vertex);
+        }
+        b2PolygonShape innerShape;
+        innerShape.Set(vertices, vertexCount);
+        body_->CreateFixture(&innerShape, 0.0f);
+
         normalX_ = -0.05f + 0.1f * game->getRandomFloat();
         normalY_ = -0.05f + 0.1f * game->getRandomFloat();
 

@@ -88,6 +88,15 @@ namespace crust {
         return true;
     }
 
+    void Polygon2::pad(float f)
+    {
+        Vector2 centroid = getCentroid();
+        for (std::size_t i = 0; i < vertices.size(); ++i) {
+            Vector2 direction = vertices[i] - centroid;
+            vertices[i] += f * normalize(direction);
+        }
+    }
+    
     bool contains(Box2 const &outer, Polygon2 const &inner)
     {
         for (int i = 0; i < inner.getSize(); ++i) {

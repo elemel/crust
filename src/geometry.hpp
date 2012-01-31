@@ -235,6 +235,8 @@ namespace crust {
         Box2 getBoundingBox() const;
 
         bool containsPoint(Vector2 const &p) const;
+
+        void pad(float f);
     };
 
     inline Polygon2 transform(Polygon2 const &p, Matrix3 const &m)
