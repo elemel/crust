@@ -1,6 +1,7 @@
 #include "game.hpp"
 
 #include "block.hpp"
+#include "chain.hpp"
 #include "config.hpp"
 #include "dungeon_generator.hpp"
 #include "error.hpp"
@@ -91,6 +92,7 @@ namespace crust {
         initBlocks();
         initDungeon();
         initMonsters();
+        initChains();
     }
     
     void Game::initSdl()
@@ -223,6 +225,16 @@ namespace crust {
         }
     }
 
+    void Game::initChains()
+    {
+        chains_.clear();
+        if (dungeonGenerator_.getRoomBoxCount()) {
+            Box2 roomBox = dungeonGenerator_.getRoomBox(0);
+            Vector2 position(roomBox.getCenter().x, roomBox.p2.y);
+            chains_.push_back(new Chain(this, position, 20));
+        }
+    }
+                
     void Game::run()
     {
         while (!quit_) {
@@ -309,6 +321,7 @@ namespace crust {
                 initBlocks();
                 initDungeon();
                 initMonsters();
+                initChains();
                 break;
 
             case SDLK_1:
@@ -471,10 +484,13 @@ namespace crust {
             // glEnable(GL_BLEND);
             // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             setLighting();
+            drawBlocks();
             if (!monsters_.empty()) {
                 monsters_.front().draw();
             }
-            drawBlocks();
+            if (!chains_.empty()) {
+                chains_.front().draw();
+            }
             glPopAttrib();
         }
         if (debugDrawEnabled_) {

@@ -18,6 +18,7 @@
 
 namespace crust {
     class Block;
+    class Chain;
     class Config;
     class Font;
     class Monster;
@@ -31,6 +32,8 @@ namespace crust {
         typedef CollisionMap::iterator CollisionIterator;
         typedef boost::ptr_vector<Monster> MonsterVector;
         typedef MonsterVector::iterator MonsterIterator;
+        typedef boost::ptr_vector<Chain> ChainVector;
+        typedef ChainVector::iterator ChainIterator;
 
         explicit Game(Config const *config);
         ~Game();
@@ -75,6 +78,7 @@ namespace crust {
         std::vector<Block *> blocksWithNeighbors_;
         CollisionMap particleToBlockCollisions_;
         MonsterVector monsters_;
+        ChainVector chains_;
 
         Vector2 cameraPosition_;
         float cameraScale_;
@@ -106,6 +110,7 @@ namespace crust {
         void initBlocks();
         void initDungeon();
         void initMonsters();
+        void initChains();
 
         void run();
         void runStep(float dt);
