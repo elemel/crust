@@ -365,17 +365,10 @@ namespace crust {
             float x = cameraPosition_.x + invScale * float(event->button.x - windowWidth_ / 2);
             float y = cameraPosition_.y + invScale * -float(event->button.y - windowHeight_ / 2);
             Vector2 point(x, y);
-            BlockIterator j = blocks_.end();
             for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-                if (i == blocks_.begin() ||
-                    getSquaredDistance(i->getPosition(), point) <
-                    getSquaredDistance(j->getPosition(), point))
-                {
-                    j = i;
+                if (getSquaredDistance(i->getPosition(), point) < square(2.0f)) {
+                    i->makeDynamic();
                 }
-            }
-            if (j != blocks_.end()) {
-                j->makeDynamic();
             }
         }
     }
