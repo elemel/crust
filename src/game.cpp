@@ -178,10 +178,15 @@ namespace crust {
         Box2 triangulationBounds = vertexBounds;
         triangulationBounds.pad(5.0f);
         delauneyTriangulation_ = DelauneyTriangulation(triangulationBounds);
-        for (int i = 0; i < 2000; ++i) {
-            float x = vertexBounds.p1.x + vertexBounds.getWidth() * getRandomFloat();
-            float y = vertexBounds.p1.y + vertexBounds.getHeight() * getRandomFloat();
-            delauneyTriangulation_.addVertex(Vector2(x, y));
+        int subdivCount = 30;
+        float subdivWidth = float(vertexBounds.getWidth()) / float(subdivCount);
+        float subdivHeight = float(vertexBounds.getHeight()) / float(subdivCount);
+        for (int i = 0; i < subdivCount; ++i) {
+            for (int j = 0; j < subdivCount; ++j) {
+                float x = vertexBounds.p1.x + (float(i) + getRandomFloat()) * subdivWidth;
+                float y = vertexBounds.p1.y + (float(j) + getRandomFloat()) * subdivHeight;
+                delauneyTriangulation_.addVertex(Vector2(x, y));
+            }
         }
         voronoiDiagram_.generate(delauneyTriangulation_);
     }
