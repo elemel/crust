@@ -3,7 +3,6 @@
 #include "debug_draw.hpp"
 #include "game.hpp"
 #include "geometry.hpp"
-#include "ray_spring.hpp"
 
 namespace crust {
     Monster::Monster(Game *game, Vector2 const &position) :
