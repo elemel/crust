@@ -369,14 +369,10 @@ namespace crust {
             float x = cameraPosition_.x + invScale * float(event->button.x - windowWidth_ / 2);
             float y = cameraPosition_.y + invScale * -float(event->button.y - windowHeight_ / 2);
             Vector2 point(x, y);
-            for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-                if (getSquaredDistance(i->getPosition(), point) < square(2.0f)) {
-                    i->makeDynamic();
-                }
-            }
+            makeBlocksDynamic(point, 2.0f);
         }
     }
-    
+
     void Game::handleInput()
     {
         int x = 0;
@@ -403,6 +399,15 @@ namespace crust {
         }
     }
 
+    void Game::makeBlocksDynamic(Vector2 const &point, float distance)
+    {
+        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
+            if (getSquaredDistance(i->getPosition(), point) < square(distance)) {
+                i->makeDynamic();
+            }
+        }
+    }
+    
     void Game::setBlockElementAtPosition(float x, float y, int type)
     {
         BlockIterator j = blocks_.end();

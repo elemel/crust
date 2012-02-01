@@ -121,6 +121,8 @@ namespace crust {
         void handleKeyDownEvent(SDL_Event *event);
         void handleMouseButtonDownEvent(SDL_Event *event);
         void handleInput();
+
+        void makeBlocksDynamic(Vector2 const &point, float distance);
         void setBlockElementAtPosition(float x, float y, int type);
 
         void step(float dt);
