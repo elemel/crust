@@ -9,7 +9,6 @@
 #include "font_reader.hpp"
 #include "geometry.hpp"
 #include "monster.hpp"
-#include "particle_emitter.hpp"
 #include "physics_draw.hpp"
 #include "text_drawer.hpp"
 
