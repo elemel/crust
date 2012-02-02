@@ -35,6 +35,11 @@ namespace crust {
 
         typedef std::pair<int, int> Key;
 
+        b2Body *getPhysicsBody()
+        {
+            return body_;
+        }
+
         Vector2 getPosition() const;
         void setPosition(float x, float y);
         void setAngle(float angle);

@@ -95,6 +95,9 @@ namespace crust {
         double fpsTime_;
         int fpsCount_;
         std::string fpsText_;
+        
+        Block *grabbedBlock_;
+        b2MouseJoint *grabJoint_;
 
         DelauneyTriangulation delauneyTriangulation_;
         VoronoiDiagram voronoiDiagram_;
@@ -119,7 +122,9 @@ namespace crust {
         void handleEvents();
         void handleEvent(SDL_Event *event);
         void handleKeyDownEvent(SDL_Event *event);
+        void handleKeyUpEvent(SDL_Event *event);
         void handleMouseButtonDownEvent(SDL_Event *event);
+        void handleMouseButtonUpEvent(SDL_Event *event);
         void handleInput();
 
         void makeBlocksDynamic(Vector2 const &point, float distance);
@@ -146,6 +151,9 @@ namespace crust {
         void drawBlocks();
 
         void dig(Box2 const &box);
+        
+        void grabBlock(Vector2 const &point);
+        void releaseBlock();
     };
 }
 

@@ -38,11 +38,15 @@ namespace crust {
         fpsCount_(0),
     
         delauneyTriangulation_(bounds_),
-        dungeonGenerator_(&random_, bounds_)
+        dungeonGenerator_(&random_, bounds_),
+    
+        grabbedBlock_(0),
+        grabJoint_(0)
     { }
     
     Game::~Game()
     {
+        releaseBlock();
         if (context_) {
             SDL_GL_DeleteContext(context_);
         }
@@ -307,8 +311,16 @@ namespace crust {
                 handleKeyDownEvent(event);
                 break;
 
+            case SDL_KEYUP:
+                handleKeyUpEvent(event);
+                break;
+
             case SDL_MOUSEBUTTONDOWN:
                 handleMouseButtonDownEvent(event);
+                break;
+
+            case SDL_MOUSEBUTTONUP:
+                handleMouseButtonUpEvent(event);
                 break;
         }
     }
@@ -321,6 +333,7 @@ namespace crust {
                 break;
 
             case SDLK_BACKSPACE:
+                releaseBlock();
                 initVoronoiDiagram();
                 initBlocks();
                 initDungeon();
@@ -337,39 +350,75 @@ namespace crust {
                 break;
 
             case SDLK_PLUS:
-                cameraScale_ *= config_->cameraZoom;
+                if (grabJoint_ == 0) {
+                    cameraScale_ *= config_->cameraZoom;
+                }
                 break;
 
             case SDLK_MINUS:
-                cameraScale_ /= config_->cameraZoom;
+                if (grabJoint_ == 0) {
+                    cameraScale_ /= config_->cameraZoom;
+                }
                 break;
 
             case SDLK_UP:
-                cameraPosition_.y += config_->cameraPan / cameraScale_;
+                // cameraPosition_.y += config_->cameraPan / cameraScale_;
                 break;
 
             case SDLK_LEFT:
-                cameraPosition_.x -= config_->cameraPan / cameraScale_;
+                // cameraPosition_.x -= config_->cameraPan / cameraScale_;
                 break;
 
             case SDLK_RIGHT:
-                cameraPosition_.x += config_->cameraPan / cameraScale_;
+                // cameraPosition_.x += config_->cameraPan / cameraScale_;
                 break;
 
             case SDLK_DOWN:
-                cameraPosition_.y -= config_->cameraPan / cameraScale_;
+                // cameraPosition_.y -= config_->cameraPan / cameraScale_;
+                break;
+
+            case SDLK_LSHIFT:
+            {
+                int x = 0;
+                int y = 0;
+                SDL_GetMouseState(&x, &y);
+                float invScale = 2.0f / cameraScale_ / float(windowHeight_);
+                Vector2 targetPosition;
+                targetPosition.x = cameraPosition_.x + invScale * float(x - windowWidth_ / 2);
+                targetPosition.y = cameraPosition_.y + invScale * -float(y - windowHeight_ / 2);
+                grabBlock(targetPosition);
+                break;
+            }
+        }
+    }
+
+    void Game::handleKeyUpEvent(SDL_Event *event)
+    {
+        switch (event->key.keysym.sym) {
+            case SDLK_LSHIFT:
+                releaseBlock();
                 break;
         }
     }
 
     void Game::handleMouseButtonDownEvent(SDL_Event *event)
     {
-        if (event->type == SDL_MOUSEBUTTONDOWN) {
+        if (grabJoint_) {
+            releaseBlock();
+        } else {
             float invScale = 2.0f / cameraScale_ / float(windowHeight_);
             float x = cameraPosition_.x + invScale * float(event->button.x - windowWidth_ / 2);
             float y = cameraPosition_.y + invScale * -float(event->button.y - windowHeight_ / 2);
             Vector2 point(x, y);
-            makeBlocksDynamic(point, 2.0f);
+            grabBlock(point);
+        }
+    }
+
+    void Game::handleMouseButtonUpEvent(SDL_Event *event)
+    {
+        Uint8 *state = SDL_GetKeyboardState(0);
+        if (!state[SDL_SCANCODE_LSHIFT]) {
+            releaseBlock();
         }
     }
 
@@ -385,6 +434,9 @@ namespace crust {
             targetPosition.x = cameraPosition_.x + invScale * float(x - windowWidth_ / 2);
             targetPosition.y = cameraPosition_.y + invScale * -float(y - windowHeight_ / 2);
             monsters_.front().setTargetPosition(targetPosition);
+            if (grabJoint_) {
+                grabJoint_->SetTarget(b2Vec2(targetPosition.x, targetPosition.y));
+            }
         }
 
         Uint8 *state = SDL_GetKeyboardState(0);
@@ -434,7 +486,9 @@ namespace crust {
             i->stepAnimation(dt);
         }
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            i->makeStaticIfSleeping();
+            if (&*i != grabbedBlock_) {
+                i->makeStaticIfSleeping();
+            }
         }
     }
 
@@ -452,7 +506,7 @@ namespace crust {
 
     void Game::updateCamera()
     {
-        if (!monsters_.empty()) {
+        if (!monsters_.empty() && grabJoint_ == 0) {
             Vector2 position = monsters_.front().getPosition();
             cameraPosition_.x = position.x;
             cameraPosition_.y = position.y;
@@ -645,6 +699,51 @@ namespace crust {
                 blocks_.erase(i);
                 i = blocks_.begin() + j - 1;
             }
+        }
+    }
+
+    void Game::grabBlock(Vector2 const &point)
+    {
+        if (grabJoint_) {
+            return;
+        }
+
+        Block *block = 0;
+        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
+            if (block == 0 || getSquaredDistance(i->getPosition(), point) <
+                getSquaredDistance(block->getPosition(), point))
+            {
+                block = &*i;
+            }
+        }
+        if (block) {
+            block->makeDynamic();
+            grabbedBlock_ = block;
+
+            b2MouseJointDef jointDef;
+            jointDef.target.Set(point.x, point.y);
+            jointDef.bodyA = block->getPhysicsBody();
+            jointDef.bodyB = block->getPhysicsBody();
+            jointDef.maxForce = 5.0f * block->getPhysicsBody()->GetMass() * 10.0f;
+            grabJoint_ = static_cast<b2MouseJoint *>(physicsWorld_->CreateJoint(&jointDef));
+        }
+    }
+
+    void Game::releaseBlock()
+    {
+        if (grabJoint_) {
+            b2Body *body = grabbedBlock_->getPhysicsBody();
+            b2Vec2 linearVelocity = body->GetLinearVelocity();
+            float angularVelocity = body->GetAngularVelocity();
+            float epsilon = 0.1f;
+            if (linearVelocity.LengthSquared() < square(epsilon) && std::abs(angularVelocity) < epsilon) {
+                body->SetType(b2_staticBody);
+            }
+                
+
+            physicsWorld_->DestroyJoint(grabJoint_);
+            grabJoint_ = 0;
+            grabbedBlock_ = 0;
         }
     }
 }
