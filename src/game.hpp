@@ -97,7 +97,7 @@ namespace crust {
         std::string fpsText_;
         
         Block *grabbedBlock_;
-        b2MouseJoint *grabJoint_;
+        b2MouseJoint *mouseJoint_;
 
         DelauneyTriangulation delauneyTriangulation_;
         VoronoiDiagram voronoiDiagram_;
