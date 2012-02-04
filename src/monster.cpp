@@ -93,13 +93,17 @@ namespace crust {
     void Monster::stepAnimation(float dt)
     {
         int xControl = int(rightControl_) - int(leftControl_);
-        if (xControl) {
+        bool bodyTurned = false;
+        if (xControl && xControl != bodyDirection_) {
             bodyDirection_ = xControl;
             bodySprite_.setScale(Vector2(0.1f * float(bodyDirection_), 0.1f));
+            bodyTurned = true;
         }
         b2Vec2 localEyePosition = b2Vec2(0.0f, 0.35f);
         b2Vec2 localTargetPosition = body_->GetLocalPoint(b2Vec2(targetPosition_.x, targetPosition_.y));
-        headDirection_ = (localTargetPosition.x < 0) ? -1 : 1;
+        if (bodyTurned || 0.05f < std::abs(localTargetPosition.x)) {
+            headDirection_ = (localTargetPosition.x < 0) ? -1 : 1;
+        }
         if (bodyDirection_ == -1) {
             localTargetPosition.x = -localTargetPosition.x;
         }
