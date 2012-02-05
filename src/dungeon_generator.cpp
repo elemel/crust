@@ -12,7 +12,7 @@ namespace crust {
         corridorWidth_(2.0f),
         corridorHeight_(2.0f)
     {
-        bounds_.pad(-wallSize_, -wallSize_);
+        bounds_.pad(Vector2(-wallSize_, -wallSize_));
     }
 
     void DungeonGenerator::generate()
@@ -113,7 +113,7 @@ namespace crust {
     int DungeonGenerator::intersectsRoom(Box2 const &box)
     {
         Box2 paddedBox(box);
-        paddedBox.pad(wallSize_, wallSize_);
+        paddedBox.pad(Vector2(wallSize_, wallSize_));
         int count = 0;
         for (std::size_t i = 0; i < roomBoxes_.size(); ++i) {
             if (intersects(paddedBox, roomBoxes_[i])) {

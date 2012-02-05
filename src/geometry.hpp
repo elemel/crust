@@ -60,11 +60,6 @@ namespace crust {
             return 0.5f * (p1 + p2);
         }
         
-        bool containsPoint(float x, float y) const
-        {
-            return p1.x < x && x < p2.x && p1.y < y && y < p2.y;
-        }
-
         bool containsPoint(Vector2 const &p) const
         {
             return p1.x < p.x && p.x < p2.x && p1.y < p.y && p.y < p2.y;
@@ -78,12 +73,12 @@ namespace crust {
             p2.y += f;
         }
 
-        void pad(float x, float y)
+        void pad(Vector2 const &p)
         {
-            p1.x -= x;
-            p1.y -= y;
-            p2.x += x;
-            p2.y += y;
+            p1.x -= p.x;
+            p1.y -= p.y;
+            p2.x += p.x;
+            p2.y += p.y;
         }
         
         void mergePoint(float x, float y)
