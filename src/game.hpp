@@ -98,6 +98,8 @@ namespace crust {
         
         Block *grabbedBlock_;
         b2MouseJoint *mouseJoint_;
+        double grabTime_;
+        float grabDuration_;
 
         DelauneyTriangulation delauneyTriangulation_;
         VoronoiDiagram voronoiDiagram_;

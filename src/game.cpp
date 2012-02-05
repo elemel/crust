@@ -41,7 +41,9 @@ namespace crust {
         dungeonGenerator_(&random_, bounds_),
     
         grabbedBlock_(0),
-        mouseJoint_(0)
+        mouseJoint_(0),
+        grabTime_(0.0),
+        grabDuration_(0.3f)
     { }
     
     Game::~Game()
@@ -435,8 +437,16 @@ namespace crust {
             targetPosition.y = cameraPosition_.y + invScale * -float(y - windowHeight_ / 2);
             monsters_.front().setTargetPosition(targetPosition);
             if (grabbedBlock_) {
-                b2Vec2 targetPositionVec2(targetPosition.x, targetPosition.y);
-                mouseJoint_->SetTarget(targetPositionVec2);
+                bool containsTarget = grabbedBlock_->containsPoint(targetPosition);
+                if (containsTarget) {
+                    grabTime_ = time_;
+                }
+                if (containsTarget || time_ < grabTime_ + grabDuration_) {
+                    b2Vec2 targetPositionVec2(targetPosition.x, targetPosition.y);                    
+                    mouseJoint_->SetTarget(targetPositionVec2);
+                } else {
+                    releaseBlock();
+                }
             }
         }
 
@@ -721,7 +731,23 @@ namespace crust {
 
         if (block) {
             b2Body *body = block->getPhysicsBody();
-            body->SetFixedRotation(true);
+
+            b2Vec2 localPointVec2 = body->GetLocalPoint(b2Vec2(point.x, point.y));
+            Vector2 localPoint(localPointVec2.x, localPointVec2.y);
+            Polygon2 const &localPolygon = block->getLocalPolygon();
+            Vector2 localCentroid = localPolygon.getCentroid();
+            float squaredCentroidDistance = getSquaredDistance(localPoint, localCentroid);
+            bool fixedRotation = true;
+            for (std::size_t i = 0; i < localPolygon.vertices.size(); ++i) {
+                if (getSquaredDistance(localPoint, localPolygon.vertices[i]) < squaredCentroidDistance) {
+                    fixedRotation = false;
+                }
+            }
+
+            if (fixedRotation) {
+                body->SetAngularVelocity(0.0f);
+                body->SetFixedRotation(true);
+            }
             body->SetType(b2_dynamicBody);
 
             grabbedBlock_ = block;
@@ -732,6 +758,8 @@ namespace crust {
             mouseJointDef.bodyB = body;
             mouseJointDef.maxForce = 5.0f * body->GetMass() * 10.0f;
             mouseJoint_ = static_cast<b2MouseJoint *>(physicsWorld_->CreateJoint(&mouseJointDef));
+
+            grabTime_ = time_;
         }
     }
 
@@ -739,9 +767,19 @@ namespace crust {
     {
         if (grabbedBlock_) {
             b2Body *body = grabbedBlock_->getPhysicsBody();
+            bool makeStatic = false;
             b2Vec2 linearVelocity = body->GetLinearVelocityFromWorldPoint(mouseJoint_->GetTarget());
-            float epsilon = 0.1f;
-            if (linearVelocity.LengthSquared() < square(epsilon)) {
+            float angularVelocity = body->GetAngularVelocity();
+            if (linearVelocity.LengthSquared() < square(0.1f) &&
+                std::abs(angularVelocity) < 0.1f)
+            {
+                for (b2ContactEdge *i = body->GetContactList(); i; i = i->next) {
+                    if (i->contact->IsTouching() && i->other->GetType() == b2_staticBody) {
+                        makeStatic = true;
+                    }
+                }
+            }
+            if (makeStatic) {
                 body->SetType(b2_staticBody);
             }
             body->SetFixedRotation(false);

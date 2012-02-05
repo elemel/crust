@@ -57,6 +57,11 @@ namespace crust {
 
         Box2 getBounds() const;
         bool containsPoint(Vector2 const &point) const;
+
+        Polygon2 const &getLocalPolygon() const
+        {
+            return localPolygon_;
+        }
         
     private:
         Game *game_;
