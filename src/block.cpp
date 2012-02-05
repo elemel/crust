@@ -35,6 +35,7 @@ namespace crust {
         for (int32 i = 0; i < vertexCount; ++i) {
             b2Vec2 vertex(polygon.vertices[i].x, polygon.vertices[i].y);
             vertices[i] = body_->GetLocalPoint(vertex);
+            localPolygon_.vertices.push_back(Vector2(vertices[i].x, vertices[i].y));
         }
         b2PolygonShape shape;
         shape.Set(vertices, vertexCount);
@@ -164,7 +165,7 @@ namespace crust {
         glPopAttrib();
     }
 
-    Box2 Block::getBounds()
+    Box2 Block::getBounds() const
     {
         if (grid_.isEmpty()) {
             return Box2();
@@ -183,6 +184,13 @@ namespace crust {
         }
     }
 
+    bool Block::containsPoint(Vector2 const &point) const
+    {
+        b2Vec2 localPoint = body_->GetLocalPoint(b2Vec2(point.x, point.y));
+        return localPolygon_.containsPoint(Vector2(localPoint.x, localPoint.y));
+    }
+
+    
     void Block::rasterize(Polygon2 const &polygon)
     {
         Polygon2 localPolygon;
@@ -231,7 +239,7 @@ namespace crust {
         return a;
     }
 
-    void Block::addGridPointToBounds(int x, int y, Box2 *bounds)
+    void Block::addGridPointToBounds(int x, int y, Box2 *bounds) const
     {
         b2Vec2 localPoint = b2Vec2(0.1f * float(x), 0.1f * float(y));
         b2Vec2 worldPoint = body_->GetWorldPoint(localPoint);

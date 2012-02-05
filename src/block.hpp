@@ -2,6 +2,7 @@
 #define CRUST_BLOCK_HPP
 
 #include "actor.hpp"
+#include "geometry.hpp"
 #include "grid.hpp"
 
 #include <vector>
@@ -54,10 +55,13 @@ namespace crust {
         
         void draw();
 
-        Box2 getBounds();
-
+        Box2 getBounds() const;
+        bool containsPoint(Vector2 const &point) const;
+        
     private:
         Game *game_;
+        Polygon2 localPolygon_;
+
         Grid<unsigned char> grid_;
         b2Body *body_;
         float red_;
@@ -71,7 +75,7 @@ namespace crust {
 
         float getColorOffset(int x, int y, int i);
         std::size_t hashValue(std::size_t a);
-        void addGridPointToBounds(int x, int y, Box2 *bounds);
+        void addGridPointToBounds(int x, int y, Box2 *bounds) const;
 
         void updateDrawVertices();
         void updateQuadDrawVertices();

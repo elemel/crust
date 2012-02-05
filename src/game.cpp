@@ -714,12 +714,11 @@ namespace crust {
 
         Block *block = 0;
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (block == 0 || getSquaredDistance(i->getPosition(), point) <
-                getSquaredDistance(block->getPosition(), point))
-            {
+            if (i->containsPoint(point)) {
                 block = &*i;
             }
         }
+
         if (block) {
             b2Body *body = block->getPhysicsBody();
             body->SetFixedRotation(true);
