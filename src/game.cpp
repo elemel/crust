@@ -437,12 +437,18 @@ namespace crust {
             targetPosition.y = cameraPosition_.y + invScale * -float(y - windowHeight_ / 2);
             monsters_.front().setTargetPosition(targetPosition);
             if (grabbedBlock_) {
-                bool containsTarget = grabbedBlock_->containsPoint(targetPosition);
+                b2Body *body = grabbedBlock_->getPhysicsBody();
+                b2Vec2 targetPositionVec2(targetPosition.x, targetPosition.y);                    
+                b2Vec2 localTargetPositionVec2 = body->GetLocalPoint(targetPositionVec2);
+                Vector2 localTargetPosition(localTargetPositionVec2.x,
+                                            localTargetPositionVec2.y);
+                Polygon2 localPaddedPolygon = grabbedBlock_->getLocalPolygon();
+                localPaddedPolygon.pad(0.2f);
+                bool containsTarget = localPaddedPolygon.containsPoint(localTargetPosition);
                 if (containsTarget) {
                     grabTime_ = time_;
                 }
                 if (containsTarget || time_ < grabTime_ + grabDuration_) {
-                    b2Vec2 targetPositionVec2(targetPosition.x, targetPosition.y);                    
                     mouseJoint_->SetTarget(targetPositionVec2);
                 } else {
                     releaseBlock();
