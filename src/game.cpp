@@ -456,7 +456,7 @@ namespace crust {
     {
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
             if (getSquaredDistance(i->getPosition(), point) < square(distance)) {
-                i->makeDynamic();
+                i->getPhysicsBody()->SetType(b2_dynamicBody);
             }
         }
     }
@@ -488,7 +488,10 @@ namespace crust {
         }
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
             if (&*i != grabbedBlock_) {
-                i->makeStaticIfSleeping();
+                b2Body *body = i->getPhysicsBody();
+                if (body->GetType() != b2_staticBody && !body->IsAwake()) {
+                    body->SetType(b2_staticBody);
+                }
             }
         }
     }
@@ -720,8 +723,8 @@ namespace crust {
         if (block) {
             b2Body *body = block->getPhysicsBody();
             body->SetFixedRotation(true);
+            body->SetType(b2_dynamicBody);
 
-            block->makeDynamic();
             grabbedBlock_ = block;
 
             b2MouseJointDef mouseJointDef;

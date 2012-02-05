@@ -56,18 +56,6 @@ namespace crust {
 
         Box2 getBounds();
 
-        void makeDynamic()
-        {
-            body_->SetType(b2_dynamicBody);
-        }
-
-        void makeStaticIfSleeping()
-        {
-            if (body_->GetType() != b2_staticBody && !body_->IsAwake()) {
-                body_->SetType(b2_staticBody);
-            }
-        }
-        
     private:
         Game *game_;
         Grid<unsigned char> grid_;
