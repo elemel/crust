@@ -17,13 +17,13 @@ namespace crust {
 
         wheelRadius_(0.4f),
         maxVelocity_(5.0f),
-        jumpImpulse_(6.0f),
         jumpDuration_(0.2f),
+        jumpVelocity_(8.0f),
         maxDriftVelocity_(3.0f),
         driftForce_(10.0f),
         maxBoostVelocity_(7.0f),
         boostDuration_(0.3f),
-        boostForce_(15.0f),
+        boostAcceleration_(20.0f),
         jumpTime_(0.0f),
 
         headDirection_(1),
@@ -64,8 +64,9 @@ namespace crust {
         if (standing && jumpControl_ &&
             jumpTime_ + jumpDuration_ < game_->getTime())
         {
-            b2Vec2 impulse(0.0f, jumpImpulse_);
-            body_->ApplyLinearImpulse(impulse, body_->GetPosition());
+            b2Vec2 velocity = body_->GetLinearVelocity();
+            velocity.y = jumpVelocity_;
+            body_->SetLinearVelocity(velocity);
             jumpTime_ = game_->getTime();
         }
 
@@ -74,7 +75,8 @@ namespace crust {
             velocity.y < maxBoostVelocity_ &&
             game_->getTime() < jumpTime_ + boostDuration_)
         {
-            body_->ApplyForce(b2Vec2(0.0f, boostForce_), body_->GetPosition());
+            velocity.y += boostAcceleration_ * dt;
+            body_->SetLinearVelocity(velocity);
         }
 
         // Drift.

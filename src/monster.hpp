@@ -65,13 +65,13 @@ namespace crust {
         
         float wheelRadius_;
         float maxVelocity_;
-        float jumpImpulse_;
         float jumpDuration_;
+        float jumpVelocity_;
         float maxDriftVelocity_;
         float driftForce_;
         float maxBoostVelocity_;
         float boostDuration_;
-        float boostForce_;
+        float boostAcceleration_;
         float jumpTime_;
 
         int headDirection_;
