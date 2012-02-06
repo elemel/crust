@@ -26,6 +26,13 @@ namespace crust {
 
     class Game : public b2ContactListener {
     public:
+        enum Mode {
+            DISLODGE_MODE,
+            GRAB_MODE,
+
+            MODE_COUNT
+        };
+
         typedef boost::ptr_vector<Block> BlockVector;
         typedef BlockVector::iterator BlockIterator;
         typedef std::map<b2Body *, b2Body *> CollisionMap;
@@ -34,7 +41,7 @@ namespace crust {
         typedef MonsterVector::iterator MonsterIterator;
         typedef boost::ptr_vector<Chain> ChainVector;
         typedef ChainVector::iterator ChainIterator;
-
+        
         explicit Game(Config const *config);
         ~Game();
         
@@ -96,6 +103,7 @@ namespace crust {
         int fpsCount_;
         std::string fpsText_;
         
+        Mode mode_;
         Block *grabbedBlock_;
         b2MouseJoint *mouseJoint_;
         double grabTime_;
@@ -129,7 +137,6 @@ namespace crust {
         void handleMouseButtonUpEvent(SDL_Event *event);
         void handleInput();
 
-        void makeBlocksDynamic(Vector2 const &point, float distance);
         void setBlockElementAtPosition(float x, float y, int type);
 
         void step(float dt);
@@ -146,6 +153,7 @@ namespace crust {
         void setCameraLight();
         void setTargetLight();
         void drawOverlay();
+        void drawMode();
         void drawFps();
         void setWorldProjection();
         void setOverlayProjection();
@@ -154,6 +162,7 @@ namespace crust {
 
         void dig(Box2 const &box);
         
+        void dislodgeBlocks(Vector2 const &point, float distance);
         void grabBlock(Vector2 const &point);
         void releaseBlock();
     };

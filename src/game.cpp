@@ -39,7 +39,8 @@ namespace crust {
     
         delauneyTriangulation_(bounds_),
         dungeonGenerator_(&random_, bounds_),
-    
+
+        mode_(DISLODGE_MODE),
         grabbedBlock_(0),
         mouseJoint_(0),
         grabTime_(0.0),
@@ -344,11 +345,11 @@ namespace crust {
                 break;
 
             case SDLK_1:
-                debugDrawEnabled_ = !debugDrawEnabled_;
+                mode_ = DISLODGE_MODE;
                 break;
 
             case SDLK_2:
-                lightingEnabled_ = !lightingEnabled_;
+                mode_ = GRAB_MODE;
                 break;
 
             case SDLK_PLUS:
@@ -388,7 +389,11 @@ namespace crust {
                 Vector2 targetPosition;
                 targetPosition.x = cameraPosition_.x + invScale * float(x - windowWidth_ / 2);
                 targetPosition.y = cameraPosition_.y + invScale * -float(y - windowHeight_ / 2);
-                grabBlock(targetPosition);
+                if (mode_ == DISLODGE_MODE) {
+                    dislodgeBlocks(targetPosition, 2.0f);
+                } else if (mode_ == GRAB_MODE) {
+                    grabBlock(targetPosition);
+                }
                 break;
             }
         }
@@ -405,14 +410,18 @@ namespace crust {
 
     void Game::handleMouseButtonDownEvent(SDL_Event *event)
     {
-        if (grabbedBlock_) {
-            releaseBlock();
-        } else {
-            float invScale = 2.0f / cameraScale_ / float(windowHeight_);
-            float x = cameraPosition_.x + invScale * float(event->button.x - windowWidth_ / 2);
-            float y = cameraPosition_.y + invScale * -float(event->button.y - windowHeight_ / 2);
-            Vector2 point(x, y);
-            grabBlock(point);
+        float invScale = 2.0f / cameraScale_ / float(windowHeight_);
+        float x = cameraPosition_.x + invScale * float(event->button.x - windowWidth_ / 2);
+        float y = cameraPosition_.y + invScale * -float(event->button.y - windowHeight_ / 2);
+        Vector2 point(x, y);
+        if (mode_ == DISLODGE_MODE) {
+            dislodgeBlocks(point, 2.0f);
+        } else if (mode_ == GRAB_MODE) {
+            if (grabbedBlock_) {
+                releaseBlock();
+            } else {
+                grabBlock(point);
+            }
         }
     }
 
@@ -468,15 +477,6 @@ namespace crust {
         }
     }
 
-    void Game::makeBlocksDynamic(Vector2 const &point, float distance)
-    {
-        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (getSquaredDistance(i->getPosition(), point) < square(distance)) {
-                i->getPhysicsBody()->SetType(b2_dynamicBody);
-            }
-        }
-    }
-    
     void Game::setBlockElementAtPosition(float x, float y, int type)
     {
         BlockIterator j = blocks_.end();
@@ -649,11 +649,27 @@ namespace crust {
     void Game::drawOverlay()
     {
         setOverlayProjection();
+        drawMode();
         if (config_->drawFps) {
             drawFps();
         }
     }
 
+    void Game::drawMode()
+    {
+        int scale = 3;
+        glPushMatrix();
+        glTranslatef(0.0f, float(windowHeight_) - float(scale) * textDrawer_->getHeight("X"), 0.0f);
+        glTranslatef(float(scale), -float(scale), 0.0f);
+        glScalef(float(scale), float(scale), 1.0);
+        if (mode_ == DISLODGE_MODE) {
+            textDrawer_->draw("DISLODGE");
+        } else if (mode_ == GRAB_MODE) {
+            textDrawer_->draw("GRAB");
+        }
+        glPopMatrix();
+    }
+    
     void Game::drawFps()
     {
         int scale = 3;
@@ -718,6 +734,15 @@ namespace crust {
                 int j = i - blocks_.begin();
                 blocks_.erase(i);
                 i = blocks_.begin() + j - 1;
+            }
+        }
+    }
+
+    void Game::dislodgeBlocks(Vector2 const &point, float distance)
+    {
+        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
+            if (getSquaredDistance(i->getPosition(), point) < square(distance)) {
+                i->getPhysicsBody()->SetType(b2_dynamicBody);
             }
         }
     }
