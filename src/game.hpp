@@ -160,7 +160,7 @@ namespace crust {
         void drawBlockBounds();
         void drawBlocks();
 
-        void dig(Box2 const &box);
+        void removeBlocks(Box2 const &box);
 
         void digBlock(Vector2 const &point);
         void liftBlock(Vector2 const &point);

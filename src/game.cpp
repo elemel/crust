@@ -219,10 +219,10 @@ namespace crust {
     {
         dungeonGenerator_.generate();
         for (int i = 0; i < dungeonGenerator_.getRoomBoxCount(); ++i) {
-            dig(dungeonGenerator_.getRoomBox(i));
+            removeBlocks(dungeonGenerator_.getRoomBox(i));
         }
         for (int i = 0; i < dungeonGenerator_.getCorridorBoxCount(); ++i) {
-            dig(dungeonGenerator_.getCorridorBox(i));
+            removeBlocks(dungeonGenerator_.getCorridorBox(i));
         }
     }
 
@@ -718,7 +718,7 @@ namespace crust {
         }
     }
 
-    void Game::dig(Box2 const &box)
+    void Game::removeBlocks(Box2 const &box)
     {
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
             if (box.containsPoint(i->getPosition())) {
