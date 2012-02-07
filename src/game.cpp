@@ -729,16 +729,46 @@ namespace crust {
         }
     }
 
+    namespace {
+        class DigCallback : public b2RayCastCallback {
+        public:
+            Block *block;
+
+            DigCallback() :
+                block(0)
+            { }
+
+            float32 ReportFixture(b2Fixture *fixture, b2Vec2 const &point,
+                                  b2Vec2 const &normal, float32 fraction)
+            {
+                b2Body *body = fixture->GetBody();
+                Actor *actor = static_cast<Actor *>(body->GetUserData());
+                Block *tempBlock = dynamic_cast<Block *>(actor);
+                if (tempBlock) {
+                    block = tempBlock;
+                    return fraction;
+                } else {
+                    return 1.0f;
+                }
+            }
+        };
+    }
+    
     void Game::digBlock(Vector2 const &point)
     {
-        BlockIterator j = blocks_.end();
-        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (i->containsPoint(point)) {
-                j = i;
+        if (!monsters_.empty()) {
+            Vector2 p1 = monsters_.front().getPosition();
+            DigCallback callback;
+            physicsWorld_->RayCast(&callback, b2Vec2(p1.x, p1.y),
+                                   b2Vec2(point.x, point.y));
+            if (callback.block) {
+                for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
+                    if (&*i == callback.block) {
+                        blocks_.erase(i);
+                        break;
+                    }
+                }
             }
-        }
-        if (j != blocks_.end()) {
-            blocks_.erase(j);
         }
     }
 
