@@ -27,8 +27,9 @@ namespace crust {
     class Game : public b2ContactListener {
     public:
         enum Mode {
-            DISLODGE_MODE,
-            GRAB_MODE,
+            DIG_MODE,
+            LIFT_MODE,
+            COLLAPSE_MODE,
 
             MODE_COUNT
         };
@@ -104,10 +105,9 @@ namespace crust {
         std::string fpsText_;
         
         Mode mode_;
-        Block *grabbedBlock_;
-        b2MouseJoint *mouseJoint_;
-        double grabTime_;
-        float grabDuration_;
+        Block *liftedBlock_;
+        b2MouseJoint *liftJoint_;
+        double liftTime_;
 
         DelauneyTriangulation delauneyTriangulation_;
         VoronoiDiagram voronoiDiagram_;
@@ -161,10 +161,11 @@ namespace crust {
         void drawBlocks();
 
         void dig(Box2 const &box);
-        
-        void dislodgeBlocks(Vector2 const &point, float distance);
-        void grabBlock(Vector2 const &point);
+
+        void digBlock(Vector2 const &point);
+        void liftBlock(Vector2 const &point);
         void releaseBlock();
+        void collapseBlocks(Vector2 const &point, float distance);
     };
 }
 

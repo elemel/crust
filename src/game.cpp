@@ -40,11 +40,10 @@ namespace crust {
         delauneyTriangulation_(bounds_),
         dungeonGenerator_(&random_, bounds_),
 
-        mode_(DISLODGE_MODE),
-        grabbedBlock_(0),
-        mouseJoint_(0),
-        grabTime_(0.0),
-        grabDuration_(0.3f)
+        mode_(DIG_MODE),
+        liftedBlock_(0),
+        liftJoint_(0),
+        liftTime_(0.0)
     { }
     
     Game::~Game()
@@ -345,21 +344,25 @@ namespace crust {
                 break;
 
             case SDLK_1:
-                mode_ = DISLODGE_MODE;
+                mode_ = DIG_MODE;
                 break;
 
             case SDLK_2:
-                mode_ = GRAB_MODE;
+                mode_ = LIFT_MODE;
                 break;
 
+            case SDLK_3:
+                mode_ = COLLAPSE_MODE;
+                break;
+                
             case SDLK_PLUS:
-                if (grabbedBlock_ == 0) {
+                if (liftedBlock_ == 0) {
                     cameraScale_ *= config_->cameraZoom;
                 }
                 break;
 
             case SDLK_MINUS:
-                if (grabbedBlock_ == 0) {
+                if (liftedBlock_ == 0) {
                     cameraScale_ /= config_->cameraZoom;
                 }
                 break;
@@ -389,10 +392,8 @@ namespace crust {
                 Vector2 targetPosition;
                 targetPosition.x = cameraPosition_.x + invScale * float(x - windowWidth_ / 2);
                 targetPosition.y = cameraPosition_.y + invScale * -float(y - windowHeight_ / 2);
-                if (mode_ == DISLODGE_MODE) {
-                    dislodgeBlocks(targetPosition, 2.0f);
-                } else if (mode_ == GRAB_MODE) {
-                    grabBlock(targetPosition);
+                if (mode_ == LIFT_MODE) {
+                    liftBlock(targetPosition);
                 }
                 break;
             }
@@ -414,14 +415,8 @@ namespace crust {
         float x = cameraPosition_.x + invScale * float(event->button.x - windowWidth_ / 2);
         float y = cameraPosition_.y + invScale * -float(event->button.y - windowHeight_ / 2);
         Vector2 point(x, y);
-        if (mode_ == DISLODGE_MODE) {
-            dislodgeBlocks(point, 2.0f);
-        } else if (mode_ == GRAB_MODE) {
-            if (grabbedBlock_) {
-                releaseBlock();
-            } else {
-                grabBlock(point);
-            }
+        if (mode_ == LIFT_MODE) {
+            liftBlock(point);
         }
     }
 
@@ -438,29 +433,23 @@ namespace crust {
         int x = 0;
         int y = 0;
         Uint8 buttons = SDL_GetMouseState(&x, &y);
-        (void) buttons;
         if (!monsters_.empty()) {
             float invScale = 2.0f / cameraScale_ / float(windowHeight_);
             Vector2 targetPosition;
             targetPosition.x = cameraPosition_.x + invScale * float(x - windowWidth_ / 2);
             targetPosition.y = cameraPosition_.y + invScale * -float(y - windowHeight_ / 2);
             monsters_.front().setTargetPosition(targetPosition);
-            if (grabbedBlock_) {
-                b2Body *body = grabbedBlock_->getPhysicsBody();
-                b2Vec2 targetPositionVec2(targetPosition.x, targetPosition.y);                    
-                b2Vec2 localTargetPositionVec2 = body->GetLocalPoint(targetPositionVec2);
-                Vector2 localTargetPosition(localTargetPositionVec2.x,
-                                            localTargetPositionVec2.y);
-                Polygon2 localPaddedPolygon = grabbedBlock_->getLocalPolygon();
-                localPaddedPolygon.pad(0.2f);
-                bool containsTarget = localPaddedPolygon.containsPoint(localTargetPosition);
-                if (containsTarget) {
-                    grabTime_ = time_;
-                }
-                if (containsTarget || time_ < grabTime_ + grabDuration_) {
-                    mouseJoint_->SetTarget(targetPositionVec2);
-                } else {
-                    releaseBlock();
+            if (liftedBlock_) {
+                liftJoint_->SetTarget(b2Vec2(targetPosition.x, targetPosition.y));
+            }
+            Uint8 *state = SDL_GetKeyboardState(0);
+            if (state[SDL_SCANCODE_LSHIFT] ||
+                (buttons & SDL_BUTTON_LMASK) != 0)
+            {
+                if (mode_ == DIG_MODE) {
+                    digBlock(targetPosition);
+                } else if (mode_ == COLLAPSE_MODE) {
+                    collapseBlocks(targetPosition, 2.0f);
                 }
             }
         }
@@ -503,7 +492,7 @@ namespace crust {
             i->stepAnimation(dt);
         }
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (&*i != grabbedBlock_) {
+            if (&*i != liftedBlock_) {
                 b2Body *body = i->getPhysicsBody();
                 if (body->GetType() != b2_staticBody && !body->IsAwake()) {
                     body->SetType(b2_staticBody);
@@ -526,7 +515,7 @@ namespace crust {
 
     void Game::updateCamera()
     {
-        if (!monsters_.empty() && grabbedBlock_ == 0) {
+        if (!monsters_.empty() && liftedBlock_ == 0) {
             Vector2 position = monsters_.front().getPosition();
             cameraPosition_.x = position.x;
             cameraPosition_.y = position.y;
@@ -662,10 +651,12 @@ namespace crust {
         glTranslatef(0.0f, float(windowHeight_) - float(scale) * textDrawer_->getHeight("X"), 0.0f);
         glTranslatef(float(scale), -float(scale), 0.0f);
         glScalef(float(scale), float(scale), 1.0);
-        if (mode_ == DISLODGE_MODE) {
-            textDrawer_->draw("DISLODGE");
-        } else if (mode_ == GRAB_MODE) {
-            textDrawer_->draw("GRAB");
+        if (mode_ == DIG_MODE) {
+            textDrawer_->draw("DIG");
+        } else if (mode_ == LIFT_MODE) {
+            textDrawer_->draw("LIFT");
+        } else if (mode_ == COLLAPSE_MODE) {
+            textDrawer_->draw("COLLAPSE");
         }
         glPopMatrix();
     }
@@ -738,18 +729,22 @@ namespace crust {
         }
     }
 
-    void Game::dislodgeBlocks(Vector2 const &point, float distance)
+    void Game::digBlock(Vector2 const &point)
     {
+        BlockIterator j = blocks_.end();
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (getSquaredDistance(i->getPosition(), point) < square(distance)) {
-                i->getPhysicsBody()->SetType(b2_dynamicBody);
+            if (i->containsPoint(point)) {
+                j = i;
             }
+        }
+        if (j != blocks_.end()) {
+            blocks_.erase(j);
         }
     }
 
-    void Game::grabBlock(Vector2 const &point)
+    void Game::liftBlock(Vector2 const &point)
     {
-        if (grabbedBlock_) {
+        if (liftedBlock_) {
             return;
         }
 
@@ -781,25 +776,25 @@ namespace crust {
             }
             body->SetType(b2_dynamicBody);
 
-            grabbedBlock_ = block;
+            liftedBlock_ = block;
 
-            b2MouseJointDef mouseJointDef;
-            mouseJointDef.target.Set(point.x, point.y);
-            mouseJointDef.bodyA = body;
-            mouseJointDef.bodyB = body;
-            mouseJointDef.maxForce = 5.0f * body->GetMass() * 10.0f;
-            mouseJoint_ = static_cast<b2MouseJoint *>(physicsWorld_->CreateJoint(&mouseJointDef));
+            b2MouseJointDef liftJointDef;
+            liftJointDef.target.Set(point.x, point.y);
+            liftJointDef.bodyA = body;
+            liftJointDef.bodyB = body;
+            liftJointDef.maxForce = 5.0f * body->GetMass() * 10.0f;
+            liftJoint_ = static_cast<b2MouseJoint *>(physicsWorld_->CreateJoint(&liftJointDef));
 
-            grabTime_ = time_;
+            liftTime_ = time_;
         }
     }
 
     void Game::releaseBlock()
     {
-        if (grabbedBlock_) {
-            b2Body *body = grabbedBlock_->getPhysicsBody();
+        if (liftedBlock_) {
+            b2Body *body = liftedBlock_->getPhysicsBody();
             bool makeStatic = false;
-            b2Vec2 linearVelocity = body->GetLinearVelocityFromWorldPoint(mouseJoint_->GetTarget());
+            b2Vec2 linearVelocity = body->GetLinearVelocityFromWorldPoint(liftJoint_->GetTarget());
             float angularVelocity = body->GetAngularVelocity();
             if (linearVelocity.LengthSquared() < square(0.1f) &&
                 std::abs(angularVelocity) < 0.1f)
@@ -815,9 +810,18 @@ namespace crust {
             }
             body->SetFixedRotation(false);
 
-            physicsWorld_->DestroyJoint(mouseJoint_);
-            mouseJoint_ = 0;
-            grabbedBlock_ = 0;
+            physicsWorld_->DestroyJoint(liftJoint_);
+            liftJoint_ = 0;
+            liftedBlock_ = 0;
+        }
+    }
+
+    void Game::collapseBlocks(Vector2 const &point, float distance)
+    {
+        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
+            if (getSquaredDistance(i->getPosition(), point) < square(distance)) {
+                i->getPhysicsBody()->SetType(b2_dynamicBody);
+            }
         }
     }
 }
