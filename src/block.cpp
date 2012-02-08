@@ -128,7 +128,7 @@ namespace crust {
         setElement(xIndex, yIndex, type);
     }
 
-    void Block::draw()
+    void Block::draw() const
     {
         updateDrawVertices();
 
@@ -220,14 +220,14 @@ namespace crust {
         }
     }
     
-    float Block::getColorOffset(int x, int y, int i)
+    float Block::getColorOffset(int x, int y, int i) const
     {
         std::size_t a = hashValue((x << 16) + (y << 8) + i);
         return 0.1f * 0.001f * float(a % 1000);
     }
     
     // http://burtleburtle.net/bob/hash/integer.html
-    std::size_t Block::hashValue(std::size_t a)
+    std::size_t Block::hashValue(std::size_t a) const
     {
         a -= (a << 6);
         a ^= (a >> 17);
@@ -246,7 +246,7 @@ namespace crust {
         bounds->mergePoint(worldPoint.x, worldPoint.y);
     }
 
-    void Block::updateDrawVertices()
+    void Block::updateDrawVertices() const
     {
         if (drawVerticesDirty_) {
             updateQuadDrawVertices();
@@ -255,7 +255,7 @@ namespace crust {
         }
     }
 
-    void Block::updateQuadDrawVertices()
+    void Block::updateQuadDrawVertices() const
     {
         quadDrawVertices_.clear();
         for (int y = 0; y < grid_.getHeight(); ++y) {
@@ -290,7 +290,7 @@ namespace crust {
         }
     }
 
-    void Block::updateLineDrawVertices()
+    void Block::updateLineDrawVertices() const
     {
         lineDrawVertices_.clear();
 

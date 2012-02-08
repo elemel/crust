@@ -53,7 +53,7 @@ namespace crust {
         int getElementAtPosition(float x, float y);
         void setElementAtPosition(float x, float y, int type);
         
-        void draw();
+        void draw() const;
 
         Box2 getBounds() const;
         bool containsPoint(Vector2 const &point) const;
@@ -74,17 +74,18 @@ namespace crust {
         float blue_;
         float normalX_;
         float normalY_;
-        std::vector<DrawVertex> quadDrawVertices_;
-        std::vector<DrawVertex> lineDrawVertices_;
-        bool drawVerticesDirty_;
 
-        float getColorOffset(int x, int y, int i);
-        std::size_t hashValue(std::size_t a);
+        mutable std::vector<DrawVertex> quadDrawVertices_;
+        mutable std::vector<DrawVertex> lineDrawVertices_;
+        mutable bool drawVerticesDirty_;
+
+        float getColorOffset(int x, int y, int i) const;
+        std::size_t hashValue(std::size_t a) const;
         void addGridPointToBounds(int x, int y, Box2 *bounds) const;
 
-        void updateDrawVertices();
-        void updateQuadDrawVertices();
-        void updateLineDrawVertices();
+        void updateDrawVertices() const;
+        void updateQuadDrawVertices() const;
+        void updateLineDrawVertices() const;
 
         void rasterize(Polygon2 const &polygon);
     };

@@ -22,7 +22,7 @@ namespace crust {
     class Config;
     class Font;
     class Monster;
-    class TextDrawer;
+    class RenderManager;
 
     class Game : public b2ContactListener {
     public:
@@ -36,18 +36,31 @@ namespace crust {
 
         typedef boost::ptr_vector<Block> BlockVector;
         typedef BlockVector::iterator BlockIterator;
+        typedef BlockVector::const_iterator ConstBlockIterator;
         typedef std::map<b2Body *, b2Body *> CollisionMap;
         typedef CollisionMap::iterator CollisionIterator;
         typedef boost::ptr_vector<Monster> MonsterVector;
         typedef MonsterVector::iterator MonsterIterator;
+        typedef MonsterVector::const_iterator ConstMonsterIterator;
         typedef boost::ptr_vector<Chain> ChainVector;
         typedef ChainVector::iterator ChainIterator;
+        typedef ChainVector::const_iterator ConstChainIterator;
         
         explicit Game(Config const *config);
         ~Game();
         
         int main(int argc, char **argv);
 
+        Config const *getConfig() const
+        {
+            return config_;
+        }
+
+        SDL_Window *getWindow()
+        {
+            return window_;
+        }
+        
         double getTime() const
         {
             return time_;
@@ -58,6 +71,11 @@ namespace crust {
             return physicsWorld_.get();
         }
 
+        Mode getMode() const
+        {
+            return mode_;
+        }
+        
         void BeginContact(b2Contact* contact);
         void EndContact(b2Contact* contact);
 
@@ -66,6 +84,26 @@ namespace crust {
         float getRandomFloat();
         int getRandomInt(int size);
 
+        BlockVector const &getBlocks() const
+        {
+            return blocks_;
+        }
+
+        MonsterVector const &getMonsters() const
+        {
+            return monsters_;
+        }
+
+        ChainVector const &getChains() const
+        {
+            return chains_;
+        }
+
+        const char *getFpsText() const
+        {
+            return fpsText_.c_str();
+        }
+        
     private:
         Config const *config_;
         Random random_;
@@ -88,16 +126,6 @@ namespace crust {
         MonsterVector monsters_;
         ChainVector chains_;
 
-        Vector2 cameraPosition_;
-        float cameraScale_;
-        Box2 frustum_;
-
-        bool drawEnabled_;
-        bool debugDrawEnabled_;
-        bool lightingEnabled_;
-        std::auto_ptr<Font> font_;        
-        std::auto_ptr<TextDrawer> textDrawer_;
-        
         Box2 bounds_;
 
         double fpsTime_;
@@ -113,12 +141,13 @@ namespace crust {
         VoronoiDiagram voronoiDiagram_;
         DungeonGenerator dungeonGenerator_;
 
+        std::auto_ptr<RenderManager> renderManager_;
+        
         void init();
         void initSdl();
         void initWindow();
         void initContext();
         void initPhysics();
-        void initFont();
         void initVoronoiDiagram();
         void initBlocks();
         void initDungeon();
@@ -128,6 +157,7 @@ namespace crust {
         void run();
         void runStep(float dt);
         void updateFps();
+        void updateCamera();
 
         void handleEvents();
         void handleEvent(SDL_Event *event);
@@ -142,24 +172,6 @@ namespace crust {
         void step(float dt);
         void handleCollisions();
         
-        void redraw();
-        void updateCamera();
-        void updateFrustum();
-        void clear();
-        void draw();
-        void drawWorld();
-        void setLighting();
-        void setWorldLight();
-        void setCameraLight();
-        void setTargetLight();
-        void drawOverlay();
-        void drawMode();
-        void drawFps();
-        void setWorldProjection();
-        void setOverlayProjection();
-        void drawBlockBounds();
-        void drawBlocks();
-
         void removeBlocks(Box2 const &box);
 
         void digBlock(Vector2 const &point);

@@ -5,12 +5,10 @@
 #include "config.hpp"
 #include "dungeon_generator.hpp"
 #include "error.hpp"
-#include "font.hpp"
-#include "font_reader.hpp"
 #include "geometry.hpp"
 #include "monster.hpp"
 #include "physics_draw.hpp"
-#include "text_drawer.hpp"
+#include "render_manager.hpp"
 
 #include <fstream>
 
@@ -25,12 +23,6 @@ namespace crust {
 
         appTime_(0.0),
         time_(0.0),
-
-        cameraScale_(config_->cameraScale),
-
-        drawEnabled_(true),
-        debugDrawEnabled_(false),
-        lightingEnabled_(true),
 
         bounds_(Vector2(-15.0f, -15.0f), Vector2(15.0f, 15.0f)),
 
@@ -92,12 +84,12 @@ namespace crust {
         initWindow();
         initContext();
         initPhysics();
-        initFont();
         initVoronoiDiagram();
         initBlocks();
         initDungeon();
         initMonsters();
         initChains();
+        renderManager_.reset(new RenderManager(this));
     }
     
     void Game::initSdl()
@@ -165,15 +157,6 @@ namespace crust {
         physicsWorld_->SetContactListener(this);
         physicsDraw_.reset(new PhysicsDraw);
         physicsWorld_->SetDebugDraw(physicsDraw_.get());
-    }
-
-    void Game::initFont()
-    {
-        font_.reset(new Font);
-        std::ifstream in("../../../data/font.txt");
-        FontReader reader;
-        reader.read(&in, font_.get());
-        textDrawer_.reset(new TextDrawer(font_.get()));
     }
 
     void Game::initVoronoiDiagram()
@@ -273,9 +256,10 @@ namespace crust {
         handleEvents();
         handleInput();
         step(float(dt));
-        redraw();
+        updateCamera();
+        renderManager_->redraw();
     }
-    
+
     void Game::updateFps()
     {
         if (fpsTime_ < appTime_) {
@@ -287,6 +271,14 @@ namespace crust {
         }
 
         ++fpsCount_;
+    }
+    
+    void Game::updateCamera()
+    {
+        if (!monsters_.empty() && liftedBlock_ == 0) {
+            Vector2 position = monsters_.front().getPosition();
+            renderManager_->setCameraPosition(position);
+        }
     }
     
     void Game::handleEvents()
@@ -357,13 +349,17 @@ namespace crust {
                 
             case SDLK_PLUS:
                 if (liftedBlock_ == 0) {
-                    cameraScale_ *= config_->cameraZoom;
+                    float scale = renderManager_->getCameraScale();
+                    scale *= config_->cameraZoom;
+                    renderManager_->setCameraScale(scale);
                 }
                 break;
 
             case SDLK_MINUS:
                 if (liftedBlock_ == 0) {
-                    cameraScale_ /= config_->cameraZoom;
+                    float scale = renderManager_->getCameraScale();
+                    scale /= config_->cameraZoom;
+                    renderManager_->setCameraScale(scale);
                 }
                 break;
 
@@ -388,10 +384,7 @@ namespace crust {
                 int x = 0;
                 int y = 0;
                 SDL_GetMouseState(&x, &y);
-                float invScale = 2.0f / cameraScale_ / float(windowHeight_);
-                Vector2 targetPosition;
-                targetPosition.x = cameraPosition_.x + invScale * float(x - windowWidth_ / 2);
-                targetPosition.y = cameraPosition_.y + invScale * -float(y - windowHeight_ / 2);
+                Vector2 targetPosition = renderManager_->getWorldPosition(Vector2(float(x), float(y)));
                 if (mode_ == LIFT_MODE) {
                     liftBlock(targetPosition);
                 }
@@ -411,12 +404,10 @@ namespace crust {
 
     void Game::handleMouseButtonDownEvent(SDL_Event *event)
     {
-        float invScale = 2.0f / cameraScale_ / float(windowHeight_);
-        float x = cameraPosition_.x + invScale * float(event->button.x - windowWidth_ / 2);
-        float y = cameraPosition_.y + invScale * -float(event->button.y - windowHeight_ / 2);
-        Vector2 point(x, y);
         if (mode_ == LIFT_MODE) {
-            liftBlock(point);
+            Vector2 screenPosition(float(event->button.x), float(event->button.y));
+            Vector2 position = renderManager_->getWorldPosition(screenPosition);
+            liftBlock(position);
         }
     }
 
@@ -434,10 +425,7 @@ namespace crust {
         int y = 0;
         Uint8 buttons = SDL_GetMouseState(&x, &y);
         if (!monsters_.empty()) {
-            float invScale = 2.0f / cameraScale_ / float(windowHeight_);
-            Vector2 targetPosition;
-            targetPosition.x = cameraPosition_.x + invScale * float(x - windowWidth_ / 2);
-            targetPosition.y = cameraPosition_.y + invScale * -float(y - windowHeight_ / 2);
+            Vector2 targetPosition = renderManager_->getWorldPosition(Vector2(float(x), float(y)));
             monsters_.front().setTargetPosition(targetPosition);
             if (liftedBlock_) {
                 liftJoint_->SetTarget(b2Vec2(targetPosition.x, targetPosition.y));
@@ -503,220 +491,6 @@ namespace crust {
 
     void Game::handleCollisions()
     { }
-
-    void Game::redraw()
-    {
-        updateCamera();
-        updateFrustum();
-        clear();
-        draw();
-        SDL_GL_SwapWindow(window_);
-    }
-
-    void Game::updateCamera()
-    {
-        if (!monsters_.empty() && liftedBlock_ == 0) {
-            Vector2 position = monsters_.front().getPosition();
-            cameraPosition_.x = position.x;
-            cameraPosition_.y = position.y;
-        }
-    }
-    
-    void Game::updateFrustum()
-    {
-        float invScale = 1.0f / cameraScale_;
-        float aspectRatio = float(windowWidth_) / float(windowHeight_);
-        frustum_ = Box2(Vector2(cameraPosition_.x - invScale * aspectRatio,
-                                cameraPosition_.y - invScale),
-                        Vector2(cameraPosition_.x + invScale * aspectRatio,
-                                cameraPosition_.y + invScale));
-    }
-
-    void Game::clear()
-    {
-        glClearColor(0.0, 0.0, 0.0, 0.0);
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-    
-    void Game::draw()
-    {
-        drawWorld();
-        drawOverlay();
-    }
-    
-    void Game::drawWorld()
-    {
-        setWorldProjection();
-        if (drawEnabled_) {
-            glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_LIGHTING_BIT);
-            // glEnable(GL_BLEND);
-            // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            setLighting();
-            drawBlocks();
-            if (!monsters_.empty()) {
-                monsters_.front().draw();
-            }
-            if (!chains_.empty()) {
-                chains_.front().draw();
-            }
-            glPopAttrib();
-        }
-        if (debugDrawEnabled_) {
-            glPushAttrib(GL_CURRENT_BIT);
-            glColor3f(0.0f, 1.0f, 0.0f);
-            physicsWorld_->DrawDebugData();
-            // drawBlockBounds();
-            // glColor3f(0.0f, 0.5f, 1.0f);
-            // delauneyTriangulation_.draw();
-            // glColor3f(1.0f, 0.5f, 0.0f);
-            // voronoiDiagram_.draw();
-            glPopAttrib();
-        }
-    }
-
-    void Game::setLighting()
-    {
-        if (lightingEnabled_) {
-            glEnable(GL_LIGHTING);
-            GLfloat ambient[] = { 0.05f, 0.05f, 0.05f, 1.0f };
-            glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient);
-            glEnable(GL_COLOR_MATERIAL);
-            glColorMaterial(GL_FRONT, GL_DIFFUSE);
-            glEnable(GL_NORMALIZE);
-
-            setWorldLight();
-            setCameraLight();
-            setTargetLight();
-        }
-    }
-
-    void Game::setWorldLight()
-    { 
-        glEnable(GL_LIGHT0);
-        GLfloat diffuse[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-        GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-        glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
-        GLfloat position[] = { 0.0f, 0.0f, 1.0f, 0.0f };
-        glLightfv(GL_LIGHT0, GL_POSITION, position);
-        glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.0f);
-        glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.0f);
-        glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.0f);
-    }
-
-    void Game::setCameraLight()
-    {
-        glEnable(GL_LIGHT1);
-        GLfloat diffuse[] = { 4.0f, 4.0f, 4.0f, 1.0f };
-        GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-        glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
-        glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
-        GLfloat position[] = { cameraPosition_.x, cameraPosition_.y, 5.0f, 1.0f };
-        glLightfv(GL_LIGHT1, GL_POSITION, position);
-        glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.0f);
-        glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 1.0f);
-        glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.0f);
-    }
-
-    void Game::setTargetLight()
-    {
-        if (!monsters_.empty()) {
-            glEnable(GL_LIGHT2);
-            GLfloat diffuse[] = { 2.0f, 2.0f, 2.0f, 1.0f };
-            GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-            glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse);
-            glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
-            Vector2 const &targetPosition = monsters_.front().getTargetPosition();
-            GLfloat position[] = { targetPosition.x, targetPosition.y, 1.0f, 1.0f };
-            glLightfv(GL_LIGHT2, GL_POSITION, position);
-            glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1.0f);
-            glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 1.0f);
-            glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0f);
-        }
-    }
-
-    void Game::drawOverlay()
-    {
-        setOverlayProjection();
-        drawMode();
-        if (config_->drawFps) {
-            drawFps();
-        }
-    }
-
-    void Game::drawMode()
-    {
-        int scale = 3;
-        glPushMatrix();
-        glTranslatef(0.0f, float(windowHeight_) - float(scale) * textDrawer_->getHeight("X"), 0.0f);
-        glTranslatef(float(scale), -float(scale), 0.0f);
-        glScalef(float(scale), float(scale), 1.0);
-        if (mode_ == DIG_MODE) {
-            textDrawer_->draw("DIG");
-        } else if (mode_ == LIFT_MODE) {
-            textDrawer_->draw("LIFT");
-        } else if (mode_ == COLLAPSE_MODE) {
-            textDrawer_->draw("COLLAPSE");
-        }
-        glPopMatrix();
-    }
-    
-    void Game::drawFps()
-    {
-        int scale = 3;
-        glPushMatrix();
-        glTranslatef(float(scale), float(scale), 0.0f);
-        glScalef(float(scale), float(scale), 1.0);
-        textDrawer_->draw(fpsText_.c_str());
-        glPopMatrix();
-    }
-
-    void Game::setWorldProjection()
-    {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(frustum_.p1.x, frustum_.p2.x, frustum_.p1.y, frustum_.p2.y,
-                -1.0f, 1.0f);
-        glMatrixMode(GL_MODELVIEW);
-    }
-
-    void Game::setOverlayProjection()
-    {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(0.0, double(windowWidth_), 0.0, double(windowHeight_),
-                -1.0, 1.0);
-        glMatrixMode(GL_MODELVIEW);
-    }
-
-    void Game::drawBlockBounds()
-    {
-        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            Box2 bounds = i->getBounds();
-            if (!bounds.isEmpty()) {
-                float x = bounds.p1.x;
-                float y = bounds.p1.y;
-                float width = bounds.getWidth();
-                float height = bounds.getHeight();
-                
-                glBegin(GL_LINE_LOOP);
-                glVertex2f(x, y);
-                glVertex2f(x + width, y);
-                glVertex2f(x + width, y + height);
-                glVertex2f(x, y + height);
-                glEnd();
-            }
-        }
-    }
-    
-    void Game::drawBlocks()
-    {
-        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (intersects(frustum_, i->getBounds())) {
-                i->draw();
-            }
-        }
-    }
 
     void Game::removeBlocks(Box2 const &box)
     {
