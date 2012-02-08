@@ -219,7 +219,7 @@ namespace crust {
         Color4 shirtColor = parseColor4("#9c3");
         Color4 beltColor = parseColor4("#630");
         Color4 buckleColor = parseColor4("#fc3");
-        Color4 leggingsColor = parseColor4("#690");
+        Color4 trousersColor = parseColor4("#390");
         Color4 bootsColor = parseColor4("#960");
         
         headSprite_.setPixel(Vector2(-0.2f, 0.2f), skinColor);
@@ -351,18 +351,18 @@ namespace crust {
         bodySprite_.setPixel(Vector2(0.5f, -0.2f), skinColor);
         bodySprite_.setPixel(Vector2(0.5f, -0.3f), skinColor);
 
-        bodySprite_.setPixel(Vector2(-0.3f, -0.3f), leggingsColor);
-        bodySprite_.setPixel(Vector2(-0.2f, -0.3f), leggingsColor);
-        bodySprite_.setPixel(Vector2(-0.1f, -0.3f), leggingsColor);
-        bodySprite_.setPixel(Vector2(0.0f, -0.3f), leggingsColor);
-        bodySprite_.setPixel(Vector2(0.1f, -0.3f), leggingsColor);
-        bodySprite_.setPixel(Vector2(0.2f, -0.3f), leggingsColor);
-        bodySprite_.setPixel(Vector2(0.3f, -0.3f), leggingsColor);
+        bodySprite_.setPixel(Vector2(-0.3f, -0.3f), trousersColor);
+        bodySprite_.setPixel(Vector2(-0.2f, -0.3f), trousersColor);
+        bodySprite_.setPixel(Vector2(-0.1f, -0.3f), trousersColor);
+        bodySprite_.setPixel(Vector2(0.0f, -0.3f), trousersColor);
+        bodySprite_.setPixel(Vector2(0.1f, -0.3f), trousersColor);
+        bodySprite_.setPixel(Vector2(0.2f, -0.3f), trousersColor);
+        bodySprite_.setPixel(Vector2(0.3f, -0.3f), trousersColor);
         
-        bodySprite_.setPixel(Vector2(-0.3f, -0.4f), leggingsColor);
-        bodySprite_.setPixel(Vector2(-0.2f, -0.4f), leggingsColor);
-        bodySprite_.setPixel(Vector2(0.2f, -0.4f), leggingsColor);
-        bodySprite_.setPixel(Vector2(0.3f, -0.4f), leggingsColor);
+        bodySprite_.setPixel(Vector2(-0.3f, -0.4f), trousersColor);
+        bodySprite_.setPixel(Vector2(-0.2f, -0.4f), trousersColor);
+        bodySprite_.setPixel(Vector2(0.2f, -0.4f), trousersColor);
+        bodySprite_.setPixel(Vector2(0.3f, -0.4f), trousersColor);
         
         bodySprite_.setPixel(Vector2(-0.3f, -0.5f), bootsColor);
         bodySprite_.setPixel(Vector2(-0.2f, -0.5f), bootsColor);
