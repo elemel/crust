@@ -47,7 +47,6 @@ namespace crust {
         if (window_) {
             SDL_DestroyWindow(window_);
         }
-        SDL_Quit();
     }
 
     int Game::main(int argc, char **argv)
@@ -80,7 +79,6 @@ namespace crust {
 
     void Game::init()
     {
-        initSdl();
         initWindow();
         initContext();
         initPhysics();
@@ -90,15 +88,6 @@ namespace crust {
         initMonsters();
         initChains();
         renderManager_.reset(new RenderManager(this));
-    }
-    
-    void Game::initSdl()
-    {
-        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) != 0) {
-            std::stringstream message;
-            message << "Failed to initialize SDL: " << SDL_GetError();
-            throw Error(message.str());
-        }
     }
     
     void Game::initWindow()

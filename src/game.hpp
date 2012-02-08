@@ -144,7 +144,6 @@ namespace crust {
         std::auto_ptr<RenderManager> renderManager_;
         
         void init();
-        void initSdl();
         void initWindow();
         void initContext();
         void initPhysics();
