@@ -212,10 +212,12 @@ namespace crust {
         
         Color4 skinColor = parseColor4("#fc9");
         Color4 eyeColor = parseColor4("#000");
-        Color4 noseColor = parseColor4("#c96");
-        Color4 earColor = parseColor4("#c96");
-        Color4 shirtColor = parseColor4("#f30");
-        Color4 leggingsColor = parseColor4("#930");
+        Color4 noseColor = parseColor4("#f96");
+        Color4 earColor = parseColor4("#f96");
+        Color4 hairColor = parseColor4("#996");
+        Color4 beardColor = parseColor4("#663");
+        Color4 shirtColor = parseColor4("#9c3");
+        Color4 leggingsColor = parseColor4("#690");
         Color4 bootsColor = parseColor4("#960");
         
         headSprite_.setPixel(Vector2(-0.2f, 0.2f), skinColor);
@@ -223,6 +225,7 @@ namespace crust {
         headSprite_.setPixel(Vector2(0.0f, 0.2f), skinColor);
         headSprite_.setPixel(Vector2(0.1f, 0.2f), skinColor);
         headSprite_.setPixel(Vector2(0.2f, 0.2f), skinColor);
+        headSprite_.setPixel(Vector2(0.3f, 0.2f), skinColor);
         
         headSprite_.setPixel(Vector2(-0.3f, 0.1f), skinColor);
         headSprite_.setPixel(Vector2(-0.2f, 0.1f), skinColor);
@@ -245,15 +248,39 @@ namespace crust {
         headSprite_.setPixel(Vector2(0.0f, -0.1f), skinColor);
         headSprite_.setPixel(Vector2(0.1f, -0.1f), skinColor);
         headSprite_.setPixel(Vector2(0.2f, -0.1f), skinColor);
-        
+
+        headSprite_.setPixel(Vector2(-0.2f, 0.4f), hairColor);
+        headSprite_.setPixel(Vector2(0.0f, 0.4f), hairColor);
+        headSprite_.setPixel(Vector2(0.2f, 0.4f), hairColor);
+        headSprite_.setPixel(Vector2(-0.3f, 0.3f), hairColor);
+        headSprite_.setPixel(Vector2(-0.2f, 0.3f), hairColor);
+        headSprite_.setPixel(Vector2(-0.1f, 0.3f), hairColor);
+        headSprite_.setPixel(Vector2(0.0f, 0.3f), hairColor);
+        headSprite_.setPixel(Vector2(0.1f, 0.3f), hairColor);
+        headSprite_.setPixel(Vector2(0.2f, 0.3f), hairColor);
+        headSprite_.setPixel(Vector2(-0.3f, 0.2f), hairColor);
+        headSprite_.setPixel(Vector2(-0.2f, 0.2f), hairColor);
+        headSprite_.setPixel(Vector2(-0.2f, 0.1f), hairColor);
+
+        headSprite_.setPixel(Vector2(-0.2f, 0.0f), beardColor);
+        headSprite_.setPixel(Vector2(-0.2f, -0.1f), beardColor);
+        headSprite_.setPixel(Vector2(-0.1f, -0.1f), beardColor);
+        headSprite_.setPixel(Vector2(0.0f, -0.1f), beardColor);
+        headSprite_.setPixel(Vector2(0.1f, -0.1f), beardColor);
+        headSprite_.setPixel(Vector2(0.2f, -0.1f), beardColor);
+        headSprite_.setPixel(Vector2(0.3f, -0.1f), beardColor);
+        headSprite_.setPixel(Vector2(-0.1f, -0.2f), beardColor);
+        headSprite_.setPixel(Vector2(0.1f, -0.2f), beardColor);
+        headSprite_.setPixel(Vector2(0.3f, -0.2f), beardColor);
+
         headSprite_.setPixel(Vector2(0.0f, 0.1f), eyeColor);
         headSprite_.setPixel(Vector2(0.2f, 0.1f), eyeColor);
         
         headSprite_.setPixel(Vector2(0.1f, 0.1f), noseColor);
         headSprite_.setPixel(Vector2(0.1f, 0.0f), noseColor);
         
-        headSprite_.setPixel(Vector2(-0.2f, 0.1f), earColor);
-        headSprite_.setPixel(Vector2(-0.2f, 0.0f), earColor);
+        headSprite_.setPixel(Vector2(-0.3f, 0.1f), earColor);
+        headSprite_.setPixel(Vector2(-0.3f, 0.0f), earColor);
 
         bodySprite_.setPixel(Vector2(-0.1f, 0.4f), skinColor);
         bodySprite_.setPixel(Vector2(0.0f, 0.4f), skinColor);
