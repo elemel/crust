@@ -758,9 +758,10 @@ namespace crust {
     {
         if (!monsters_.empty()) {
             Vector2 p1 = monsters_.front().getPosition();
+            Vector2 p2 = p1 + clampLength(point - p1, 1.5f);
             DigCallback callback;
             physicsWorld_->RayCast(&callback, b2Vec2(p1.x, p1.y),
-                                   b2Vec2(point.x, point.y));
+                                   b2Vec2(p2.x, p2.y));
             if (callback.block) {
                 for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
                     if (&*i == callback.block) {
