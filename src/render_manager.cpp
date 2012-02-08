@@ -177,6 +177,10 @@ namespace crust {
                 textDrawer_->draw("DIG");
                 break;
 
+            case Game::CHAIN_MODE:
+                textDrawer_->draw("CHAIN");
+                break;
+
             case Game::LIFT_MODE:
                 textDrawer_->draw("LIFT");
                 break;

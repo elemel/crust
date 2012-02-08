@@ -28,6 +28,7 @@ namespace crust {
     public:
         enum Mode {
             DIG_MODE,
+            CHAIN_MODE,
             LIFT_MODE,
             COLLAPSE_MODE,
 

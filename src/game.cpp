@@ -323,13 +323,17 @@ namespace crust {
                 break;
 
             case SDLK_2:
-                mode_ = LIFT_MODE;
+                mode_ = CHAIN_MODE;
                 break;
 
             case SDLK_3:
+                mode_ = LIFT_MODE;
+                break;
+
+            case SDLK_4:
                 mode_ = COLLAPSE_MODE;
                 break;
-                
+
             case SDLK_PLUS:
                 if (liftedBlock_ == 0) {
                     float scale = renderManager_->getCameraScale();
