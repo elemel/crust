@@ -216,10 +216,10 @@ namespace crust {
         Color4 earColor = parseColor4("#f96");
         Color4 hairColor = parseColor4("#996");
         Color4 beardColor = parseColor4("#663");
-        Color4 shirtColor = parseColor4("#9c3");
+        Color4 shirtColor = parseColor4("#6cf");
         Color4 beltColor = parseColor4("#630");
         Color4 buckleColor = parseColor4("#fc3");
-        Color4 trouserColor = parseColor4("#390");
+        Color4 trouserColor = parseColor4("#069");
         Color4 bootColor = parseColor4("#960");
         
         headSprite_.setPixel(Vector2(-0.2f, 0.2f), skinColor);
