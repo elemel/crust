@@ -49,7 +49,7 @@ namespace crust {
         explicit Game(Config const *config);
         ~Game();
         
-        int main(int argc, char **argv);
+        void run();
 
         Config const *getConfig() const
         {
@@ -143,7 +143,6 @@ namespace crust {
 
         std::auto_ptr<RenderManager> renderManager_;
         
-        void init();
         void initWindow();
         void initContext();
         void initPhysics();
@@ -153,7 +152,6 @@ namespace crust {
         void initMonsters();
         void initChains();
 
-        void run();
         void runStep(float dt);
         void updateFps();
         void updateCamera();

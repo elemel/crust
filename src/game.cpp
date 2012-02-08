@@ -36,7 +36,17 @@ namespace crust {
         liftedBlock_(0),
         liftJoint_(0),
         liftTime_(0.0)
-    { }
+    {
+        initWindow();
+        initContext();
+        initPhysics();
+        initVoronoiDiagram();
+        initBlocks();
+        initDungeon();
+        initMonsters();
+        initChains();
+        renderManager_.reset(new RenderManager(this));
+    }
     
     Game::~Game()
     {
@@ -49,13 +59,25 @@ namespace crust {
         }
     }
 
-    int Game::main(int argc, char **argv)
+    void Game::run()
     {
-        init();
-        run();
-        return 0;
+        while (!quit_) {
+            double newAppTime = 0.001 * double(SDL_GetTicks());
+            if (0.1 < newAppTime - appTime_) {
+                appTime_ = newAppTime;
+            }
+            
+            if (config_->fps) {
+                double dt = 1.0 / double(config_->fps);
+                while (dt < float(newAppTime - appTime_)) {
+                    runStep(float(dt));
+                }
+            } else {
+                runStep(float(newAppTime - appTime_));
+            }
+        }
     }
-
+    
     void Game::BeginContact(b2Contact* contact)
     {
         // b2Body *bodyA = contact->GetFixtureA()->GetBody();
@@ -77,19 +99,6 @@ namespace crust {
         return random_.getInt(size);
     }
 
-    void Game::init()
-    {
-        initWindow();
-        initContext();
-        initPhysics();
-        initVoronoiDiagram();
-        initBlocks();
-        initDungeon();
-        initMonsters();
-        initChains();
-        renderManager_.reset(new RenderManager(this));
-    }
-    
     void Game::initWindow()
     {
         if (config_->fullscreen) {
@@ -217,25 +226,6 @@ namespace crust {
         }
     }
                 
-    void Game::run()
-    {
-        while (!quit_) {
-            double newAppTime = 0.001 * double(SDL_GetTicks());
-            if (0.1 < newAppTime - appTime_) {
-                appTime_ = newAppTime;
-            }
-
-            if (config_->fps) {
-                double dt = 1.0 / double(config_->fps);
-                while (dt < float(newAppTime - appTime_)) {
-                    runStep(float(dt));
-                }
-            } else {
-                runStep(float(newAppTime - appTime_));
-            }
-        }
-    }
-
     void Game::runStep(float dt)
     {
         appTime_ += dt;

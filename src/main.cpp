@@ -18,5 +18,6 @@ int main(int argc, char **argv)
         throw crust::Error(message.str());
     }
 
-    return crust::Game(&config).main(argc, argv);
+    crust::Game(&config).run();
+    return 0;
 }
