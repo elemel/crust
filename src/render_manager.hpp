@@ -15,7 +15,7 @@ namespace crust {
         explicit RenderManager(Game *game);
         ~RenderManager();
 
-        void redraw();
+        void draw();
 
         Vector2 const &getCameraPosition() const
         {
@@ -59,8 +59,6 @@ namespace crust {
         void initFont();
 
         void updateFrustum();
-        void clear();
-        void draw();
         void drawWorld();
         void setLighting();
         void setWorldLight();

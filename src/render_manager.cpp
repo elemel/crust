@@ -32,14 +32,14 @@ namespace crust {
     RenderManager::~RenderManager()
     { }
     
-    void RenderManager::redraw()
+    
+    void RenderManager::draw()
     {
         updateFrustum();
-        clear();
-        draw();
-        SDL_GL_SwapWindow(window_);
+        drawWorld();
+        drawOverlay();
     }
-
+    
     Vector2 RenderManager::getWorldPosition(Vector2 const &screenPosition) const
     {
         float invScale = 2.0f / cameraScale_ / float(windowHeight_);
@@ -67,19 +67,7 @@ namespace crust {
                         Vector2(cameraPosition_.x + invScale * aspectRatio,
                                 cameraPosition_.y + invScale));
     }
-    
-    void RenderManager::clear()
-    {
-        glClearColor(0.0, 0.0, 0.0, 0.0);
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-    
-    void RenderManager::draw()
-    {
-        drawWorld();
-        drawOverlay();
-    }
-    
+
     void RenderManager::drawWorld()
     {
         setWorldProjection();

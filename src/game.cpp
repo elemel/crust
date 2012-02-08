@@ -257,7 +257,11 @@ namespace crust {
         handleInput();
         step(float(dt));
         updateCamera();
-        renderManager_->redraw();
+
+        glClearColor(0.0, 0.0, 0.0, 0.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+        renderManager_->draw();
+        SDL_GL_SwapWindow(window_);
     }
 
     void Game::updateFps()
