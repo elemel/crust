@@ -217,6 +217,8 @@ namespace crust {
         Color4 hairColor = parseColor4("#996");
         Color4 beardColor = parseColor4("#663");
         Color4 shirtColor = parseColor4("#9c3");
+        Color4 beltColor = parseColor4("#630");
+        Color4 buckleColor = parseColor4("#fc3");
         Color4 leggingsColor = parseColor4("#690");
         Color4 bootsColor = parseColor4("#960");
         
@@ -332,17 +334,23 @@ namespace crust {
         bodySprite_.setPixel(Vector2(0.3f, -0.1f), shirtColor);
         bodySprite_.setPixel(Vector2(0.5f, -0.1f), shirtColor);
         
+        bodySprite_.setPixel(Vector2(-0.3f, -0.2f), beltColor);
+        bodySprite_.setPixel(Vector2(-0.2f, -0.2f), beltColor);
+        bodySprite_.setPixel(Vector2(-0.1f, -0.2f), beltColor);
+        bodySprite_.setPixel(Vector2(0.0f, -0.2f), beltColor);
+        bodySprite_.setPixel(Vector2(0.1f, -0.2f), beltColor);
+        bodySprite_.setPixel(Vector2(0.2f, -0.2f), beltColor);
+        bodySprite_.setPixel(Vector2(0.3f, -0.2f), beltColor);
+
+        bodySprite_.setPixel(Vector2(0.0f, -0.2f), buckleColor);
+        bodySprite_.setPixel(Vector2(0.1f, -0.2f), buckleColor);
+
         bodySprite_.setPixel(Vector2(-0.5f, -0.2f), skinColor);
-        bodySprite_.setPixel(Vector2(-0.3f, -0.2f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.2f, -0.2f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.1f, -0.2f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.0f, -0.2f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.1f, -0.2f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.2f, -0.2f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.3f, -0.2f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.5f, -0.2f), skinColor);
-        
         bodySprite_.setPixel(Vector2(-0.5f, -0.3f), skinColor);
+
+        bodySprite_.setPixel(Vector2(0.5f, -0.2f), skinColor);
+        bodySprite_.setPixel(Vector2(0.5f, -0.3f), skinColor);
+
         bodySprite_.setPixel(Vector2(-0.3f, -0.3f), leggingsColor);
         bodySprite_.setPixel(Vector2(-0.2f, -0.3f), leggingsColor);
         bodySprite_.setPixel(Vector2(-0.1f, -0.3f), leggingsColor);
@@ -350,7 +358,6 @@ namespace crust {
         bodySprite_.setPixel(Vector2(0.1f, -0.3f), leggingsColor);
         bodySprite_.setPixel(Vector2(0.2f, -0.3f), leggingsColor);
         bodySprite_.setPixel(Vector2(0.3f, -0.3f), leggingsColor);
-        bodySprite_.setPixel(Vector2(0.5f, -0.3f), skinColor);
         
         bodySprite_.setPixel(Vector2(-0.3f, -0.4f), leggingsColor);
         bodySprite_.setPixel(Vector2(-0.2f, -0.4f), leggingsColor);
@@ -361,7 +368,7 @@ namespace crust {
         bodySprite_.setPixel(Vector2(-0.2f, -0.5f), bootsColor);
         bodySprite_.setPixel(Vector2(0.2f, -0.5f), bootsColor);
         bodySprite_.setPixel(Vector2(0.3f, -0.5f), bootsColor);
-        
+
         bodySprite_.setPixel(Vector2(-0.3f, -0.6f), bootsColor);
         bodySprite_.setPixel(Vector2(-0.2f, -0.6f), bootsColor);
         bodySprite_.setPixel(Vector2(-0.1f, -0.6f), bootsColor);
