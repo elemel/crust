@@ -167,8 +167,6 @@ namespace crust {
         void handleMouseButtonUpEvent(SDL_Event *event);
         void handleInput();
 
-        void setBlockElementAtPosition(float x, float y, int type);
-
         void step(float dt);
         void handleCollisions();
         

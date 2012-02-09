@@ -9,6 +9,7 @@
 
 namespace crust {
     class Block;
+    class BlockPhysicsComponent;
     
     class BlockRenderComponent : public RenderComponent {
     public:
@@ -32,6 +33,7 @@ namespace crust {
         
     private:
         Block *block_;
+        BlockPhysicsComponent *physicsComponent_;
 
         float red_;
         float green_;

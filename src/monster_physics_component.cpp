@@ -32,12 +32,10 @@ namespace crust {
         world->DestroyBody(mainBody_);
     }
 
-    Vector2 const &MonsterPhysicsComponent::getPosition() const
+    Vector2 MonsterPhysicsComponent::getPosition() const
     {
         b2Vec2 const &position = mainBody_->GetPosition();
-        tempPosition_.x = position.x;
-        tempPosition_.y = position.y;
-        return tempPosition_;
+        return Vector2(position.x, position.y);
     }
 
     float MonsterPhysicsComponent::getAngle() const

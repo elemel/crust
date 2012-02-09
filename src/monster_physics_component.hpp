@@ -15,7 +15,7 @@ namespace crust {
         MonsterPhysicsComponent(Actor *actor, Vector2 const &position);
         ~MonsterPhysicsComponent();
 
-        Vector2 const &getPosition() const;
+        Vector2 getPosition() const;
         float getAngle() const;
 
         float getWheelRadius() const
@@ -43,8 +43,6 @@ namespace crust {
     private:
         Actor *actor_;
 
-        mutable Vector2 tempPosition_;
-        
         float wheelRadius_;
         
         b2Body *mainBody_;

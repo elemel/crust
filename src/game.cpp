@@ -4,6 +4,7 @@
 #include "actor_factory.hpp"
 #include "animation_component.hpp"
 #include "block.hpp"
+#include "block_physics_component.hpp"
 #include "chain.hpp"
 #include "config.hpp"
 #include "control_component.hpp"
@@ -440,19 +441,6 @@ namespace crust {
             controlComponent->setJumpControl(jumpControl);
         }
     }
-
-    void Game::setBlockElementAtPosition(float x, float y, int type)
-    {
-        BlockIterator j = blocks_.end();
-        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (i->findElementNearPosition(x, y)) {
-                j = i;
-            }
-        }
-        if (j != blocks_.end()) {
-            j->setElementAtPosition(x, y, type);
-        }
-    }
     
     void Game::step(float dt)
     {
@@ -468,7 +456,7 @@ namespace crust {
         }
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
             if (&*i != liftedBlock_) {
-                b2Body *body = i->getBody();
+                b2Body *body = static_cast<BlockPhysicsComponent *>(i->getPhysicsComponent())->getBody();
                 if (body->GetType() != b2_staticBody && !body->IsAwake()) {
                     body->SetType(b2_staticBody);
                 }
@@ -482,7 +470,7 @@ namespace crust {
     void Game::removeBlocks(Box2 const &box)
     {
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (box.containsPoint(i->getPosition())) {
+            if (box.containsPoint(i->getPhysicsComponent()->getPosition())) {
                 int j = i - blocks_.begin();
                 blocks_.erase(i);
                 i = blocks_.begin() + j - 1;
@@ -542,17 +530,17 @@ namespace crust {
 
         Block *block = 0;
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (i->containsPoint(point)) {
+            if (static_cast<BlockPhysicsComponent *>(i->getPhysicsComponent())->containsPoint(point)) {
                 block = &*i;
             }
         }
 
         if (block) {
-            b2Body *body = block->getBody();
+            b2Body *body = static_cast<BlockPhysicsComponent *>(block->getPhysicsComponent())->getBody();
 
             b2Vec2 localPointVec2 = body->GetLocalPoint(b2Vec2(point.x, point.y));
             Vector2 localPoint(localPointVec2.x, localPointVec2.y);
-            Polygon2 const &localPolygon = block->getLocalPolygon();
+            Polygon2 const &localPolygon = static_cast<BlockPhysicsComponent *>(block->getPhysicsComponent())->getLocalPolygon();
             Vector2 localCentroid = localPolygon.getCentroid();
             float squaredCentroidDistance = getSquaredDistance(localPoint, localCentroid);
             bool fixedRotation = true;
@@ -584,7 +572,7 @@ namespace crust {
     void Game::releaseBlock()
     {
         if (liftedBlock_) {
-            b2Body *body = liftedBlock_->getBody();
+            b2Body *body = static_cast<BlockPhysicsComponent *>(liftedBlock_->getPhysicsComponent())->getBody();
             bool makeStatic = false;
             b2Vec2 linearVelocity = body->GetLinearVelocityFromWorldPoint(liftJoint_->GetTarget());
             float angularVelocity = body->GetAngularVelocity();
@@ -611,8 +599,8 @@ namespace crust {
     void Game::collapseBlocks(Vector2 const &point, float distance)
     {
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (getSquaredDistance(i->getPosition(), point) < square(distance)) {
-                i->getBody()->SetType(b2_dynamicBody);
+            if (getSquaredDistance(i->getPhysicsComponent()->getPosition(), point) < square(distance)) {
+                static_cast<BlockPhysicsComponent *>(i->getPhysicsComponent())->getBody()->SetType(b2_dynamicBody);
             }
         }
     }

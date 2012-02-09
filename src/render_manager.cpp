@@ -2,6 +2,7 @@
 
 #include "actor.hpp"
 #include "block.hpp"
+#include "block_physics_component.hpp"
 #include "chain.hpp"
 #include "config.hpp"
 #include "control_component.hpp"
@@ -229,7 +230,7 @@ namespace crust {
     {
         Game::BlockVector const &blocks = game_->getBlocks();
         for (Game::ConstBlockIterator i = blocks.begin(); i != blocks.end(); ++i) {
-            Box2 bounds = i->getBounds();
+            Box2 bounds = static_cast<BlockPhysicsComponent const *>(i->getPhysicsComponent())->getBounds();
             if (!bounds.isEmpty()) {
                 float x = bounds.p1.x;
                 float y = bounds.p1.y;
@@ -250,7 +251,7 @@ namespace crust {
     {
         Game::BlockVector const &blocks = game_->getBlocks();
         for (Game::ConstBlockIterator i = blocks.begin(); i != blocks.end(); ++i) {
-            if (intersects(frustum_, i->getBounds())) {
+            if (intersects(frustum_, static_cast<BlockPhysicsComponent const *>(i->getPhysicsComponent())->getBounds())) {
                 i->getRenderComponent()->draw();
             }
         }

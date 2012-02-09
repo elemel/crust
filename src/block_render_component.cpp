@@ -1,12 +1,15 @@
 #include "block_render_component.hpp"
 
 #include "block.hpp"
+#include "block_physics_component.hpp"
 #include "game.hpp"
 #include "grid.hpp"
+#include "wire.hpp"
 
 namespace crust {
     BlockRenderComponent::BlockRenderComponent(Block *block) :
         block_(block),
+        physicsComponent_(wire(block->getPhysicsComponent())),
 
         red_(1.0f),
         green_(1.0f),
@@ -30,8 +33,8 @@ namespace crust {
     {
         updateDrawVertices();
         
-        b2Vec2 position = block_->getBody()->GetPosition();
-        float angle = block_->getBody()->GetAngle();
+        Vector2 position = physicsComponent_->getPosition();
+        float angle = physicsComponent_->getAngle();
         glPushAttrib(GL_CURRENT_BIT);
         glPushMatrix();
         glTranslatef(position.x, position.y, 0.0f);
@@ -93,7 +96,7 @@ namespace crust {
     
     void BlockRenderComponent::updateQuadDrawVertices() const
     {
-        Grid<unsigned char> const &grid = block_->getGrid();
+        Grid<unsigned char> const &grid = physicsComponent_->getGrid();
 
         quadDrawVertices_.clear();
         for (int y = 0; y < grid.getHeight(); ++y) {
@@ -130,7 +133,7 @@ namespace crust {
     
     void BlockRenderComponent::updateLineDrawVertices() const
     {
-        Grid<unsigned char> const &grid = block_->getGrid();
+        Grid<unsigned char> const &grid = physicsComponent_->getGrid();
         lineDrawVertices_.clear();
         
         DrawVertex vertex;
