@@ -64,7 +64,6 @@ namespace crust {
         }
         
     private:
-        Game *game_;
         Polygon2 localPolygon_;
 
         Grid<unsigned char> grid_;

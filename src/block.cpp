@@ -10,7 +10,7 @@
 
 namespace crust {
     Block::Block(Game *game, Polygon2 const &polygon) :
-        game_(game),
+        Actor(game),
         body_(0),
         red_(1.0f),
         green_(1.0f),

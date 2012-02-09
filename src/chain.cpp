@@ -4,7 +4,7 @@
 
 namespace crust {
     Chain::Chain(Game *game, Vector2 const &position, int linkCount) :
-        game_(game),
+        Actor(game),
         ropeJoint_(0)
     {
         for (int i = 0; i < linkCount; ++i) {

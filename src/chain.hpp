@@ -19,7 +19,6 @@ namespace crust {
         void draw() const;
 
     private:
-        Game *game_;
         std::vector<b2Body *> bodies_;
         b2RopeJoint *ropeJoint_;
     };

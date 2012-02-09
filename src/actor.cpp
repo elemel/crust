@@ -1,4 +1,4 @@
-#include "monster.hpp"
+#include "actor.hpp"
 
 #include "animation_component.hpp"
 #include "control_component.hpp"
@@ -6,10 +6,10 @@
 #include "render_component.hpp"
 
 namespace crust {
-    Monster::Monster(Game *game) :
+    Actor::Actor(Game *game) :
         game_(game)
     { }
 
-    Monster::~Monster()
+    Actor::~Actor()
     { }
 }
