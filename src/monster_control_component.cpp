@@ -3,12 +3,12 @@
 #include "game.hpp"
 #include "monster.hpp"
 #include "monster_physics_component.hpp"
+#include "wire.hpp"
 
 namespace crust {
-    MonsterControlComponent::MonsterControlComponent(Monster *monster,
-                                                     MonsterPhysicsComponent *physicsComponent) :
+    MonsterControlComponent::MonsterControlComponent(Monster *monster) :
         monster_(monster),
-        physicsComponent_(physicsComponent),
+        physicsComponent_(wire(monster->getPhysicsComponent())),
 
         maxVelocity_(5.0f),
         jumpDuration_(0.2f),

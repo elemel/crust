@@ -6,8 +6,9 @@ namespace crust {
     public:
         virtual ~PhysicsComponent()
         { }
-        
-    private:
+
+        virtual Vector2 const &getPosition() const = 0;
+        virtual float getAngle() const = 0;
     };
 }
 

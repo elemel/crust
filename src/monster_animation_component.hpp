@@ -11,10 +11,7 @@ namespace crust {
 
     class MonsterAnimationComponent : public AnimationComponent {
     public:
-        MonsterAnimationComponent(Monster *monster,
-                                  MonsterPhysicsComponent *physicsComponent,
-                                  MonsterControlComponent *controlComponent,
-                                  MonsterRenderComponent *renderComponent);
+        MonsterAnimationComponent(Monster *monster);
 
         void step(float dt);
         

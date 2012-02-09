@@ -1,20 +1,31 @@
 #include "monster_render_component.hpp"
 
+#include "monster.hpp"
+#include "monster_physics_component.hpp"
 #include "sprite.hpp"
+#include "wire.hpp"
+
+#include <SDL/SDL_opengl.h>
 
 namespace crust {
     MonsterRenderComponent::MonsterRenderComponent(Monster *monster) :
-        monster_(monster)
+        monster_(monster),
+        physicsComponent_(wire(monster->getPhysicsComponent()))
     {
         initSprites();
     }
 
     void MonsterRenderComponent::draw() const
     {
+        glPushMatrix();
+        Vector2 const &position = physicsComponent_->getPosition();
+        float angle = physicsComponent_->getAngle();
+        glTranslatef(position.x, position.y, 0.0f);
+        glRotatef((180.0f / M_PI) * angle, 0.0f, 0.0f, 1.0f);
         trunkSprite_->draw();
         headSprite_->draw();
+        glPopMatrix();
     }
-
     
     void MonsterRenderComponent::initSprites()
     {

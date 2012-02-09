@@ -6,8 +6,8 @@ namespace crust {
     public:
         virtual ~AnimationComponent()
         { }
-        
-    private:
+
+        virtual void step(float dt) = 0;
     };
 }
 

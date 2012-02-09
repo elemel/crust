@@ -1,14 +1,15 @@
 #include "game.hpp"
 
+#include "animation_component.hpp"
 #include "block.hpp"
 #include "chain.hpp"
 #include "config.hpp"
+#include "control_component.hpp"
 #include "dungeon_generator.hpp"
 #include "error.hpp"
 #include "geometry.hpp"
 #include "monster.hpp"
-#include "monster_animation_component.hpp"
-#include "monster_control_component.hpp"
+#include "physics_component.hpp"
 #include "physics_draw.hpp"
 #include "render_manager.hpp"
 
@@ -261,7 +262,7 @@ namespace crust {
     void Game::updateCamera()
     {
         if (!monsters_.empty() && liftedBlock_ == 0) {
-            Vector2 position = monsters_.front().getPosition();
+            Vector2 position = monsters_.front().getPhysicsComponent()->getPosition();
             renderManager_->setCameraPosition(position);
         }
     }
@@ -437,7 +438,7 @@ namespace crust {
             bool rightControl = bool(state[SDL_SCANCODE_D]);
             bool jumpControl = bool(state[SDL_SCANCODE_SPACE]);
 
-            MonsterControlComponent *controlComponent = monsters_.front().getControlComponent();
+            ControlComponent *controlComponent = monsters_.front().getControlComponent();
             controlComponent->setLeftControl(leftControl);
             controlComponent->setRightControl(rightControl);
             controlComponent->setJumpControl(jumpControl);
@@ -521,7 +522,7 @@ namespace crust {
     void Game::digBlock(Vector2 const &point)
     {
         if (!monsters_.empty()) {
-            Vector2 p1 = monsters_.front().getPosition();
+            Vector2 p1 = monsters_.front().getPhysicsComponent()->getPosition();
             Vector2 p2 = p1 + clampLength(point - p1, 1.5f);
             DigCallback callback;
             physicsWorld_->RayCast(&callback, b2Vec2(p1.x, p1.y),

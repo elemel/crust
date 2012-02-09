@@ -7,7 +7,7 @@ namespace crust {
         virtual ~RenderComponent()
         { }
 
-    private:
+        virtual void draw() const = 0;
     };
 }
 

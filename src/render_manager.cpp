@@ -3,11 +3,12 @@
 #include "block.hpp"
 #include "chain.hpp"
 #include "config.hpp"
+#include "control_component.hpp"
 #include "font.hpp"
 #include "font_reader.hpp"
 #include "game.hpp"
 #include "monster.hpp"
-#include "monster_control_component.hpp"
+#include "render_component.hpp"
 #include "text_renderer.hpp"
 
 #include <fstream>
@@ -259,7 +260,7 @@ namespace crust {
     {
         Game::MonsterVector const &monsters = game_->getMonsters();
         for (Game::ConstMonsterIterator i = monsters.begin(); i != monsters.end(); ++i) {
-            i->draw();
+            i->getRenderComponent()->draw();
         }
     }
 

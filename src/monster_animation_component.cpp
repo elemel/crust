@@ -5,16 +5,14 @@
 #include "monster_physics_component.hpp"
 #include "monster_render_component.hpp"
 #include "sprite.hpp"
+#include "wire.hpp"
 
 namespace crust {
-    MonsterAnimationComponent::MonsterAnimationComponent(Monster *monster,
-                                                         MonsterPhysicsComponent *physicsComponent,
-                                                         MonsterControlComponent *controlComponent,
-                                                         MonsterRenderComponent *renderComponent) :
+    MonsterAnimationComponent::MonsterAnimationComponent(Monster *monster) :
         monster_(monster),
-        physicsComponent_(physicsComponent),
-        controlComponent_(controlComponent),
-        renderComponent_(renderComponent),
+        physicsComponent_(wire(monster->getPhysicsComponent())),
+        controlComponent_(wire(monster->getControlComponent())),
+        renderComponent_(wire(monster->getRenderComponent())),
     
         headDirection_(1),
         trunkDirection_(1)

@@ -2,17 +2,15 @@
 #define CRUST_MONSTER_HPP
 
 #include "actor.hpp"
-#include "geometry.hpp"
 
 #include <memory>
-#include <boost/ptr_container/ptr_array.hpp>
 
 namespace crust {
+    class AnimationComponent;
+    class ControlComponent;
     class Game;
-    class MonsterAnimationComponent;
-    class MonsterControlComponent;
-    class MonsterPhysicsComponent;
-    class MonsterRenderComponent;
+    class PhysicsComponent;
+    class RenderComponent;
     class Vector2;
 
     class Monster : public Actor {
@@ -30,26 +28,42 @@ namespace crust {
             return game_;
         }
 
-        Vector2 getPosition() const;
+        PhysicsComponent *getPhysicsComponent()
+        {
+            return physicsComponent_.get();
+        }
+        
+        PhysicsComponent const *getPhysicsComponent() const
+        {
+            return physicsComponent_.get();
+        }
 
-        void draw() const;
-
-        MonsterControlComponent *getControlComponent()
+        ControlComponent *getControlComponent()
         {
             return controlComponent_.get();
         }
 
-        MonsterControlComponent const *getControlComponent() const
+        ControlComponent const *getControlComponent() const
         {
             return controlComponent_.get();
         }
 
-        MonsterAnimationComponent *getAnimationComponent()
+        RenderComponent *getRenderComponent()
+        {
+            return renderComponent_.get();
+        }
+        
+        RenderComponent const *getRenderComponent() const
+        {
+            return renderComponent_.get();
+        }
+
+        AnimationComponent *getAnimationComponent()
         {
             return animationComponent_.get();
         }
         
-        MonsterAnimationComponent const *getAnimationComponent() const
+        AnimationComponent const *getAnimationComponent() const
         {
             return animationComponent_.get();
         }
@@ -57,10 +71,10 @@ namespace crust {
     private:
         Game *game_;
         
-        std::auto_ptr<MonsterPhysicsComponent> physicsComponent_;
-        std::auto_ptr<MonsterControlComponent> controlComponent_;
-        std::auto_ptr<MonsterRenderComponent> renderComponent_;
-        std::auto_ptr<MonsterAnimationComponent> animationComponent_;
+        std::auto_ptr<PhysicsComponent> physicsComponent_;
+        std::auto_ptr<ControlComponent> controlComponent_;
+        std::auto_ptr<RenderComponent> renderComponent_;
+        std::auto_ptr<AnimationComponent> animationComponent_;
     };
 }
 

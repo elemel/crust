@@ -10,7 +10,7 @@ namespace crust {
     
     class MonsterControlComponent : public ControlComponent {
     public:
-        MonsterControlComponent(Monster *monster, MonsterPhysicsComponent *physicsComponent);
+        MonsterControlComponent(Monster *monster);
 
         bool getLeftControl() const
         {

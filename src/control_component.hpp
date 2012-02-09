@@ -2,12 +2,26 @@
 #define CRUST_CONTROL_COMPONENT_HPP
 
 namespace crust {
+    class Vector2;
+
     class ControlComponent {
     public:
         virtual ~ControlComponent()
         { }
+
+        virtual bool getLeftControl() const = 0;
+        virtual void setLeftControl(bool control) = 0;
+
+        virtual bool getRightControl() const = 0;
+        virtual void setRightControl(bool control) = 0;
         
-    private:
+        virtual bool getJumpControl() const = 0;
+        virtual void setJumpControl(bool control) = 0;
+        
+        virtual Vector2 const &getTargetPosition() const = 0;
+        virtual void setTargetPosition(Vector2 const &position) = 0;
+
+        virtual void step(float dt) = 0;
     };
 }
 
