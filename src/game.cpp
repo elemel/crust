@@ -7,6 +7,7 @@
 #include "error.hpp"
 #include "geometry.hpp"
 #include "monster.hpp"
+#include "monster_control_component.hpp"
 #include "physics_draw.hpp"
 #include "render_manager.hpp"
 
@@ -435,9 +436,10 @@ namespace crust {
             bool rightControl = bool(state[SDL_SCANCODE_D]);
             bool jumpControl = bool(state[SDL_SCANCODE_SPACE]);
 
-            monsters_.front().setLeftControl(leftControl);
-            monsters_.front().setRightControl(rightControl);
-            monsters_.front().setJumpControl(jumpControl);
+            MonsterControlComponent *controlComponent = monsters_.front().getControlComponent();
+            controlComponent->setLeftControl(leftControl);
+            controlComponent->setRightControl(rightControl);
+            controlComponent->setJumpControl(jumpControl);
         }
     }
 
@@ -458,7 +460,7 @@ namespace crust {
     {
         for (MonsterIterator i = monsters_.begin(); i != monsters_.end(); ++i) 
         {
-            i->stepPhysics(dt);
+            i->getControlComponent()->step(dt);
         }
         physicsWorld_->Step(dt, 10, 10);
         handleCollisions();

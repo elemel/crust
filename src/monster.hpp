@@ -9,6 +9,7 @@
 
 namespace crust {
     class Game;
+    class MonsterControlComponent;
     class MonsterPhysicsComponent;
     class MonsterRenderComponent;
     class Vector2;
@@ -40,49 +41,25 @@ namespace crust {
             targetPosition_ = position;
         }
         
-        void stepPhysics(float dt);
         void stepAnimation(float dt);
-
-        void setLeftControl(bool control)
-        {
-            leftControl_ = control;
-        }
-
-        void setRightControl(bool control)
-        {
-            rightControl_ = control;
-        }
-
-        void setJumpControl(bool control)
-        {
-            jumpControl_ = control;
-        }
 
         void draw() const;
 
+        MonsterControlComponent *getControlComponent()
+        {
+            return controlComponent_.get();
+        }
+        
     private:
         Game *game_;
 
         Vector2 targetPosition_;
         
-        float maxVelocity_;
-        float jumpDuration_;
-        float jumpVelocity_;
-        float maxDriftVelocity_;
-        float driftForce_;
-        float maxBoostVelocity_;
-        float boostDuration_;
-        float boostAcceleration_;
-        float jumpTime_;
-
         int headDirection_;
         int bodyDirection_;
         
-        bool leftControl_;
-        bool rightControl_;
-        bool jumpControl_;
-
         std::auto_ptr<MonsterPhysicsComponent> physicsComponent_;
+        std::auto_ptr<MonsterControlComponent> controlComponent_;
         std::auto_ptr<MonsterRenderComponent> renderComponent_;
     };
 }
