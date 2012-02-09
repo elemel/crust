@@ -191,12 +191,6 @@ namespace crust {
             Polygon2 polygon = voronoiDiagram_.getPolygon(i);
             if (contains(paddedBounds, polygon)) {
                 blocks_.push_back(actorFactory_->createBlock(polygon));
-                
-                float brightness = 0.5f + 0.3f * getRandomFloat();
-                float red = 0.3f + 0.1f * getRandomFloat();
-                float green = 0.5f + 0.1f * getRandomFloat();
-                float blue = 0.7f + 0.1f * getRandomFloat();
-                blocks_.back().setColor(brightness * red, brightness * green, brightness * blue);
             }
         }
     }
@@ -474,7 +468,7 @@ namespace crust {
         }
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
             if (&*i != liftedBlock_) {
-                b2Body *body = i->getPhysicsBody();
+                b2Body *body = i->getBody();
                 if (body->GetType() != b2_staticBody && !body->IsAwake()) {
                     body->SetType(b2_staticBody);
                 }
@@ -554,7 +548,7 @@ namespace crust {
         }
 
         if (block) {
-            b2Body *body = block->getPhysicsBody();
+            b2Body *body = block->getBody();
 
             b2Vec2 localPointVec2 = body->GetLocalPoint(b2Vec2(point.x, point.y));
             Vector2 localPoint(localPointVec2.x, localPointVec2.y);
@@ -590,7 +584,7 @@ namespace crust {
     void Game::releaseBlock()
     {
         if (liftedBlock_) {
-            b2Body *body = liftedBlock_->getPhysicsBody();
+            b2Body *body = liftedBlock_->getBody();
             bool makeStatic = false;
             b2Vec2 linearVelocity = body->GetLinearVelocityFromWorldPoint(liftJoint_->GetTarget());
             float angularVelocity = body->GetAngularVelocity();
@@ -618,7 +612,7 @@ namespace crust {
     {
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
             if (getSquaredDistance(i->getPosition(), point) < square(distance)) {
-                i->getPhysicsBody()->SetType(b2_dynamicBody);
+                i->getBody()->SetType(b2_dynamicBody);
             }
         }
     }

@@ -251,7 +251,7 @@ namespace crust {
         Game::BlockVector const &blocks = game_->getBlocks();
         for (Game::ConstBlockIterator i = blocks.begin(); i != blocks.end(); ++i) {
             if (intersects(frustum_, i->getBounds())) {
-                i->draw();
+                i->getRenderComponent()->draw();
             }
         }
     }
