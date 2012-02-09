@@ -11,11 +11,10 @@ namespace crust {
     class Game;
     class PhysicsComponent;
     class RenderComponent;
-    class Vector2;
 
     class Monster : public Actor {
     public:
-        Monster(Game *game, Vector2 const &position);
+        explicit Monster(Game *game);
         ~Monster();
 
         Game *getGame()
@@ -38,6 +37,11 @@ namespace crust {
             return physicsComponent_.get();
         }
 
+        void setPhysicsComponent(std::auto_ptr<PhysicsComponent> component)
+        {
+            physicsComponent_ = component;
+        }
+        
         ControlComponent *getControlComponent()
         {
             return controlComponent_.get();
@@ -46,6 +50,11 @@ namespace crust {
         ControlComponent const *getControlComponent() const
         {
             return controlComponent_.get();
+        }
+
+        void setControlComponent(std::auto_ptr<ControlComponent> component)
+        {
+            controlComponent_ = component;
         }
 
         RenderComponent *getRenderComponent()
@@ -58,6 +67,11 @@ namespace crust {
             return renderComponent_.get();
         }
 
+        void setRenderComponent(std::auto_ptr<RenderComponent> component)
+        {
+            renderComponent_ = component;
+        }
+
         AnimationComponent *getAnimationComponent()
         {
             return animationComponent_.get();
@@ -66,6 +80,11 @@ namespace crust {
         AnimationComponent const *getAnimationComponent() const
         {
             return animationComponent_.get();
+        }
+
+        void setAnimationComponent(std::auto_ptr<AnimationComponent> component)
+        {
+            animationComponent_ = component;
         }
 
     private:

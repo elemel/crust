@@ -3,6 +3,10 @@
 #include "block.hpp"
 #include "chain.hpp"
 #include "monster.hpp"
+#include "monster_animation_component.hpp"
+#include "monster_control_component.hpp"
+#include "monster_physics_component.hpp"
+#include "monster_render_component.hpp"
 
 namespace crust {
     ActorFactory::ActorFactory(Game *game) :
@@ -21,6 +25,11 @@ namespace crust {
 
     std::auto_ptr<Monster> ActorFactory::createMonster(Vector2 const &position)
     {
-        return std::auto_ptr<Monster>(new Monster(game_, position));
+        std::auto_ptr<Monster> monster(new Monster(game_));
+        monster->setPhysicsComponent(std::auto_ptr<PhysicsComponent>(new MonsterPhysicsComponent(monster.get(), position)));
+        monster->setControlComponent(std::auto_ptr<ControlComponent>(new MonsterControlComponent(monster.get())));
+        monster->setRenderComponent(std::auto_ptr<RenderComponent>(new MonsterRenderComponent(monster.get())));
+        monster->setAnimationComponent(std::auto_ptr<AnimationComponent>(new MonsterAnimationComponent(monster.get())));
+        return monster;
     }
 }
