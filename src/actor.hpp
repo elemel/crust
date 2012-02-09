@@ -6,6 +6,8 @@ namespace crust {
     public:
         virtual ~Actor()
         { }
+
+    private:
     };
 }
 

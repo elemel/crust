@@ -2,19 +2,31 @@
 #define CRUST_MONSTER_HPP
 
 #include "actor.hpp"
-#include "sprite.hpp"
+#include "geometry.hpp"
 
+#include <memory>
 #include <boost/ptr_container/ptr_array.hpp>
 #include <Box2D/Box2D.h>
 
 namespace crust {
     class Game;
+    class MonsterRenderComponent;
     class Vector2;
 
     class Monster : public Actor {
     public:
         Monster(Game *game, Vector2 const &position);
         ~Monster();
+
+        Game *getGame()
+        {
+            return game_;
+        }
+
+        Game const *getGame() const
+        {
+            return game_;
+        }
 
         Vector2 getPosition() const;
 
@@ -58,9 +70,6 @@ namespace crust {
         b2Fixture *bottomSensorFixture_;
         b2Fixture *rightSensorFixture_;
 
-        Sprite headSprite_;
-        Sprite bodySprite_;
-
         Vector2 targetPosition_;
         
         float wheelRadius_;
@@ -81,8 +90,9 @@ namespace crust {
         bool rightControl_;
         bool jumpControl_;
 
+        std::auto_ptr<MonsterRenderComponent> renderComponent_;
+        
         void initPhysics(Vector2 const &position);
-        void initSprites();
         
         bool isStanding();
     };

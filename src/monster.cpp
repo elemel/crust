@@ -3,6 +3,8 @@
 #include "debug_draw.hpp"
 #include "game.hpp"
 #include "geometry.hpp"
+#include "monster_render_component.hpp"
+#include "sprite.hpp"
 
 namespace crust {
     Monster::Monster(Game *game, Vector2 const &position) :
@@ -31,10 +33,11 @@ namespace crust {
 
         leftControl_(false),
         rightControl_(false),
-        jumpControl_(false)
+        jumpControl_(false),
+    
+        renderComponent_(new MonsterRenderComponent(this))
     {
         initPhysics(position);
-        initSprites();
     }
 
     Monster::~Monster()
@@ -98,7 +101,7 @@ namespace crust {
         bool bodyTurned = false;
         if (xControl && xControl != bodyDirection_) {
             bodyDirection_ = xControl;
-            bodySprite_.setScale(Vector2(0.1f * float(bodyDirection_), 0.1f));
+            renderComponent_->getBodySprite()->setScale(Vector2(0.1f * float(bodyDirection_), 0.1f));
             bodyTurned = true;
         }
         b2Vec2 localEyePosition = b2Vec2(0.0f, 0.35f);
@@ -115,8 +118,8 @@ namespace crust {
         b2Vec2 eyeToTargetOffset = localTargetPosition - localEyePosition;
         float targetAngle = std::atan2(eyeToTargetOffset.y, eyeToTargetOffset.x);
         float headAngle = 0.5f * float(headDirection_) * targetAngle;
-        headSprite_.setAngle(headAngle);
-        headSprite_.setScale(Vector2(0.1f * float(headDirection_), 0.1f));
+        renderComponent_->getHeadSprite()->setAngle(headAngle);
+        renderComponent_->getHeadSprite()->setScale(Vector2(0.1f * float(headDirection_), 0.1f));
     }
 
     void Monster::draw() const
@@ -126,8 +129,7 @@ namespace crust {
         float angle = body_->GetAngle();
         glTranslatef(position.x, position.y, 0.0f);
         glRotatef((180.0f / M_PI) * angle, 0.0f, 0.0f, 1.0f);
-        bodySprite_.draw();
-        headSprite_.draw();
+        renderComponent_->draw();
         glPopMatrix();
     }
     
@@ -203,180 +205,5 @@ namespace crust {
         rightSensorShape.m_radius = wheelRadius_;
         rightSensorFixture_ = body_->CreateFixture(&rightSensorShape, 0.0f);
         rightSensorFixture_->SetSensor(true);
-    }
-    
-    void Monster::initSprites()
-    {
-        headSprite_.setScale(Vector2(0.1f));
-        bodySprite_.setScale(Vector2(0.1f));
-        
-        Color4 skinColor = parseColor4("#fc9");
-        Color4 eyeColor = parseColor4("#000");
-        Color4 noseColor = parseColor4("#f96");
-        Color4 earColor = parseColor4("#f96");
-        Color4 hairColor = parseColor4("#996");
-        Color4 beardColor = parseColor4("#663");
-        Color4 shirtColor = parseColor4("#6cf");
-        Color4 beltColor = parseColor4("#630");
-        Color4 buckleColor = parseColor4("#fc3");
-        Color4 trouserColor = parseColor4("#069");
-        Color4 bootColor = parseColor4("#960");
-        
-        headSprite_.setPixel(Vector2(-0.2f, 0.2f), skinColor);
-        headSprite_.setPixel(Vector2(-0.1f, 0.2f), skinColor);
-        headSprite_.setPixel(Vector2(0.0f, 0.2f), skinColor);
-        headSprite_.setPixel(Vector2(0.1f, 0.2f), skinColor);
-        headSprite_.setPixel(Vector2(0.2f, 0.2f), skinColor);
-        headSprite_.setPixel(Vector2(0.3f, 0.2f), skinColor);
-        
-        headSprite_.setPixel(Vector2(-0.3f, 0.1f), skinColor);
-        headSprite_.setPixel(Vector2(-0.2f, 0.1f), skinColor);
-        headSprite_.setPixel(Vector2(-0.1f, 0.1f), skinColor);
-        headSprite_.setPixel(Vector2(0.0f, 0.1f), skinColor);
-        headSprite_.setPixel(Vector2(0.1f, 0.1f), skinColor);
-        headSprite_.setPixel(Vector2(0.2f, 0.1f), skinColor);
-        headSprite_.setPixel(Vector2(0.3f, 0.1f), skinColor);
-        
-        headSprite_.setPixel(Vector2(-0.3f, 0.0f), skinColor);
-        headSprite_.setPixel(Vector2(-0.2f, 0.0f), skinColor);
-        headSprite_.setPixel(Vector2(-0.1f, 0.0f), skinColor);
-        headSprite_.setPixel(Vector2(0.0f, 0.0f), skinColor);
-        headSprite_.setPixel(Vector2(0.1f, 0.0f), skinColor);
-        headSprite_.setPixel(Vector2(0.2f, 0.0f), skinColor);
-        headSprite_.setPixel(Vector2(0.3f, 0.0f), skinColor);
-        
-        headSprite_.setPixel(Vector2(-0.2f, -0.1f), skinColor);
-        headSprite_.setPixel(Vector2(-0.1f, -0.1f), skinColor);
-        headSprite_.setPixel(Vector2(0.0f, -0.1f), skinColor);
-        headSprite_.setPixel(Vector2(0.1f, -0.1f), skinColor);
-        headSprite_.setPixel(Vector2(0.2f, -0.1f), skinColor);
-
-        headSprite_.setPixel(Vector2(-0.2f, 0.4f), hairColor);
-        headSprite_.setPixel(Vector2(0.0f, 0.4f), hairColor);
-        headSprite_.setPixel(Vector2(0.2f, 0.4f), hairColor);
-        headSprite_.setPixel(Vector2(-0.3f, 0.3f), hairColor);
-        headSprite_.setPixel(Vector2(-0.2f, 0.3f), hairColor);
-        headSprite_.setPixel(Vector2(-0.1f, 0.3f), hairColor);
-        headSprite_.setPixel(Vector2(0.0f, 0.3f), hairColor);
-        headSprite_.setPixel(Vector2(0.1f, 0.3f), hairColor);
-        headSprite_.setPixel(Vector2(0.2f, 0.3f), hairColor);
-        headSprite_.setPixel(Vector2(-0.3f, 0.2f), hairColor);
-        headSprite_.setPixel(Vector2(-0.2f, 0.2f), hairColor);
-        headSprite_.setPixel(Vector2(-0.2f, 0.1f), hairColor);
-
-        headSprite_.setPixel(Vector2(-0.2f, 0.0f), beardColor);
-        headSprite_.setPixel(Vector2(-0.2f, -0.1f), beardColor);
-        headSprite_.setPixel(Vector2(-0.1f, -0.1f), beardColor);
-        headSprite_.setPixel(Vector2(0.0f, -0.1f), beardColor);
-        headSprite_.setPixel(Vector2(0.1f, -0.1f), beardColor);
-        headSprite_.setPixel(Vector2(0.2f, -0.1f), beardColor);
-        headSprite_.setPixel(Vector2(0.3f, -0.1f), beardColor);
-        headSprite_.setPixel(Vector2(-0.1f, -0.2f), beardColor);
-        headSprite_.setPixel(Vector2(0.1f, -0.2f), beardColor);
-        headSprite_.setPixel(Vector2(0.3f, -0.2f), beardColor);
-
-        headSprite_.setPixel(Vector2(0.0f, 0.1f), eyeColor);
-        headSprite_.setPixel(Vector2(0.2f, 0.1f), eyeColor);
-        
-        headSprite_.setPixel(Vector2(0.1f, 0.1f), noseColor);
-        headSprite_.setPixel(Vector2(0.1f, 0.0f), noseColor);
-        
-        headSprite_.setPixel(Vector2(-0.3f, 0.1f), earColor);
-        headSprite_.setPixel(Vector2(-0.3f, 0.0f), earColor);
-
-        bodySprite_.setPixel(Vector2(-0.1f, 0.4f), skinColor);
-        bodySprite_.setPixel(Vector2(0.0f, 0.4f), skinColor);
-        bodySprite_.setPixel(Vector2(0.1f, 0.4f), skinColor);
-        
-        bodySprite_.setPixel(Vector2(-0.1f, 0.3f), skinColor);
-        bodySprite_.setPixel(Vector2(0.0f, 0.3f), skinColor);
-        bodySprite_.setPixel(Vector2(0.1f, 0.3f), skinColor);
-
-        bodySprite_.setPixel(Vector2(-0.4f, 0.2f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.3f, 0.2f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.2f, 0.2f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.1f, 0.2f), skinColor);
-        bodySprite_.setPixel(Vector2(0.0f, 0.2f), skinColor);
-        bodySprite_.setPixel(Vector2(0.1f, 0.2f), skinColor);
-        bodySprite_.setPixel(Vector2(0.2f, 0.2f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.3f, 0.2f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.4f, 0.2f), shirtColor);
-        
-        bodySprite_.setPixel(Vector2(-0.5f, 0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.4f, 0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.3f, 0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.2f, 0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.1f, 0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.0f, 0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.1f, 0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.2f, 0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.3f, 0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.4f, 0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.5f, 0.1f), shirtColor);
-        
-        bodySprite_.setPixel(Vector2(-0.5f, 0.0f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.3f, 0.0f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.2f, 0.0f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.1f, 0.0f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.0f, 0.0f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.1f, 0.0f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.2f, 0.0f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.3f, 0.0f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.5f, 0.0f), shirtColor);
-        
-        bodySprite_.setPixel(Vector2(-0.5f, -0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.3f, -0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.2f, -0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(-0.1f, -0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.0f, -0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.1f, -0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.2f, -0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.3f, -0.1f), shirtColor);
-        bodySprite_.setPixel(Vector2(0.5f, -0.1f), shirtColor);
-        
-        bodySprite_.setPixel(Vector2(-0.3f, -0.2f), beltColor);
-        bodySprite_.setPixel(Vector2(-0.2f, -0.2f), beltColor);
-        bodySprite_.setPixel(Vector2(-0.1f, -0.2f), beltColor);
-        bodySprite_.setPixel(Vector2(0.0f, -0.2f), beltColor);
-        bodySprite_.setPixel(Vector2(0.1f, -0.2f), beltColor);
-        bodySprite_.setPixel(Vector2(0.2f, -0.2f), beltColor);
-        bodySprite_.setPixel(Vector2(0.3f, -0.2f), beltColor);
-
-        bodySprite_.setPixel(Vector2(0.0f, -0.2f), buckleColor);
-        bodySprite_.setPixel(Vector2(0.1f, -0.2f), buckleColor);
-
-        bodySprite_.setPixel(Vector2(-0.5f, -0.2f), skinColor);
-        bodySprite_.setPixel(Vector2(-0.5f, -0.3f), skinColor);
-
-        bodySprite_.setPixel(Vector2(0.5f, -0.2f), skinColor);
-        bodySprite_.setPixel(Vector2(0.5f, -0.3f), skinColor);
-
-        bodySprite_.setPixel(Vector2(-0.3f, -0.3f), trouserColor);
-        bodySprite_.setPixel(Vector2(-0.2f, -0.3f), trouserColor);
-        bodySprite_.setPixel(Vector2(-0.1f, -0.3f), trouserColor);
-        bodySprite_.setPixel(Vector2(0.0f, -0.3f), trouserColor);
-        bodySprite_.setPixel(Vector2(0.1f, -0.3f), trouserColor);
-        bodySprite_.setPixel(Vector2(0.2f, -0.3f), trouserColor);
-        bodySprite_.setPixel(Vector2(0.3f, -0.3f), trouserColor);
-        
-        bodySprite_.setPixel(Vector2(-0.3f, -0.4f), trouserColor);
-        bodySprite_.setPixel(Vector2(-0.2f, -0.4f), trouserColor);
-        bodySprite_.setPixel(Vector2(0.2f, -0.4f), trouserColor);
-        bodySprite_.setPixel(Vector2(0.3f, -0.4f), trouserColor);
-        
-        bodySprite_.setPixel(Vector2(-0.3f, -0.5f), bootColor);
-        bodySprite_.setPixel(Vector2(-0.2f, -0.5f), bootColor);
-        bodySprite_.setPixel(Vector2(0.2f, -0.5f), bootColor);
-        bodySprite_.setPixel(Vector2(0.3f, -0.5f), bootColor);
-
-        bodySprite_.setPixel(Vector2(-0.3f, -0.6f), bootColor);
-        bodySprite_.setPixel(Vector2(-0.2f, -0.6f), bootColor);
-        bodySprite_.setPixel(Vector2(-0.1f, -0.6f), bootColor);
-        bodySprite_.setPixel(Vector2(0.2f, -0.6f), bootColor);
-        bodySprite_.setPixel(Vector2(0.3f, -0.6f), bootColor);
-        bodySprite_.setPixel(Vector2(0.4f, -0.6f), bootColor);
-        
-        headSprite_.setPosition(Vector2(0.0f, 0.25f));
-        bodySprite_.setPosition(Vector2(0.0f, -0.15f));
     }
 }
