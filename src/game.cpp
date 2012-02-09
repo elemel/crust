@@ -414,7 +414,7 @@ namespace crust {
         Uint8 buttons = SDL_GetMouseState(&x, &y);
         if (!monsters_.empty()) {
             Vector2 targetPosition = renderManager_->getWorldPosition(Vector2(float(x), float(y)));
-            monsters_.front().setTargetPosition(targetPosition);
+            monsters_.front().getControlComponent()->setTargetPosition(targetPosition);
             if (liftedBlock_) {
                 liftJoint_->SetTarget(b2Vec2(targetPosition.x, targetPosition.y));
             }

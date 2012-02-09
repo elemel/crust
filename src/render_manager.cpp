@@ -7,6 +7,7 @@
 #include "font_reader.hpp"
 #include "game.hpp"
 #include "monster.hpp"
+#include "monster_control_component.hpp"
 #include "text_renderer.hpp"
 
 #include <fstream>
@@ -147,7 +148,7 @@ namespace crust {
             GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
             glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse);
             glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
-            Vector2 const &targetPosition = monsters.front().getTargetPosition();
+            Vector2 const &targetPosition = monsters.front().getControlComponent()->getTargetPosition();
             GLfloat position[] = { targetPosition.x, targetPosition.y, 1.0f, 1.0f };
             glLightfv(GL_LIGHT2, GL_POSITION, position);
             glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1.0f);

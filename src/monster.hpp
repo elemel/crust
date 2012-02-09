@@ -31,16 +31,6 @@ namespace crust {
 
         Vector2 getPosition() const;
 
-        Vector2 const &getTargetPosition() const
-        {
-            return targetPosition_;
-        }
-
-        void setTargetPosition(Vector2 const &position)
-        {
-            targetPosition_ = position;
-        }
-        
         void stepAnimation(float dt);
 
         void draw() const;
@@ -49,11 +39,14 @@ namespace crust {
         {
             return controlComponent_.get();
         }
-        
+
+        MonsterControlComponent const *getControlComponent() const
+        {
+            return controlComponent_.get();
+        }
+
     private:
         Game *game_;
-
-        Vector2 targetPosition_;
         
         int headDirection_;
         int bodyDirection_;

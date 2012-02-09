@@ -2,6 +2,7 @@
 #define CRUST_MONSTER_CONTROL_COMPONENT_HPP
 
 #include "control_component.hpp"
+#include "geometry.hpp"
 
 namespace crust {
     class Monster;
@@ -41,6 +42,16 @@ namespace crust {
             jumpControl_ = control;
         }
 
+        Vector2 const &getTargetPosition() const
+        {
+            return targetPosition_;
+        }
+        
+        void setTargetPosition(Vector2 const &position)
+        {
+            targetPosition_ = position;
+        }
+
         void step(float dt);
 
     private:
@@ -60,6 +71,8 @@ namespace crust {
         bool leftControl_;
         bool rightControl_;
         bool jumpControl_;
+        
+        Vector2 targetPosition_;
     };
 }
 

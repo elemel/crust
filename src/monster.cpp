@@ -38,8 +38,9 @@ namespace crust {
             renderComponent_->getBodySprite()->setScale(Vector2(0.1f * float(bodyDirection_), 0.1f));
             bodyTurned = true;
         }
+        Vector2 const &targetPosition = controlComponent_->getTargetPosition();
         b2Vec2 localEyePosition = b2Vec2(0.0f, 0.35f);
-        b2Vec2 localTargetPosition = physicsComponent_->getMainBody()->GetLocalPoint(b2Vec2(targetPosition_.x, targetPosition_.y));
+        b2Vec2 localTargetPosition = physicsComponent_->getMainBody()->GetLocalPoint(b2Vec2(targetPosition.x, targetPosition.y));
         if (bodyTurned || 0.05f < std::abs(localTargetPosition.x)) {
             headDirection_ = (localTargetPosition.x < 0) ? -1 : 1;
         }
