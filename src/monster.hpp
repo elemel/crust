@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <boost/ptr_container/ptr_array.hpp>
-#include <Box2D/Box2D.h>
 
 namespace crust {
     class Game;
+    class MonsterPhysicsComponent;
     class MonsterRenderComponent;
     class Vector2;
 
@@ -62,17 +62,9 @@ namespace crust {
 
     private:
         Game *game_;
-        b2Body *body_;
-        b2Body *wheelBody_;
-        b2RevoluteJoint *wheelJoint_;
-        b2Fixture *topSensorFixture_;
-        b2Fixture *leftSensorFixture_;
-        b2Fixture *bottomSensorFixture_;
-        b2Fixture *rightSensorFixture_;
 
         Vector2 targetPosition_;
         
-        float wheelRadius_;
         float maxVelocity_;
         float jumpDuration_;
         float jumpVelocity_;
@@ -90,11 +82,8 @@ namespace crust {
         bool rightControl_;
         bool jumpControl_;
 
+        std::auto_ptr<MonsterPhysicsComponent> physicsComponent_;
         std::auto_ptr<MonsterRenderComponent> renderComponent_;
-        
-        void initPhysics(Vector2 const &position);
-        
-        bool isStanding();
     };
 }
 
