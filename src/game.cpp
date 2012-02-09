@@ -1,5 +1,6 @@
 #include "game.hpp"
 
+#include "actor_factory.hpp"
 #include "animation_component.hpp"
 #include "block.hpp"
 #include "chain.hpp"
@@ -40,6 +41,7 @@ namespace crust {
         liftJoint_(0),
         liftTime_(0.0)
     {
+        actorFactory_.reset(new ActorFactory(this));
         initWindow();
         initContext();
         initPhysics();
@@ -188,7 +190,7 @@ namespace crust {
         for (int i = 0; i < voronoiDiagram_.getPolygonCount(); ++i) {
             Polygon2 polygon = voronoiDiagram_.getPolygon(i);
             if (contains(paddedBounds, polygon)) {
-                blocks_.push_back(new Block(this, polygon));
+                blocks_.push_back(actorFactory_->createBlock(polygon));
                 
                 float brightness = 0.5f + 0.3f * getRandomFloat();
                 float red = 0.3f + 0.1f * getRandomFloat();
@@ -215,7 +217,7 @@ namespace crust {
         monsters_.clear();
         if (dungeonGenerator_.getRoomBoxCount()) {
             Vector2 position = dungeonGenerator_.getRoomBox(0).getCenter();
-            monsters_.push_back(new Monster(this, position));
+            monsters_.push_back(actorFactory_->createMonster(position));
         }
     }
 
@@ -225,7 +227,7 @@ namespace crust {
         if (dungeonGenerator_.getRoomBoxCount()) {
             Box2 roomBox = dungeonGenerator_.getRoomBox(0);
             Vector2 position(roomBox.getCenter().x, roomBox.p2.y);
-            chains_.push_back(new Chain(this, position, 20));
+            chains_.push_back(actorFactory_->createChain(position, 20));
         }
     }
                 

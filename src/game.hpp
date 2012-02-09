@@ -17,6 +17,7 @@
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
+    class ActorFactory;
     class Block;
     class Chain;
     class Config;
@@ -143,6 +144,7 @@ namespace crust {
         DungeonGenerator dungeonGenerator_;
 
         std::auto_ptr<RenderManager> renderManager_;
+        std::auto_ptr<ActorFactory> actorFactory_;
         
         void initWindow();
         void initContext();
