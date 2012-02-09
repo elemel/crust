@@ -8,11 +8,11 @@
 #include <Box2D/Box2D.h>
 
 namespace crust {
-    class Monster;
+    class Actor;
     
     class MonsterPhysicsComponent : public PhysicsComponent {
     public:
-        MonsterPhysicsComponent(Monster *monster, Vector2 const &position);
+        MonsterPhysicsComponent(Actor *actor, Vector2 const &position);
         ~MonsterPhysicsComponent();
 
         Vector2 const &getPosition() const;
@@ -41,7 +41,7 @@ namespace crust {
         bool isStanding() const;
 
     private:
-        Monster *monster_;
+        Actor *actor_;
 
         mutable Vector2 tempPosition_;
         

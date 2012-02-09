@@ -1,5 +1,6 @@
 #include "game.hpp"
 
+#include "actor.hpp"
 #include "actor_factory.hpp"
 #include "animation_component.hpp"
 #include "block.hpp"
@@ -9,7 +10,6 @@
 #include "dungeon_generator.hpp"
 #include "error.hpp"
 #include "geometry.hpp"
-#include "monster.hpp"
 #include "physics_component.hpp"
 #include "physics_draw.hpp"
 #include "render_manager.hpp"

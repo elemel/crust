@@ -1,6 +1,6 @@
 #include "monster_animation_component.hpp"
 
-#include "monster.hpp"
+#include "actor.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
 #include "monster_render_component.hpp"
@@ -8,11 +8,11 @@
 #include "wire.hpp"
 
 namespace crust {
-    MonsterAnimationComponent::MonsterAnimationComponent(Monster *monster) :
-        monster_(monster),
-        physicsComponent_(wire(monster->getPhysicsComponent())),
-        controlComponent_(wire(monster->getControlComponent())),
-        renderComponent_(wire(monster->getRenderComponent())),
+    MonsterAnimationComponent::MonsterAnimationComponent(Actor *actor) :
+        actor_(actor),
+        physicsComponent_(wire(actor->getPhysicsComponent())),
+        controlComponent_(wire(actor->getControlComponent())),
+        renderComponent_(wire(actor->getRenderComponent())),
     
         headDirection_(1),
         trunkDirection_(1)

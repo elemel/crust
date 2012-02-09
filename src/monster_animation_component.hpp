@@ -4,19 +4,19 @@
 #include "animation_component.hpp"
 
 namespace crust {
-    class Monster;
+    class Actor;
     class MonsterControlComponent;
     class MonsterPhysicsComponent;
     class MonsterRenderComponent;
 
     class MonsterAnimationComponent : public AnimationComponent {
     public:
-        MonsterAnimationComponent(Monster *monster);
+        MonsterAnimationComponent(Actor *actor);
 
         void step(float dt);
         
     private:
-        Monster *monster_;
+        Actor *actor_;
         MonsterPhysicsComponent *physicsComponent_;
         MonsterControlComponent *controlComponent_;
         MonsterRenderComponent *renderComponent_;

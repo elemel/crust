@@ -1,5 +1,6 @@
 #include "render_manager.hpp"
 
+#include "actor.hpp"
 #include "block.hpp"
 #include "chain.hpp"
 #include "config.hpp"
@@ -7,7 +8,6 @@
 #include "font.hpp"
 #include "font_reader.hpp"
 #include "game.hpp"
-#include "monster.hpp"
 #include "render_component.hpp"
 #include "text_renderer.hpp"
 

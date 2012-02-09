@@ -17,12 +17,12 @@
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
+    class Actor;
     class ActorFactory;
     class Block;
     class Chain;
     class Config;
     class Font;
-    class Monster;
     class RenderManager;
 
     class Game : public b2ContactListener {
@@ -41,7 +41,7 @@ namespace crust {
         typedef BlockVector::const_iterator ConstBlockIterator;
         typedef std::map<b2Body *, b2Body *> CollisionMap;
         typedef CollisionMap::iterator CollisionIterator;
-        typedef boost::ptr_vector<Monster> MonsterVector;
+        typedef boost::ptr_vector<Actor> MonsterVector;
         typedef MonsterVector::iterator MonsterIterator;
         typedef MonsterVector::const_iterator ConstMonsterIterator;
         typedef boost::ptr_vector<Chain> ChainVector;

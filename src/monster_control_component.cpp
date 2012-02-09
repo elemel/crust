@@ -1,14 +1,14 @@
 #include "monster_control_component.hpp"
 
+#include "actor.hpp"
 #include "game.hpp"
-#include "monster.hpp"
 #include "monster_physics_component.hpp"
 #include "wire.hpp"
 
 namespace crust {
-    MonsterControlComponent::MonsterControlComponent(Monster *monster) :
-        monster_(monster),
-        physicsComponent_(wire(monster->getPhysicsComponent())),
+    MonsterControlComponent::MonsterControlComponent(Actor *actor) :
+        actor_(actor),
+        physicsComponent_(wire(actor->getPhysicsComponent())),
 
         maxVelocity_(5.0f),
         jumpDuration_(0.2f),
@@ -27,8 +27,6 @@ namespace crust {
 
     void MonsterControlComponent::step(float dt)
     {
-        Game *game = monster_->getGame();
-
         bool standing = physicsComponent_->isStanding();
         int xControl = int(rightControl_) - int(leftControl_);
         b2Vec2 velocity = physicsComponent_->getMainBody()->GetLinearVelocity();
@@ -39,18 +37,18 @@ namespace crust {
         
         // Jump.
         if (standing && jumpControl_ &&
-            jumpTime_ + jumpDuration_ < game->getTime())
+            jumpTime_ + jumpDuration_ < actor_->getGame()->getTime())
         {
             b2Vec2 velocity = physicsComponent_->getMainBody()->GetLinearVelocity();
             velocity.y = jumpVelocity_;
             physicsComponent_->getMainBody()->SetLinearVelocity(velocity);
-            jumpTime_ = game->getTime();
+            jumpTime_ = actor_->getGame()->getTime();
         }
         
         // Boost.
         if (!standing && jumpControl_ && 0.0f < velocity.y &&
             velocity.y < maxBoostVelocity_ &&
-            game->getTime() < jumpTime_ + boostDuration_)
+            actor_->getGame()->getTime() < jumpTime_ + boostDuration_)
         {
             velocity.y += boostAcceleration_ * dt;
             physicsComponent_->getMainBody()->SetLinearVelocity(velocity);

@@ -5,12 +5,12 @@
 #include "geometry.hpp"
 
 namespace crust {
-    class Monster;
+    class Actor;
     class MonsterPhysicsComponent;
     
     class MonsterControlComponent : public ControlComponent {
     public:
-        MonsterControlComponent(Monster *monster);
+        explicit MonsterControlComponent(Actor *actor);
 
         bool getLeftControl() const
         {
@@ -55,7 +55,7 @@ namespace crust {
         void step(float dt);
 
     private:
-        Monster *monster_;
+        Actor *actor_;
         MonsterPhysicsComponent *physicsComponent_;
 
         float maxVelocity_;

@@ -6,13 +6,13 @@
 #include <memory>
 
 namespace crust {
-    class Monster;
+    class Actor;
     class MonsterPhysicsComponent;
     class Sprite;
 
     class MonsterRenderComponent : public RenderComponent {
     public:
-        explicit MonsterRenderComponent(Monster *monster);
+        explicit MonsterRenderComponent(Actor *actor);
 
         Sprite *getHeadSprite()
         {
@@ -27,7 +27,7 @@ namespace crust {
         void draw() const;
 
     private:
-        Monster *monster_;
+        Actor *actor_;
         MonsterPhysicsComponent *physicsComponent_;
 
         std::auto_ptr<Sprite> headSprite_;

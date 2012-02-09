@@ -1,12 +1,12 @@
 #include "monster_physics_component.hpp"
 
+#include "actor.hpp"
 #include "game.hpp"
-#include "monster.hpp"
 
 namespace crust {
-    MonsterPhysicsComponent::MonsterPhysicsComponent(Monster *monster,
+    MonsterPhysicsComponent::MonsterPhysicsComponent(Actor *actor,
                                                      Vector2 const &position) :
-        monster_(monster),
+        actor_(actor),
     
         wheelRadius_(0.4f),
 
@@ -25,7 +25,7 @@ namespace crust {
 
     MonsterPhysicsComponent::~MonsterPhysicsComponent()
     {
-        b2World *world = monster_->getGame()->getPhysicsWorld();
+        b2World *world = actor_->getGame()->getPhysicsWorld();
 
         world->DestroyJoint(wheelJoint_);
         world->DestroyBody(wheelBody_);
@@ -47,13 +47,13 @@ namespace crust {
 
     void MonsterPhysicsComponent::initPhysics(Vector2 const &position)
     {
-        b2World *world = monster_->getGame()->getPhysicsWorld();
+        b2World *world = actor_->getGame()->getPhysicsWorld();
 
         b2BodyDef mainBodyDef;
         mainBodyDef.type = b2_dynamicBody;
         mainBodyDef.fixedRotation = true;
         mainBodyDef.position.Set(position.x, position.y);
-        mainBodyDef.userData = static_cast<Actor *>(monster_);
+        mainBodyDef.userData = actor_;
         mainBody_ = world->CreateBody(&mainBodyDef);
         
         b2CircleShape shape;
@@ -63,7 +63,7 @@ namespace crust {
         b2BodyDef wheelBodyDef;
         wheelBodyDef.type = b2_dynamicBody;
         wheelBodyDef.position.Set(position.x, position.y - 0.4f);
-        wheelBodyDef.userData = static_cast<Actor *>(monster_);
+        wheelBodyDef.userData = actor_;
         wheelBody_ = world->CreateBody(&wheelBodyDef);
         
         b2CircleShape wheelShape;
