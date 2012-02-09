@@ -9,6 +9,7 @@
 
 namespace crust {
     class Game;
+    class MonsterAnimationComponent;
     class MonsterControlComponent;
     class MonsterPhysicsComponent;
     class MonsterRenderComponent;
@@ -31,8 +32,6 @@ namespace crust {
 
         Vector2 getPosition() const;
 
-        void stepAnimation(float dt);
-
         void draw() const;
 
         MonsterControlComponent *getControlComponent()
@@ -45,15 +44,23 @@ namespace crust {
             return controlComponent_.get();
         }
 
+        MonsterAnimationComponent *getAnimationComponent()
+        {
+            return animationComponent_.get();
+        }
+        
+        MonsterAnimationComponent const *getAnimationComponent() const
+        {
+            return animationComponent_.get();
+        }
+
     private:
         Game *game_;
-        
-        int headDirection_;
-        int trunkDirection_;
         
         std::auto_ptr<MonsterPhysicsComponent> physicsComponent_;
         std::auto_ptr<MonsterControlComponent> controlComponent_;
         std::auto_ptr<MonsterRenderComponent> renderComponent_;
+        std::auto_ptr<MonsterAnimationComponent> animationComponent_;
     };
 }
 

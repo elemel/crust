@@ -7,6 +7,7 @@
 #include "error.hpp"
 #include "geometry.hpp"
 #include "monster.hpp"
+#include "monster_animation_component.hpp"
 #include "monster_control_component.hpp"
 #include "physics_draw.hpp"
 #include "render_manager.hpp"
@@ -466,7 +467,7 @@ namespace crust {
         handleCollisions();
         for (MonsterIterator i = monsters_.begin(); i != monsters_.end(); ++i) 
         {
-            i->stepAnimation(dt);
+            i->getAnimationComponent()->step(dt);
         }
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
             if (&*i != liftedBlock_) {

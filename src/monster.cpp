@@ -3,6 +3,7 @@
 #include "debug_draw.hpp"
 #include "game.hpp"
 #include "geometry.hpp"
+#include "monster_animation_component.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
 #include "monster_render_component.hpp"
@@ -10,15 +11,16 @@
 
 namespace crust {
     Monster::Monster(Game *game, Vector2 const &position) :
-        game_(game),
-
-        headDirection_(1),
-        trunkDirection_(1),
-    
-        physicsComponent_(new MonsterPhysicsComponent(this, position)),
-        controlComponent_(new MonsterControlComponent(this, physicsComponent_.get())),
-        renderComponent_(new MonsterRenderComponent(this))
-    { }
+        game_(game)
+    {
+        physicsComponent_.reset(new MonsterPhysicsComponent(this, position));
+        controlComponent_.reset(new MonsterControlComponent(this, physicsComponent_.get()));
+        renderComponent_.reset(new MonsterRenderComponent(this));
+        animationComponent_.reset(new MonsterAnimationComponent(this,
+                                                                physicsComponent_.get(),
+                                                                controlComponent_.get(),
+                                                                renderComponent_.get()));
+    }
 
     Monster::~Monster()
     { }
@@ -27,34 +29,6 @@ namespace crust {
     {
         b2Vec2 position = physicsComponent_->getMainBody()->GetPosition();
         return Vector2(position.x, position.y);
-    }
-
-    void Monster::stepAnimation(float dt)
-    {
-        int xControl = int(controlComponent_->getRightControl()) - int(controlComponent_->getLeftControl());
-        bool trunkTurned = false;
-        if (xControl && xControl != trunkDirection_) {
-            trunkDirection_ = xControl;
-            renderComponent_->getTrunkSprite()->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
-            trunkTurned = true;
-        }
-        Vector2 const &targetPosition = controlComponent_->getTargetPosition();
-        b2Vec2 localEyePosition = b2Vec2(0.0f, 0.35f);
-        b2Vec2 localTargetPosition = physicsComponent_->getMainBody()->GetLocalPoint(b2Vec2(targetPosition.x, targetPosition.y));
-        if (trunkTurned || 0.05f < std::abs(localTargetPosition.x)) {
-            headDirection_ = (localTargetPosition.x < 0) ? -1 : 1;
-        }
-        if (trunkDirection_ == -1) {
-            localTargetPosition.x = -localTargetPosition.x;
-        }
-        if (headDirection_ != trunkDirection_) {
-            localTargetPosition.x = -localTargetPosition.x;
-        }
-        b2Vec2 eyeToTargetOffset = localTargetPosition - localEyePosition;
-        float targetAngle = std::atan2(eyeToTargetOffset.y, eyeToTargetOffset.x);
-        float headAngle = 0.5f * float(headDirection_) * targetAngle;
-        renderComponent_->getHeadSprite()->setAngle(headAngle);
-        renderComponent_->getHeadSprite()->setScale(Vector2(0.1f * float(headDirection_), 0.1f));
     }
 
     void Monster::draw() const
