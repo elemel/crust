@@ -7,7 +7,7 @@
 #include "font_reader.hpp"
 #include "game.hpp"
 #include "monster.hpp"
-#include "text_drawer.hpp"
+#include "text_renderer.hpp"
 
 #include <fstream>
 
@@ -55,7 +55,7 @@ namespace crust {
         std::ifstream in("../../../data/font.txt");
         FontReader reader;
         reader.read(&in, font_.get());
-        textDrawer_.reset(new TextDrawer(font_.get()));
+        textRenderer_.reset(new TextRenderer(font_.get()));
     }
     
     void RenderManager::updateFrustum()
@@ -169,24 +169,24 @@ namespace crust {
     {
         int scale = 3;
         glPushMatrix();
-        glTranslatef(0.0f, float(windowHeight_) - float(scale) * textDrawer_->getHeight("X"), 0.0f);
+        glTranslatef(0.0f, float(windowHeight_) - float(scale) * textRenderer_->getHeight("X"), 0.0f);
         glTranslatef(float(scale), -float(scale), 0.0f);
         glScalef(float(scale), float(scale), 1.0);
         switch (game_->getMode()) {
             case Game::DIG_MODE:
-                textDrawer_->draw("DIG");
+                textRenderer_->draw("DIG");
                 break;
 
             case Game::CHAIN_MODE:
-                textDrawer_->draw("CHAIN");
+                textRenderer_->draw("CHAIN");
                 break;
 
             case Game::LIFT_MODE:
-                textDrawer_->draw("LIFT");
+                textRenderer_->draw("LIFT");
                 break;
 
             case Game::COLLAPSE_MODE:
-                textDrawer_->draw("COLLAPSE");
+                textRenderer_->draw("COLLAPSE");
                 break;
 
             default:
@@ -201,7 +201,7 @@ namespace crust {
         glPushMatrix();
         glTranslatef(float(scale), float(scale), 0.0f);
         glScalef(float(scale), float(scale), 1.0);
-        textDrawer_->draw(game_->getFpsText());
+        textRenderer_->draw(game_->getFpsText());
         glPopMatrix();
     }
     

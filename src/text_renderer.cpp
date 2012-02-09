@@ -1,11 +1,11 @@
-#include "text_drawer.hpp"
+#include "text_renderer.hpp"
 
 #include "font.hpp"
 
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
-    void TextDrawer::draw(char const *text)
+    void TextRenderer::draw(char const *text)
     {
         int x = 0;
         int y = 0;
@@ -31,7 +31,7 @@ namespace crust {
         glEnd();
     }
 
-    int TextDrawer::getWidth(char const *text)
+    int TextRenderer::getWidth(char const *text)
     {
         int width = 0;
         for (char const *glyph = text; *glyph; ++glyph) {
@@ -43,7 +43,7 @@ namespace crust {
         return width;
     }
 
-    int TextDrawer::getHeight(char const *text)
+    int TextRenderer::getHeight(char const *text)
     {
         int height = 0;
         for (char const *glyph = text; *glyph; ++glyph) {

@@ -1,12 +1,12 @@
-#ifndef CRUST_TEXT_DRAWER_HPP
-#define CRUST_TEXT_DRAWER_HPP
+#ifndef CRUST_TEXT_RENDERER_HPP
+#define CRUST_TEXT_RENDERER_HPP
 
 namespace crust {
     class Font;
     
-    class TextDrawer {
+    class TextRenderer {
     public:
-        explicit TextDrawer(Font *font) :
+        explicit TextRenderer(Font *font) :
             font_(font)
         { }
 

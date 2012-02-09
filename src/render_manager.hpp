@@ -8,7 +8,7 @@
 namespace crust {
     class Font;
     class Game;
-    class TextDrawer;
+    class TextRenderer;
 
     class RenderManager {
     public:
@@ -54,7 +54,7 @@ namespace crust {
         bool lightingEnabled_;
 
         std::auto_ptr<Font> font_;
-        std::auto_ptr<TextDrawer> textDrawer_;
+        std::auto_ptr<TextRenderer> textRenderer_;
 
         void initFont();
 
