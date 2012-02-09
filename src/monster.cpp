@@ -13,7 +13,7 @@ namespace crust {
         game_(game),
 
         headDirection_(1),
-        bodyDirection_(1),
+        trunkDirection_(1),
     
         physicsComponent_(new MonsterPhysicsComponent(this, position)),
         controlComponent_(new MonsterControlComponent(this, physicsComponent_.get())),
@@ -32,22 +32,22 @@ namespace crust {
     void Monster::stepAnimation(float dt)
     {
         int xControl = int(controlComponent_->getRightControl()) - int(controlComponent_->getLeftControl());
-        bool bodyTurned = false;
-        if (xControl && xControl != bodyDirection_) {
-            bodyDirection_ = xControl;
-            renderComponent_->getBodySprite()->setScale(Vector2(0.1f * float(bodyDirection_), 0.1f));
-            bodyTurned = true;
+        bool trunkTurned = false;
+        if (xControl && xControl != trunkDirection_) {
+            trunkDirection_ = xControl;
+            renderComponent_->getTrunkSprite()->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
+            trunkTurned = true;
         }
         Vector2 const &targetPosition = controlComponent_->getTargetPosition();
         b2Vec2 localEyePosition = b2Vec2(0.0f, 0.35f);
         b2Vec2 localTargetPosition = physicsComponent_->getMainBody()->GetLocalPoint(b2Vec2(targetPosition.x, targetPosition.y));
-        if (bodyTurned || 0.05f < std::abs(localTargetPosition.x)) {
+        if (trunkTurned || 0.05f < std::abs(localTargetPosition.x)) {
             headDirection_ = (localTargetPosition.x < 0) ? -1 : 1;
         }
-        if (bodyDirection_ == -1) {
+        if (trunkDirection_ == -1) {
             localTargetPosition.x = -localTargetPosition.x;
         }
-        if (headDirection_ != bodyDirection_) {
+        if (headDirection_ != trunkDirection_) {
             localTargetPosition.x = -localTargetPosition.x;
         }
         b2Vec2 eyeToTargetOffset = localTargetPosition - localEyePosition;

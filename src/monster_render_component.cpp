@@ -11,7 +11,7 @@ namespace crust {
 
     void MonsterRenderComponent::draw() const
     {
-        bodySprite_->draw();
+        trunkSprite_->draw();
         headSprite_->draw();
     }
 
@@ -19,10 +19,10 @@ namespace crust {
     void MonsterRenderComponent::initSprites()
     {
         headSprite_.reset(new Sprite);
-        bodySprite_.reset(new Sprite);
+        trunkSprite_.reset(new Sprite);
 
         headSprite_->setScale(Vector2(0.1f));
-        bodySprite_->setScale(Vector2(0.1f));
+        trunkSprite_->setScale(Vector2(0.1f));
         
         Color4 skinColor = parseColor4("#fc9");
         Color4 eyeColor = parseColor4("#000");
@@ -98,99 +98,99 @@ namespace crust {
         headSprite_->setPixel(Vector2(-0.3f, 0.1f), earColor);
         headSprite_->setPixel(Vector2(-0.3f, 0.0f), earColor);
         
-        bodySprite_->setPixel(Vector2(-0.1f, 0.4f), skinColor);
-        bodySprite_->setPixel(Vector2(0.0f, 0.4f), skinColor);
-        bodySprite_->setPixel(Vector2(0.1f, 0.4f), skinColor);
+        trunkSprite_->setPixel(Vector2(-0.1f, 0.4f), skinColor);
+        trunkSprite_->setPixel(Vector2(0.0f, 0.4f), skinColor);
+        trunkSprite_->setPixel(Vector2(0.1f, 0.4f), skinColor);
         
-        bodySprite_->setPixel(Vector2(-0.1f, 0.3f), skinColor);
-        bodySprite_->setPixel(Vector2(0.0f, 0.3f), skinColor);
-        bodySprite_->setPixel(Vector2(0.1f, 0.3f), skinColor);
+        trunkSprite_->setPixel(Vector2(-0.1f, 0.3f), skinColor);
+        trunkSprite_->setPixel(Vector2(0.0f, 0.3f), skinColor);
+        trunkSprite_->setPixel(Vector2(0.1f, 0.3f), skinColor);
         
-        bodySprite_->setPixel(Vector2(-0.4f, 0.2f), shirtColor);
-        bodySprite_->setPixel(Vector2(-0.3f, 0.2f), shirtColor);
-        bodySprite_->setPixel(Vector2(-0.2f, 0.2f), shirtColor);
-        bodySprite_->setPixel(Vector2(-0.1f, 0.2f), skinColor);
-        bodySprite_->setPixel(Vector2(0.0f, 0.2f), skinColor);
-        bodySprite_->setPixel(Vector2(0.1f, 0.2f), skinColor);
-        bodySprite_->setPixel(Vector2(0.2f, 0.2f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.3f, 0.2f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.4f, 0.2f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.4f, 0.2f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.3f, 0.2f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.2f, 0.2f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.1f, 0.2f), skinColor);
+        trunkSprite_->setPixel(Vector2(0.0f, 0.2f), skinColor);
+        trunkSprite_->setPixel(Vector2(0.1f, 0.2f), skinColor);
+        trunkSprite_->setPixel(Vector2(0.2f, 0.2f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.3f, 0.2f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.4f, 0.2f), shirtColor);
         
-        bodySprite_->setPixel(Vector2(-0.5f, 0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(-0.4f, 0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(-0.3f, 0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(-0.2f, 0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(-0.1f, 0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.0f, 0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.1f, 0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.2f, 0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.3f, 0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.4f, 0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.5f, 0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.5f, 0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.4f, 0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.3f, 0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.2f, 0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.1f, 0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.0f, 0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.1f, 0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.2f, 0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.3f, 0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.4f, 0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.5f, 0.1f), shirtColor);
         
-        bodySprite_->setPixel(Vector2(-0.5f, 0.0f), shirtColor);
-        bodySprite_->setPixel(Vector2(-0.3f, 0.0f), shirtColor);
-        bodySprite_->setPixel(Vector2(-0.2f, 0.0f), shirtColor);
-        bodySprite_->setPixel(Vector2(-0.1f, 0.0f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.0f, 0.0f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.1f, 0.0f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.2f, 0.0f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.3f, 0.0f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.5f, 0.0f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.5f, 0.0f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.3f, 0.0f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.2f, 0.0f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.1f, 0.0f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.0f, 0.0f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.1f, 0.0f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.2f, 0.0f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.3f, 0.0f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.5f, 0.0f), shirtColor);
         
-        bodySprite_->setPixel(Vector2(-0.5f, -0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(-0.3f, -0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(-0.2f, -0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(-0.1f, -0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.0f, -0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.1f, -0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.2f, -0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.3f, -0.1f), shirtColor);
-        bodySprite_->setPixel(Vector2(0.5f, -0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.5f, -0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.3f, -0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.2f, -0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(-0.1f, -0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.0f, -0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.1f, -0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.2f, -0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.3f, -0.1f), shirtColor);
+        trunkSprite_->setPixel(Vector2(0.5f, -0.1f), shirtColor);
         
-        bodySprite_->setPixel(Vector2(-0.3f, -0.2f), beltColor);
-        bodySprite_->setPixel(Vector2(-0.2f, -0.2f), beltColor);
-        bodySprite_->setPixel(Vector2(-0.1f, -0.2f), beltColor);
-        bodySprite_->setPixel(Vector2(0.0f, -0.2f), beltColor);
-        bodySprite_->setPixel(Vector2(0.1f, -0.2f), beltColor);
-        bodySprite_->setPixel(Vector2(0.2f, -0.2f), beltColor);
-        bodySprite_->setPixel(Vector2(0.3f, -0.2f), beltColor);
+        trunkSprite_->setPixel(Vector2(-0.3f, -0.2f), beltColor);
+        trunkSprite_->setPixel(Vector2(-0.2f, -0.2f), beltColor);
+        trunkSprite_->setPixel(Vector2(-0.1f, -0.2f), beltColor);
+        trunkSprite_->setPixel(Vector2(0.0f, -0.2f), beltColor);
+        trunkSprite_->setPixel(Vector2(0.1f, -0.2f), beltColor);
+        trunkSprite_->setPixel(Vector2(0.2f, -0.2f), beltColor);
+        trunkSprite_->setPixel(Vector2(0.3f, -0.2f), beltColor);
         
-        bodySprite_->setPixel(Vector2(0.0f, -0.2f), buckleColor);
-        bodySprite_->setPixel(Vector2(0.1f, -0.2f), buckleColor);
+        trunkSprite_->setPixel(Vector2(0.0f, -0.2f), buckleColor);
+        trunkSprite_->setPixel(Vector2(0.1f, -0.2f), buckleColor);
         
-        bodySprite_->setPixel(Vector2(-0.5f, -0.2f), skinColor);
-        bodySprite_->setPixel(Vector2(-0.5f, -0.3f), skinColor);
+        trunkSprite_->setPixel(Vector2(-0.5f, -0.2f), skinColor);
+        trunkSprite_->setPixel(Vector2(-0.5f, -0.3f), skinColor);
         
-        bodySprite_->setPixel(Vector2(0.5f, -0.2f), skinColor);
-        bodySprite_->setPixel(Vector2(0.5f, -0.3f), skinColor);
+        trunkSprite_->setPixel(Vector2(0.5f, -0.2f), skinColor);
+        trunkSprite_->setPixel(Vector2(0.5f, -0.3f), skinColor);
         
-        bodySprite_->setPixel(Vector2(-0.3f, -0.3f), trouserColor);
-        bodySprite_->setPixel(Vector2(-0.2f, -0.3f), trouserColor);
-        bodySprite_->setPixel(Vector2(-0.1f, -0.3f), trouserColor);
-        bodySprite_->setPixel(Vector2(0.0f, -0.3f), trouserColor);
-        bodySprite_->setPixel(Vector2(0.1f, -0.3f), trouserColor);
-        bodySprite_->setPixel(Vector2(0.2f, -0.3f), trouserColor);
-        bodySprite_->setPixel(Vector2(0.3f, -0.3f), trouserColor);
+        trunkSprite_->setPixel(Vector2(-0.3f, -0.3f), trouserColor);
+        trunkSprite_->setPixel(Vector2(-0.2f, -0.3f), trouserColor);
+        trunkSprite_->setPixel(Vector2(-0.1f, -0.3f), trouserColor);
+        trunkSprite_->setPixel(Vector2(0.0f, -0.3f), trouserColor);
+        trunkSprite_->setPixel(Vector2(0.1f, -0.3f), trouserColor);
+        trunkSprite_->setPixel(Vector2(0.2f, -0.3f), trouserColor);
+        trunkSprite_->setPixel(Vector2(0.3f, -0.3f), trouserColor);
         
-        bodySprite_->setPixel(Vector2(-0.3f, -0.4f), trouserColor);
-        bodySprite_->setPixel(Vector2(-0.2f, -0.4f), trouserColor);
-        bodySprite_->setPixel(Vector2(0.2f, -0.4f), trouserColor);
-        bodySprite_->setPixel(Vector2(0.3f, -0.4f), trouserColor);
+        trunkSprite_->setPixel(Vector2(-0.3f, -0.4f), trouserColor);
+        trunkSprite_->setPixel(Vector2(-0.2f, -0.4f), trouserColor);
+        trunkSprite_->setPixel(Vector2(0.2f, -0.4f), trouserColor);
+        trunkSprite_->setPixel(Vector2(0.3f, -0.4f), trouserColor);
         
-        bodySprite_->setPixel(Vector2(-0.3f, -0.5f), bootColor);
-        bodySprite_->setPixel(Vector2(-0.2f, -0.5f), bootColor);
-        bodySprite_->setPixel(Vector2(0.2f, -0.5f), bootColor);
-        bodySprite_->setPixel(Vector2(0.3f, -0.5f), bootColor);
+        trunkSprite_->setPixel(Vector2(-0.3f, -0.5f), bootColor);
+        trunkSprite_->setPixel(Vector2(-0.2f, -0.5f), bootColor);
+        trunkSprite_->setPixel(Vector2(0.2f, -0.5f), bootColor);
+        trunkSprite_->setPixel(Vector2(0.3f, -0.5f), bootColor);
         
-        bodySprite_->setPixel(Vector2(-0.3f, -0.6f), bootColor);
-        bodySprite_->setPixel(Vector2(-0.2f, -0.6f), bootColor);
-        bodySprite_->setPixel(Vector2(-0.1f, -0.6f), bootColor);
-        bodySprite_->setPixel(Vector2(0.2f, -0.6f), bootColor);
-        bodySprite_->setPixel(Vector2(0.3f, -0.6f), bootColor);
-        bodySprite_->setPixel(Vector2(0.4f, -0.6f), bootColor);
+        trunkSprite_->setPixel(Vector2(-0.3f, -0.6f), bootColor);
+        trunkSprite_->setPixel(Vector2(-0.2f, -0.6f), bootColor);
+        trunkSprite_->setPixel(Vector2(-0.1f, -0.6f), bootColor);
+        trunkSprite_->setPixel(Vector2(0.2f, -0.6f), bootColor);
+        trunkSprite_->setPixel(Vector2(0.3f, -0.6f), bootColor);
+        trunkSprite_->setPixel(Vector2(0.4f, -0.6f), bootColor);
         
         headSprite_->setPosition(Vector2(0.0f, 0.25f));
-        bodySprite_->setPosition(Vector2(0.0f, -0.15f));
+        trunkSprite_->setPosition(Vector2(0.0f, -0.15f));
     }
 }

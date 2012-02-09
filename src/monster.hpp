@@ -49,7 +49,7 @@ namespace crust {
         Game *game_;
         
         int headDirection_;
-        int bodyDirection_;
+        int trunkDirection_;
         
         std::auto_ptr<MonsterPhysicsComponent> physicsComponent_;
         std::auto_ptr<MonsterControlComponent> controlComponent_;

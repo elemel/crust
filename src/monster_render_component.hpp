@@ -18,9 +18,9 @@ namespace crust {
             return headSprite_.get();
         }
 
-        Sprite *getBodySprite()
+        Sprite *getTrunkSprite()
         {
-            return bodySprite_.get();
+            return trunkSprite_.get();
         }
 
         void draw() const;
@@ -29,7 +29,7 @@ namespace crust {
         Monster *monster_;
 
         std::auto_ptr<Sprite> headSprite_;
-        std::auto_ptr<Sprite> bodySprite_;
+        std::auto_ptr<Sprite> trunkSprite_;
 
         void initSprites();
     };
