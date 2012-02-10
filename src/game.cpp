@@ -4,7 +4,6 @@
 #include "actor_factory.hpp"
 #include "animation_component.hpp"
 #include "block_physics_component.hpp"
-#include "chain.hpp"
 #include "config.hpp"
 #include "control_component.hpp"
 #include "dungeon_generator.hpp"

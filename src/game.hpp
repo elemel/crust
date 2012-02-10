@@ -19,7 +19,6 @@
 namespace crust {
     class Actor;
     class ActorFactory;
-    class Chain;
     class Config;
     class Font;
     class RenderManager;
@@ -43,7 +42,7 @@ namespace crust {
         typedef boost::ptr_vector<Actor> MonsterVector;
         typedef MonsterVector::iterator MonsterIterator;
         typedef MonsterVector::const_iterator ConstMonsterIterator;
-        typedef boost::ptr_vector<Chain> ChainVector;
+        typedef boost::ptr_vector<Actor> ChainVector;
         typedef ChainVector::iterator ChainIterator;
         typedef ChainVector::const_iterator ConstChainIterator;
         

@@ -3,7 +3,8 @@
 #include "actor.hpp"
 #include "block_physics_component.hpp"
 #include "block_render_component.hpp"
-#include "chain.hpp"
+#include "chain_physics_component.hpp"
+#include "chain_render_component.hpp"
 #include "monster_animation_component.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
@@ -22,9 +23,12 @@ namespace crust {
         return actor;
     }
 
-    std::auto_ptr<Chain> ActorFactory::createChain(Vector2 const &position, int linkCount)
+    std::auto_ptr<Actor> ActorFactory::createChain(Vector2 const &position, int linkCount)
     {
-        return std::auto_ptr<Chain>(new Chain(game_, position, linkCount));
+        std::auto_ptr<Actor> actor(new Actor(game_));
+        actor->setPhysicsComponent(std::auto_ptr<PhysicsComponent>(new ChainPhysicsComponent(actor.get(), position, linkCount)));
+        actor->setRenderComponent(std::auto_ptr<RenderComponent>(new ChainRenderComponent(actor.get())));
+        return actor;
     }
 
     std::auto_ptr<Actor> ActorFactory::createMonster(Vector2 const &position)

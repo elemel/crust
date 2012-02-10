@@ -2,7 +2,6 @@
 
 #include "actor.hpp"
 #include "block_physics_component.hpp"
-#include "chain.hpp"
 #include "config.hpp"
 #include "control_component.hpp"
 #include "font.hpp"
