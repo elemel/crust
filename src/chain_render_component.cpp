@@ -1,18 +1,21 @@
 #include "chain_render_component.hpp"
 
-#include "chain.hpp"
+#include "actor.hpp"
+#include "chain_physics_component.hpp"
+#include "wire.hpp"
 
 #include <Box2D/Box2D.h>
 #include <SDL/SDL_opengl.h>
 
 namespace crust {    
-    ChainRenderComponent::ChainRenderComponent(Chain *chain) :
-        chain_(chain)
+    ChainRenderComponent::ChainRenderComponent(Actor *actor) :
+        actor_(actor),
+        physicsComponent_(wire(actor->getPhysicsComponent()))
     { }
 
     void ChainRenderComponent::draw() const
     {
-        Chain::BodyVector const &bodies = chain_->getBodies();
+        ChainPhysicsComponent::BodyVector const &bodies = physicsComponent_->getBodies();
 
         for (std::size_t i = 0; i < bodies.size(); ++i) {
             b2Vec2 position = bodies[i]->GetPosition();

@@ -4,15 +4,17 @@
 #include "render_component.hpp"
 
 namespace crust {
-    class Chain;
+    class Actor;
+    class ChainPhysicsComponent;
 
     class ChainRenderComponent : public RenderComponent {
     public:
-        explicit ChainRenderComponent(Chain *chain);
+        explicit ChainRenderComponent(Actor *actor);
         void draw() const;
 
     private:
-        Chain *chain_;
+        Actor *actor_;
+        ChainPhysicsComponent *physicsComponent_;
     };
 }
 
