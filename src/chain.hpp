@@ -12,14 +12,20 @@ namespace crust {
     
     class Chain : public Actor {
     public:
+        typedef std::vector<b2Body *> BodyVector;
+
         Chain(Game *game, Vector2 const &position, int linkCount);
         ~Chain();
 
         Vector2 getPosition() const;
-        void draw() const;
 
+        BodyVector const &getBodies() const
+        {
+            return bodies_;
+        }
+        
     private:
-        std::vector<b2Body *> bodies_;
+        BodyVector bodies_;
         b2RopeJoint *ropeJoint_;
     };
 }

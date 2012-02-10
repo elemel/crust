@@ -1,5 +1,6 @@
 #include "chain.hpp"
 
+#include "chain_render_component.hpp"
 #include "game.hpp"
 
 namespace crust {
@@ -37,6 +38,8 @@ namespace crust {
         ropeJointDef.localAnchorB = (bodies_.size() % 2) ? b2Vec2(0.1f, 0.1f) : b2Vec2(-0.1f, -0.1f);
         ropeJointDef.maxLength = 1.1f * 0.2f * float(bodies_.size() - 2) * M_SQRT2;
         ropeJoint_ = static_cast<b2RopeJoint *>(game_->getPhysicsWorld()->CreateJoint(&ropeJointDef));
+
+        renderComponent_.reset(new ChainRenderComponent(this));
     }
 
     Chain::~Chain()
@@ -52,47 +55,5 @@ namespace crust {
     {
         b2Vec2 position = bodies_.front()->GetPosition();
         return Vector2(position.x, position.y);
-    }
-
-    void Chain::draw() const
-    {
-        for (std::size_t i = 0; i < bodies_.size(); ++i) {
-            b2Vec2 position = bodies_[i]->GetPosition();
-            float angle = bodies_[i]->GetAngle();
-            glPushMatrix();
-            glTranslatef(position.x, position.y, 0.0f);
-            glRotatef(180.0f / M_PI * angle, 0.0f, 0.0f, 1.0f);
-            glColor3ub(255, 255, 255);
-            glBegin(GL_QUADS);
-            glVertex2f(-0.1f, -0.1f);
-            glVertex2f(0.0f, -0.1f);
-            glVertex2f(0.0f, 0.0f);
-            glVertex2f(-0.1f, 0.0f);
-            glVertex2f(0.0f, 0.0f);
-            glVertex2f(0.1f, 0.0f);
-            glVertex2f(0.1f, 0.1f);
-            glVertex2f(0.0f, 0.1f);
-            glEnd();
-            glColor3ub(0, 0, 0);
-            glBegin(GL_LINES);
-            glVertex2f(-0.1f, -0.1f);
-            glVertex2f(0.0f, -0.1f);
-            glVertex2f(0.0f, -0.1f);
-            glVertex2f(0.0f, 0.0f);
-            glVertex2f(0.0f, 0.0f);
-            glVertex2f(-0.1f, 0.0f);
-            glVertex2f(-0.1f, 0.0f);
-            glVertex2f(-0.1f, -0.1f);
-            glVertex2f(0.0f, 0.0f);
-            glVertex2f(0.1f, 0.0f);
-            glVertex2f(0.1f, 0.0f);
-            glVertex2f(0.1f, 0.1f);
-            glVertex2f(0.1f, 0.1f);
-            glVertex2f(0.0f, 0.1f);
-            glVertex2f(0.0f, 0.1f);
-            glVertex2f(0.0f, 0.0f);
-            glEnd();
-            glPopMatrix();
-        }
     }
 }

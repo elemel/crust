@@ -268,7 +268,7 @@ namespace crust {
     {
         Game::ChainVector const &chains = game_->getChains();
         for (Game::ConstChainIterator i = chains.begin(); i != chains.end(); ++i) {
-            i->draw();
+            i->getRenderComponent()->draw();
         }
     }
 }
