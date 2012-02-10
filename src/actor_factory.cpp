@@ -1,7 +1,8 @@
 #include "actor_factory.hpp"
 
 #include "actor.hpp"
-#include "block.hpp"
+#include "block_physics_component.hpp"
+#include "block_render_component.hpp"
 #include "chain.hpp"
 #include "monster_animation_component.hpp"
 #include "monster_control_component.hpp"
@@ -13,9 +14,12 @@ namespace crust {
         game_(game)
     { }
 
-    std::auto_ptr<Block> ActorFactory::createBlock(Polygon2 const &polygon)
+    std::auto_ptr<Actor> ActorFactory::createBlock(Polygon2 const &polygon)
     {
-        return std::auto_ptr<Block>(new Block(game_, polygon));
+        std::auto_ptr<Actor> actor(new Actor(game_));
+        actor->setPhysicsComponent(std::auto_ptr<PhysicsComponent>(new BlockPhysicsComponent(actor.get(), polygon)));
+        actor->setRenderComponent(std::auto_ptr<RenderComponent>(new BlockRenderComponent(actor.get())));
+        return actor;
     }
 
     std::auto_ptr<Chain> ActorFactory::createChain(Vector2 const &position, int linkCount)

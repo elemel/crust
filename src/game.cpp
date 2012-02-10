@@ -3,7 +3,6 @@
 #include "actor.hpp"
 #include "actor_factory.hpp"
 #include "animation_component.hpp"
-#include "block.hpp"
 #include "block_physics_component.hpp"
 #include "chain.hpp"
 #include "config.hpp"
@@ -481,20 +480,21 @@ namespace crust {
     namespace {
         class DigCallback : public b2RayCastCallback {
         public:
-            Block *block;
+            Actor *actor;
 
             DigCallback() :
-                block(0)
+                actor(0)
             { }
 
             float32 ReportFixture(b2Fixture *fixture, b2Vec2 const &point,
                                   b2Vec2 const &normal, float32 fraction)
             {
                 b2Body *body = fixture->GetBody();
-                Actor *actor = static_cast<Actor *>(body->GetUserData());
-                Block *tempBlock = dynamic_cast<Block *>(actor);
-                if (tempBlock) {
-                    block = tempBlock;
+                Actor *tempActor = static_cast<Actor *>(body->GetUserData());
+                if (tempActor && tempActor->getPhysicsComponent() &&
+                    dynamic_cast<BlockPhysicsComponent *>(tempActor->getPhysicsComponent()))
+                {
+                    actor = tempActor;
                     return fraction;
                 } else {
                     return 1.0f;
@@ -511,9 +511,9 @@ namespace crust {
             DigCallback callback;
             physicsWorld_->RayCast(&callback, b2Vec2(p1.x, p1.y),
                                    b2Vec2(p2.x, p2.y));
-            if (callback.block) {
+            if (callback.actor) {
                 for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-                    if (&*i == callback.block) {
+                    if (&*i == callback.actor) {
                         blocks_.erase(i);
                         break;
                     }
@@ -528,19 +528,19 @@ namespace crust {
             return;
         }
 
-        Block *block = 0;
+        Actor *actor = 0;
         for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
             if (static_cast<BlockPhysicsComponent *>(i->getPhysicsComponent())->containsPoint(point)) {
-                block = &*i;
+                actor = &*i;
             }
         }
 
-        if (block) {
-            b2Body *body = static_cast<BlockPhysicsComponent *>(block->getPhysicsComponent())->getBody();
+        if (actor) {
+            b2Body *body = static_cast<BlockPhysicsComponent *>(actor->getPhysicsComponent())->getBody();
 
             b2Vec2 localPointVec2 = body->GetLocalPoint(b2Vec2(point.x, point.y));
             Vector2 localPoint(localPointVec2.x, localPointVec2.y);
-            Polygon2 const &localPolygon = static_cast<BlockPhysicsComponent *>(block->getPhysicsComponent())->getLocalPolygon();
+            Polygon2 const &localPolygon = static_cast<BlockPhysicsComponent *>(actor->getPhysicsComponent())->getLocalPolygon();
             Vector2 localCentroid = localPolygon.getCentroid();
             float squaredCentroidDistance = getSquaredDistance(localPoint, localCentroid);
             bool fixedRotation = true;
@@ -556,7 +556,7 @@ namespace crust {
             }
             body->SetType(b2_dynamicBody);
 
-            liftedBlock_ = block;
+            liftedBlock_ = actor;
 
             b2MouseJointDef liftJointDef;
             liftJointDef.target.Set(point.x, point.y);

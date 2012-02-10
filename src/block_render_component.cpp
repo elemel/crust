@@ -1,15 +1,15 @@
 #include "block_render_component.hpp"
 
-#include "block.hpp"
+#include "actor.hpp"
 #include "block_physics_component.hpp"
 #include "game.hpp"
 #include "grid.hpp"
 #include "wire.hpp"
 
 namespace crust {
-    BlockRenderComponent::BlockRenderComponent(Block *block) :
-        block_(block),
-        physicsComponent_(wire(block->getPhysicsComponent())),
+    BlockRenderComponent::BlockRenderComponent(Actor *actor) :
+        actor_(actor),
+        physicsComponent_(wire(actor->getPhysicsComponent())),
 
         red_(1.0f),
         green_(1.0f),
@@ -21,12 +21,12 @@ namespace crust {
         drawVerticesDirty_(true)
     {
         // float brightness = 0.5f + 0.3f * block->getGame()->getRandomFloat();
-        red_ = 0.3f + 0.1f * block->getGame()->getRandomFloat();
-        green_ = 0.5f + 0.1f * block->getGame()->getRandomFloat();
-        blue_ = 0.7f + 0.1f * block->getGame()->getRandomFloat();
+        red_ = 0.3f + 0.1f * actor->getGame()->getRandomFloat();
+        green_ = 0.5f + 0.1f * actor->getGame()->getRandomFloat();
+        blue_ = 0.7f + 0.1f * actor->getGame()->getRandomFloat();
 
-        normalX_ = -0.05f + 0.1f * block->getGame()->getRandomFloat();
-        normalY_ = -0.05f + 0.1f * block->getGame()->getRandomFloat();
+        normalX_ = -0.05f + 0.1f * actor->getGame()->getRandomFloat();
+        normalY_ = -0.05f + 0.1f * actor->getGame()->getRandomFloat();
     }
     
     void BlockRenderComponent::draw() const
@@ -171,4 +171,3 @@ namespace crust {
         }
     }
 }
-#include "block.hpp"

@@ -1,7 +1,6 @@
 #include "render_manager.hpp"
 
 #include "actor.hpp"
-#include "block.hpp"
 #include "block_physics_component.hpp"
 #include "chain.hpp"
 #include "config.hpp"

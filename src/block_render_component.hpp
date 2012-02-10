@@ -8,7 +8,7 @@
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
-    class Block;
+    class Actor;
     class BlockPhysicsComponent;
     
     class BlockRenderComponent : public RenderComponent {
@@ -27,12 +27,12 @@ namespace crust {
             GLfloat y;
         };
         
-        explicit BlockRenderComponent(Block *block);
+        explicit BlockRenderComponent(Actor *actor);
 
         void draw() const;
         
     private:
-        Block *block_;
+        Actor *actor_;
         BlockPhysicsComponent *physicsComponent_;
 
         float red_;

@@ -19,7 +19,6 @@
 namespace crust {
     class Actor;
     class ActorFactory;
-    class Block;
     class Chain;
     class Config;
     class Font;
@@ -36,7 +35,7 @@ namespace crust {
             MODE_COUNT
         };
 
-        typedef boost::ptr_vector<Block> BlockVector;
+        typedef boost::ptr_vector<Actor> BlockVector;
         typedef BlockVector::iterator BlockIterator;
         typedef BlockVector::const_iterator ConstBlockIterator;
         typedef std::map<b2Body *, b2Body *> CollisionMap;
@@ -81,8 +80,6 @@ namespace crust {
         void BeginContact(b2Contact* contact);
         void EndContact(b2Contact* contact);
 
-        Block *findBlockAtPosition(float x, float y, Block *except);
-
         float getRandomFloat();
         int getRandomInt(int size);
 
@@ -123,7 +120,7 @@ namespace crust {
         BlockVector blocks_;
         bool blockGrowthDone_;
         bool dungeonGenerationDone_;
-        std::vector<Block *> blocksWithNeighbors_;
+        std::vector<Actor *> blocksWithNeighbors_;
         CollisionMap particleToBlockCollisions_;
         MonsterVector monsters_;
         ChainVector chains_;
@@ -135,7 +132,7 @@ namespace crust {
         std::string fpsText_;
         
         Mode mode_;
-        Block *liftedBlock_;
+        Actor *liftedBlock_;
         b2MouseJoint *liftJoint_;
         double liftTime_;
 
