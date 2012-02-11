@@ -4,10 +4,33 @@
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
+    Sprite::Sprite(Vector2 const &position, float angle, float scale) :
+        position_(position),
+        angle_(angle),
+        scale_(scale),
+
+        pixels_(Color4(0, 0)),
+
+        verticesDirty_(false),
+
+        bufferDirty_(false),
+        bufferName_(0),
+        bufferCount_(0)
+    { }
+
+    Sprite::~Sprite()
+    {
+        if (bufferName_) {
+            glDeleteBuffers(1, &bufferName_);
+        }
+    }
+    
     void Sprite::draw() const
     {
         updateVertices();
-        drawVertices();
+        updateBuffer();
+        drawBuffer();
+        // drawVertices();
         // drawDirectMode();
     }
 
@@ -89,6 +112,36 @@ namespace crust {
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_COLOR_ARRAY);
+
+        glPopMatrix();
+    }
+
+    void Sprite::drawBuffer() const
+    {
+        glPushMatrix();
+        glTranslatef(position_.x, position_.y, 0.0f);
+        glRotatef((180.0f / M_PI) * angle_, 0.0f, 0.0f, 1.0f);
+        glScalef(scale_.x, scale_.y, 1.0f);
+        glTranslatef(-0.5f, -0.5f, 0.0f);
+
+        glBindBuffer(GL_ARRAY_BUFFER, bufferName_);
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+
+        unsigned char *null = 0;
+        glColorPointer(3, GL_FLOAT, sizeof(Vertex), null);
+        glNormalPointer(GL_FLOAT, sizeof(Vertex), null + sizeof(GLfloat) * 3);
+        glVertexPointer(2, GL_FLOAT, sizeof(Vertex), null + sizeof(GLfloat) * 6);
+
+        glDrawArrays(GL_QUADS, 0, bufferCount_);
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_COLOR_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         glPopMatrix();
     }
@@ -191,5 +244,26 @@ namespace crust {
         }
 
         verticesDirty_ = false;
+    }
+
+    void Sprite::updateBuffer() const
+    {
+        if (!bufferDirty_) {
+            return;
+        }
+
+        if (bufferName_) {
+            glDeleteBuffers(1, &bufferName_);
+        }
+        glGenBuffers(1, &bufferName_);
+
+        bufferCount_ = GLsizei(vertices_.size());
+        
+        glBindBuffer(GL_ARRAY_BUFFER, bufferName_);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * bufferCount_,
+                     &vertices_[0], GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        
+        bufferDirty_ = false;
     }
 }

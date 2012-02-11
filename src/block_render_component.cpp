@@ -35,12 +35,13 @@ namespace crust {
         
         Vector2 position = physicsComponent_->getPosition();
         float angle = physicsComponent_->getAngle();
-        glPushAttrib(GL_CURRENT_BIT);
+
         glPushMatrix();
         glTranslatef(position.x, position.y, 0.0f);
         glRotatef(angle * 180.0f / M_PI, 0.0f, 0.0f, 1.0f);
         glScalef(0.1f, 0.1f, 1.0f);
         glTranslatef(-0.5f, -0.5f, 0.0f);
+
         glEnableClientState(GL_COLOR_ARRAY);
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
@@ -62,8 +63,8 @@ namespace crust {
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_COLOR_ARRAY);
+
         glPopMatrix();
-        glPopAttrib();
     }
 
     float BlockRenderComponent::getColorOffset(int x, int y, int i) const

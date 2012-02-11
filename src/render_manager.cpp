@@ -73,17 +73,17 @@ namespace crust {
     {
         setWorldProjection();
         if (drawEnabled_) {
-            glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_LIGHTING_BIT);
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glEnable(GL_LIGHTING);
+            // glEnable(GL_BLEND);
+            // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             setLighting();
             drawBlocks();
             drawMonsters();
             drawChains();
-            glPopAttrib();
+            // glDisable(GL_BLEND);
+            glDisable(GL_LIGHTING);
         }
         if (debugDrawEnabled_) {
-            glPushAttrib(GL_CURRENT_BIT);
             glColor3f(0.0f, 1.0f, 0.0f);
             game_->getPhysicsWorld()->DrawDebugData();
             // drawBlockBounds();
@@ -91,14 +91,12 @@ namespace crust {
             // delauneyTriangulation_.draw();
             // glColor3f(1.0f, 0.5f, 0.0f);
             // voronoiDiagram_.draw();
-            glPopAttrib();
         }
     }
     
     void RenderManager::setLighting()
     {
         if (lightingEnabled_) {
-            glEnable(GL_LIGHTING);
             GLfloat ambient[] = { 0.05f, 0.05f, 0.05f, 1.0f };
             glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient);
             glEnable(GL_COLOR_MATERIAL);

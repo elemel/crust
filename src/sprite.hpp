@@ -24,15 +24,10 @@ namespace crust {
         };
 
         explicit Sprite(Vector2 const &position = Vector2(),
-                        float angle = 0.0f, float scale = 1.0f) :
-            position_(position),
-            angle_(angle),
-            scale_(scale),
+                        float angle = 0.0f, float scale = 1.0f);
 
-            pixels_(Color4(0, 0)),
-            verticesDirty_(false)
-        { }
-
+        ~Sprite();
+        
         Vector2 const &getPosition() const
         {
             return position_;
@@ -67,6 +62,7 @@ namespace crust {
         {
             pixels_.setElement(x, y, color);
             verticesDirty_ = true;
+            bufferDirty_ = true;
         }
         
         void draw() const;
@@ -81,9 +77,16 @@ namespace crust {
         mutable bool verticesDirty_;
         mutable std::vector<Vertex> vertices_;
 
+        mutable bool bufferDirty_;
+        mutable GLuint bufferName_;
+        mutable GLsizei bufferCount_;
+
         void drawDirectMode() const;
         void drawVertices() const;
+        void drawBuffer() const;
+
         void updateVertices() const;
+        void updateBuffer() const;
     };
 }
 
