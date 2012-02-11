@@ -9,6 +9,43 @@ namespace crust {
     {
         int x = 0;
         int y = 0;
+
+        float halfLineWidth = 1.0f;
+        glColor3ub(0, 0, 0);
+        glBegin(GL_QUADS);
+        for (char const *glyph = text; *glyph; ++glyph) {
+            if (glyph != text) {
+                x += 1;
+            }
+            int width = font_->getGlyphWidth(*glyph);
+            int height = font_->getGlyphHeight(*glyph);
+            for (int dy = 0; dy < height + 1; ++dy) {
+                for (int dx = 0; dx < width + 1; ++dx) {
+                    bool center = (dx < width && dy < height) && font_->getGlyphPixel(*glyph, dx, dy);
+                    bool left = (dx - 1 >= 0 && dy < height) && font_->getGlyphPixel(*glyph, dx - 1, dy);
+                    bool bottom = (dx < width && dy - 1 >= 0) && font_->getGlyphPixel(*glyph, dx, dy - 1);
+                    if (left != center) {
+                        glVertex2f(float(x + dx) - halfLineWidth, float(y + dy) - halfLineWidth);
+                        glVertex2f(float(x + dx) + halfLineWidth, float(y + dy) - halfLineWidth);
+                        glVertex2f(float(x + dx) + halfLineWidth, float(y + dy + 1) + halfLineWidth);
+                        glVertex2f(float(x + dx) - halfLineWidth, float(y + dy + 1) + halfLineWidth);
+                    }
+                    if (bottom != center) {
+                        glVertex2f(float(x + dx) - halfLineWidth, float(y + dy) - halfLineWidth);
+                        glVertex2f(float(x + dx + 1) + halfLineWidth, float(y + dy) - halfLineWidth);
+                        glVertex2f(float(x + dx + 1) + halfLineWidth, float(y + dy) + halfLineWidth);
+                        glVertex2f(float(x + dx) - halfLineWidth, float(y + dy) + halfLineWidth);
+                    }
+                }
+            }
+            x += width;
+        }
+        glEnd();
+
+        x = 0;
+        y = 0;
+
+        glColor3ub(255, 255, 255);
         glBegin(GL_QUADS);
         for (char const *glyph = text; *glyph; ++glyph) {
             if (glyph != text) {

@@ -45,18 +45,18 @@ namespace crust {
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
         
+        if (!lineDrawVertices_.empty()) {
+            glColorPointer(3, GL_FLOAT, sizeof(DrawVertex), &lineDrawVertices_[0].red);
+            glNormalPointer(GL_FLOAT, sizeof(DrawVertex), &lineDrawVertices_[0].normalX);
+            glVertexPointer(2, GL_FLOAT, sizeof(DrawVertex), &lineDrawVertices_[0].x);
+            glDrawArrays(GL_QUADS, 0, GLsizei(lineDrawVertices_.size()));
+        }
+        
         if (!quadDrawVertices_.empty()) {
             glColorPointer(3, GL_FLOAT, sizeof(DrawVertex), &quadDrawVertices_[0].red);
             glNormalPointer(GL_FLOAT, sizeof(DrawVertex), &quadDrawVertices_[0].normalX);
             glVertexPointer(2, GL_FLOAT, sizeof(DrawVertex), &quadDrawVertices_[0].x);
             glDrawArrays(GL_QUADS, 0, GLsizei(quadDrawVertices_.size()));
-        }
-        
-        if (!lineDrawVertices_.empty()) {
-            glColorPointer(3, GL_FLOAT, sizeof(DrawVertex), &lineDrawVertices_[0].red);
-            glNormalPointer(GL_FLOAT, sizeof(DrawVertex), &lineDrawVertices_[0].normalX);
-            glVertexPointer(2, GL_FLOAT, sizeof(DrawVertex), &lineDrawVertices_[0].x);
-            glDrawArrays(GL_LINES, 0, GLsizei(lineDrawVertices_.size()));
         }
         
         glDisableClientState(GL_VERTEX_ARRAY);
@@ -145,7 +145,8 @@ namespace crust {
         vertex.normalZ = 1.0f;
         vertex.x = 0.0f;
         vertex.y = 0.0f;
-        
+
+        float halfLineWidth = 1.0f / 3.0f;
         for (int y = 0; y < grid.getHeight() + 1; ++y) {
             for (int x = 0; x < grid.getWidth() + 1; ++x) {
                 bool center = (grid.getElement(x + grid.getX(), y + grid.getY())) != 0;
@@ -153,19 +154,31 @@ namespace crust {
                 bool bottom = (grid.getElement(x + grid.getX(), y + grid.getY() - 1)) != 0;
                 if (center != left) {
                     lineDrawVertices_.push_back(vertex);
-                    lineDrawVertices_.back().x = float(x + grid.getX());
-                    lineDrawVertices_.back().y = float(y + grid.getY());
+                    lineDrawVertices_.back().x = float(x + grid.getX()) - halfLineWidth;
+                    lineDrawVertices_.back().y = float(y + grid.getY()) - halfLineWidth;
                     lineDrawVertices_.push_back(vertex);
-                    lineDrawVertices_.back().x = float(x + grid.getX());
-                    lineDrawVertices_.back().y = float(y + grid.getY() + 1);
+                    lineDrawVertices_.back().x = float(x + grid.getX()) + halfLineWidth;
+                    lineDrawVertices_.back().y = float(y + grid.getY()) - halfLineWidth;
+                    lineDrawVertices_.push_back(vertex);
+                    lineDrawVertices_.back().x = float(x + grid.getX()) + halfLineWidth;
+                    lineDrawVertices_.back().y = float(y + grid.getY() + 1) + halfLineWidth;
+                    lineDrawVertices_.push_back(vertex);
+                    lineDrawVertices_.back().x = float(x + grid.getX()) - halfLineWidth;
+                    lineDrawVertices_.back().y = float(y + grid.getY() + 1) + halfLineWidth;
                 }
                 if (center != bottom) {
                     lineDrawVertices_.push_back(vertex);
-                    lineDrawVertices_.back().x = float(x + grid.getX());
-                    lineDrawVertices_.back().y = float(y + grid.getY());
+                    lineDrawVertices_.back().x = float(x + grid.getX()) - halfLineWidth;
+                    lineDrawVertices_.back().y = float(y + grid.getY()) - halfLineWidth;
                     lineDrawVertices_.push_back(vertex);
-                    lineDrawVertices_.back().x = float(x + grid.getX() + 1);
-                    lineDrawVertices_.back().y = float(y + grid.getY());
+                    lineDrawVertices_.back().x = float(x + grid.getX() + 1) + halfLineWidth;
+                    lineDrawVertices_.back().y = float(y + grid.getY()) - halfLineWidth;
+                    lineDrawVertices_.push_back(vertex);
+                    lineDrawVertices_.back().x = float(x + grid.getX() + 1) + halfLineWidth;
+                    lineDrawVertices_.back().y = float(y + grid.getY()) + halfLineWidth;
+                    lineDrawVertices_.push_back(vertex);
+                    lineDrawVertices_.back().x = float(x + grid.getX()) - halfLineWidth;
+                    lineDrawVertices_.back().y = float(y + grid.getY()) + halfLineWidth;
                 }
             }
         }

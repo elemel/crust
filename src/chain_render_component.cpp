@@ -17,42 +17,37 @@ namespace crust {
     {
         ChainPhysicsComponent::BodyVector const &bodies = physicsComponent_->getBodies();
 
+        float halfLineWidth = 0.1f / 3.0f;
         for (std::size_t i = 0; i < bodies.size(); ++i) {
             b2Vec2 position = bodies[i]->GetPosition();
             float angle = bodies[i]->GetAngle();
             glPushMatrix();
             glTranslatef(position.x, position.y, 0.0f);
             glRotatef(180.0f / M_PI * angle, 0.0f, 0.0f, 1.0f);
-            glColor3ub(255, 255, 255);
+
             glBegin(GL_QUADS);
-            glVertex2f(-0.1f, -0.1f);
-            glVertex2f(0.0f, -0.1f);
-            glVertex2f(0.0f, 0.0f);
-            glVertex2f(-0.1f, 0.0f);
-            glVertex2f(0.0f, 0.0f);
-            glVertex2f(0.1f, 0.0f);
-            glVertex2f(0.1f, 0.1f);
-            glVertex2f(0.0f, 0.1f);
-            glEnd();
+
             glColor3ub(0, 0, 0);
-            glBegin(GL_LINES);
+            glVertex2f(-0.1f - halfLineWidth, -0.1f - halfLineWidth);
+            glVertex2f(0.0f + halfLineWidth, -0.1f - halfLineWidth);
+            glVertex2f(0.0f + halfLineWidth, 0.0f + halfLineWidth);
+            glVertex2f(-0.1f - halfLineWidth, 0.0f + halfLineWidth);
+            glVertex2f(0.0f - halfLineWidth, 0.0f - halfLineWidth);
+            glVertex2f(0.1f + halfLineWidth, 0.0f - halfLineWidth);
+            glVertex2f(0.1f + halfLineWidth, 0.1f + halfLineWidth);
+            glVertex2f(0.0f - halfLineWidth, 0.1f + halfLineWidth);
+
+            glColor3ub(255, 255, 255);
             glVertex2f(-0.1f, -0.1f);
             glVertex2f(0.0f, -0.1f);
-            glVertex2f(0.0f, -0.1f);
-            glVertex2f(0.0f, 0.0f);
             glVertex2f(0.0f, 0.0f);
             glVertex2f(-0.1f, 0.0f);
-            glVertex2f(-0.1f, 0.0f);
-            glVertex2f(-0.1f, -0.1f);
             glVertex2f(0.0f, 0.0f);
             glVertex2f(0.1f, 0.0f);
-            glVertex2f(0.1f, 0.0f);
-            glVertex2f(0.1f, 0.1f);
             glVertex2f(0.1f, 0.1f);
             glVertex2f(0.0f, 0.1f);
-            glVertex2f(0.0f, 0.1f);
-            glVertex2f(0.0f, 0.0f);
             glEnd();
+
             glPopMatrix();
         }
     }

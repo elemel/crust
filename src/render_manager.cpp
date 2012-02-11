@@ -74,8 +74,8 @@ namespace crust {
         setWorldProjection();
         if (drawEnabled_) {
             glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_LIGHTING_BIT);
-            // glEnable(GL_BLEND);
-            // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             setLighting();
             drawBlocks();
             drawMonsters();
@@ -171,7 +171,7 @@ namespace crust {
         int scale = 3;
         glPushMatrix();
         glTranslatef(0.0f, float(windowHeight_) - float(scale) * textRenderer_->getHeight("X"), 0.0f);
-        glTranslatef(float(scale), -float(scale), 0.0f);
+        glTranslatef(2.0f * float(scale), -2.0f * float(scale), 0.0f);
         glScalef(float(scale), float(scale), 1.0);
         switch (game_->getMode()) {
             case Game::DIG_MODE:
@@ -200,7 +200,7 @@ namespace crust {
     {
         int scale = 3;
         glPushMatrix();
-        glTranslatef(float(scale), float(scale), 0.0f);
+        glTranslatef(2.0f * float(scale), 2.0f * float(scale), 0.0f);
         glScalef(float(scale), float(scale), 1.0);
         textRenderer_->draw(game_->getFpsText());
         glPopMatrix();
