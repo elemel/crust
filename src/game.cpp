@@ -235,7 +235,7 @@ namespace crust {
         step(float(dt));
         updateCamera();
 
-        glClearColor(0.0, 0.0, 0.0, 0.0);
+        glClearColor(0.2, 0.2, 0.3, 0.0);
         glClear(GL_COLOR_BUFFER_BIT);
         renderManager_->draw();
         SDL_GL_SwapWindow(window_);
