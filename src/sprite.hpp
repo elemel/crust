@@ -47,7 +47,10 @@ namespace crust {
             scale_ = scale;
         }
 
-        void setPixel(Vector2 const &position, Color4 const &color);
+        void setPixel(int x, int y, Color4 const &color)
+        {
+            pixels_.setElement(x, y, color);
+        }
         
         void draw() const;
 

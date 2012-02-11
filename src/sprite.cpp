@@ -4,19 +4,6 @@
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
-    void Sprite::setPixel(Vector2 const &position, Color4 const &color)
-    {
-        Matrix3 transform;
-        transform.translate(position_);
-        transform.rotate(angle_);
-        transform.scale(scale_);
-        transform.invert();
-        Vector2 localPosition = transformPoint(transform, position);
-        int x = int(std::floor(localPosition.x + 0.5f));
-        int y = int(std::floor(localPosition.y + 0.5f));
-        pixels_.setElement(x, y, color);
-    }
-
     void Sprite::draw() const
     {
         int x = pixels_.getX();
