@@ -13,9 +13,7 @@ namespace crust {
     class Actor {
     public:
         explicit Actor(Game *game);
-
-        // TODO: Make non-virtual once all subclasses are gone.
-        virtual ~Actor();
+        ~Actor();
         
         Game *getGame()
         {
@@ -75,8 +73,7 @@ namespace crust {
         
         void setAnimationComponent(std::auto_ptr<AnimationComponent> component);
         
-    // TODO: Make private once all subclasses are gone.
-    protected:
+    private:
         Game *game_;
         
         std::auto_ptr<PhysicsComponent> physicsComponent_;
