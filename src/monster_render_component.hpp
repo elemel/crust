@@ -13,6 +13,7 @@ namespace crust {
     class MonsterRenderComponent : public RenderComponent {
     public:
         explicit MonsterRenderComponent(Actor *actor);
+        ~MonsterRenderComponent();
 
         Sprite *getHeadSprite()
         {

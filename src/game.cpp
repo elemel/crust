@@ -16,6 +16,36 @@
 #include <fstream>
 
 namespace crust {
+    
+    namespace {        
+        bool isBlock(Actor const *actor)
+        {
+            return dynamic_cast<BlockPhysicsComponent const *>(actor->getPhysicsComponent());
+        }
+        
+        class DigCallback : public b2RayCastCallback {
+        public:
+            Actor *actor;
+            
+            DigCallback() :
+            actor(0)
+            { }
+            
+            float32 ReportFixture(b2Fixture *fixture, b2Vec2 const &point,
+                                  b2Vec2 const &normal, float32 fraction)
+            {
+                b2Body *body = fixture->GetBody();
+                Actor *tempActor = static_cast<Actor *>(body->GetUserData());
+                if (tempActor && isBlock(tempActor)) {
+                    actor = tempActor;
+                    return fraction;
+                } else {
+                    return 1.0f;
+                }
+            }
+        };
+    }
+
     Game::Game(Config const *config) :
         config_(config),
         quit_(false),
@@ -27,6 +57,8 @@ namespace crust {
         appTime_(0.0),
         time_(0.0),
 
+        playerActor_(0),
+    
         bounds_(Vector2(-15.0f, -15.0f), Vector2(15.0f, 15.0f)),
 
         fpsTime_(0.0),
@@ -183,13 +215,12 @@ namespace crust {
 
     void Game::initBlocks()
     {
-        blocks_.clear();
         Box2 paddedBounds = bounds_;
         paddedBounds.pad(2.0f);
         for (int i = 0; i < voronoiDiagram_.getPolygonCount(); ++i) {
             Polygon2 polygon = voronoiDiagram_.getPolygon(i);
             if (contains(paddedBounds, polygon)) {
-                blocks_.push_back(actorFactory_->createBlock(polygon));
+                actors_.push_back(actorFactory_->createBlock(polygon));
             }
         }
     }
@@ -207,20 +238,19 @@ namespace crust {
 
     void Game::initMonsters()
     {
-        monsters_.clear();
         if (dungeonGenerator_.getRoomBoxCount()) {
             Vector2 position = dungeonGenerator_.getRoomBox(0).getCenter();
-            monsters_.push_back(actorFactory_->createMonster(position));
+            actors_.push_back(actorFactory_->createMonster(position));
+            playerActor_ = &actors_.back();
         }
     }
 
     void Game::initChains()
     {
-        chains_.clear();
         if (dungeonGenerator_.getRoomBoxCount()) {
             Box2 roomBox = dungeonGenerator_.getRoomBox(0);
             Vector2 position(roomBox.getCenter().x, roomBox.p2.y);
-            chains_.push_back(actorFactory_->createChain(position, 20));
+            actors_.push_back(actorFactory_->createChain(position, 20));
         }
     }
                 
@@ -256,8 +286,8 @@ namespace crust {
     
     void Game::updateCamera()
     {
-        if (!monsters_.empty() && liftedBlock_ == 0) {
-            Vector2 position = monsters_.front().getPhysicsComponent()->getPosition();
+        if (playerActor_ && liftedBlock_ == 0) {
+            Vector2 position = playerActor_->getPhysicsComponent()->getPosition();
             renderManager_->setCameraPosition(position);
         }
     }
@@ -308,7 +338,9 @@ namespace crust {
                 break;
 
             case SDLK_BACKSPACE:
+                playerActor_ = 0;
                 releaseBlock();
+                actors_.clear();
                 initVoronoiDiagram();
                 initBlocks();
                 initDungeon();
@@ -413,9 +445,9 @@ namespace crust {
         int x = 0;
         int y = 0;
         Uint8 buttons = SDL_GetMouseState(&x, &y);
-        if (!monsters_.empty()) {
+        if (playerActor_) {
             Vector2 targetPosition = renderManager_->getWorldPosition(Vector2(float(x), float(y)));
-            monsters_.front().getControlComponent()->setTargetPosition(targetPosition);
+            playerActor_->getControlComponent()->setTargetPosition(targetPosition);
             if (liftedBlock_) {
                 liftJoint_->SetTarget(b2Vec2(targetPosition.x, targetPosition.y));
             }
@@ -432,12 +464,12 @@ namespace crust {
         }
 
         Uint8 *state = SDL_GetKeyboardState(0);
-        if (!monsters_.empty()) {
+        if (playerActor_) {
             bool leftControl = bool(state[SDL_SCANCODE_A]);
             bool rightControl = bool(state[SDL_SCANCODE_D]);
             bool jumpControl = bool(state[SDL_SCANCODE_SPACE]);
 
-            ControlComponent *controlComponent = monsters_.front().getControlComponent();
+            ControlComponent *controlComponent = playerActor_->getControlComponent();
             controlComponent->setLeftControl(leftControl);
             controlComponent->setRightControl(rightControl);
             controlComponent->setJumpControl(jumpControl);
@@ -446,19 +478,22 @@ namespace crust {
     
     void Game::step(float dt)
     {
-        for (MonsterIterator i = monsters_.begin(); i != monsters_.end(); ++i) 
-        {
-            i->getControlComponent()->step(dt);
+        for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
+            if (i->getControlComponent()) {
+                i->getControlComponent()->step(dt);
+            }
         }
         physicsWorld_->Step(dt, 10, 10);
         handleCollisions();
-        for (MonsterIterator i = monsters_.begin(); i != monsters_.end(); ++i) 
-        {
-            i->getAnimationComponent()->step(dt);
+        for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
+            if (i->getAnimationComponent()) {
+                i->getAnimationComponent()->step(dt);
+            }
         }
-        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (&*i != liftedBlock_) {
-                b2Body *body = static_cast<BlockPhysicsComponent *>(i->getPhysicsComponent())->getBody();
+        for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
+            Actor *actor = &*i;
+            if (isBlock(actor) && actor != liftedBlock_) {
+                b2Body *body = static_cast<BlockPhysicsComponent *>(actor->getPhysicsComponent())->getBody();
                 if (body->GetType() != b2_staticBody && !body->IsAwake()) {
                     body->SetType(b2_staticBody);
                 }
@@ -471,53 +506,28 @@ namespace crust {
 
     void Game::removeBlocks(Box2 const &box)
     {
-        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (box.containsPoint(i->getPhysicsComponent()->getPosition())) {
-                int j = i - blocks_.begin();
-                blocks_.erase(i);
-                i = blocks_.begin() + j - 1;
+        for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
+            Actor *actor = &*i;
+            if (isBlock(actor) && box.containsPoint(i->getPhysicsComponent()->getPosition())) {
+                int j = i - actors_.begin();
+                actors_.erase(i);
+                i = actors_.begin() + j - 1;
             }
         }
-    }
-
-    namespace {
-        class DigCallback : public b2RayCastCallback {
-        public:
-            Actor *actor;
-
-            DigCallback() :
-                actor(0)
-            { }
-
-            float32 ReportFixture(b2Fixture *fixture, b2Vec2 const &point,
-                                  b2Vec2 const &normal, float32 fraction)
-            {
-                b2Body *body = fixture->GetBody();
-                Actor *tempActor = static_cast<Actor *>(body->GetUserData());
-                if (tempActor && tempActor->getPhysicsComponent() &&
-                    dynamic_cast<BlockPhysicsComponent *>(tempActor->getPhysicsComponent()))
-                {
-                    actor = tempActor;
-                    return fraction;
-                } else {
-                    return 1.0f;
-                }
-            }
-        };
     }
     
     void Game::digBlock(Vector2 const &point)
     {
-        if (!monsters_.empty()) {
-            Vector2 p1 = monsters_.front().getPhysicsComponent()->getPosition();
+        if (playerActor_) {
+            Vector2 p1 = playerActor_->getPhysicsComponent()->getPosition();
             Vector2 p2 = p1 + clampLength(point - p1, 1.5f);
             DigCallback callback;
             physicsWorld_->RayCast(&callback, b2Vec2(p1.x, p1.y),
                                    b2Vec2(p2.x, p2.y));
             if (callback.actor) {
-                for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
+                for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
                     if (&*i == callback.actor) {
-                        blocks_.erase(i);
+                        actors_.erase(i);
                         break;
                     }
                 }
@@ -532,8 +542,8 @@ namespace crust {
         }
 
         Actor *actor = 0;
-        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (static_cast<BlockPhysicsComponent *>(i->getPhysicsComponent())->containsPoint(point)) {
+        for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
+            if (isBlock(&*i) && static_cast<BlockPhysicsComponent *>(i->getPhysicsComponent())->containsPoint(point)) {
                 actor = &*i;
             }
         }
@@ -601,8 +611,8 @@ namespace crust {
 
     void Game::collapseBlocks(Vector2 const &point, float distance)
     {
-        for (BlockIterator i = blocks_.begin(); i != blocks_.end(); ++i) {
-            if (getSquaredDistance(i->getPhysicsComponent()->getPosition(), point) < square(distance)) {
+        for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
+            if (isBlock(&*i) && getSquaredDistance(i->getPhysicsComponent()->getPosition(), point) < square(distance)) {
                 static_cast<BlockPhysicsComponent *>(i->getPhysicsComponent())->getBody()->SetType(b2_dynamicBody);
             }
         }

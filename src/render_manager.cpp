@@ -77,16 +77,13 @@ namespace crust {
             // glEnable(GL_BLEND);
             // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             setLighting();
-            drawBlocks();
-            drawMonsters();
-            drawChains();
+            drawActors();
             // glDisable(GL_BLEND);
             glDisable(GL_LIGHTING);
         }
         if (debugDrawEnabled_) {
             glColor3f(0.0f, 1.0f, 0.0f);
             game_->getPhysicsWorld()->DrawDebugData();
-            // drawBlockBounds();
             // glColor3f(0.0f, 0.5f, 1.0f);
             // delauneyTriangulation_.draw();
             // glColor3f(1.0f, 0.5f, 0.0f);
@@ -139,14 +136,13 @@ namespace crust {
     
     void RenderManager::setTargetLight()
     {
-        Game::MonsterVector const &monsters = game_->getMonsters();
-        if (!monsters.empty()) {
+        if (game_->getPlayerActor()) {
             glEnable(GL_LIGHT2);
             GLfloat diffuse[] = { 2.0f, 2.0f, 2.0f, 1.0f };
             GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
             glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse);
             glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
-            Vector2 const &targetPosition = monsters.front().getControlComponent()->getTargetPosition();
+            Vector2 const &targetPosition = game_->getPlayerActor()->getControlComponent()->getTargetPosition();
             GLfloat position[] = { targetPosition.x, targetPosition.y, 1.0f, 1.0f };
             glLightfv(GL_LIGHT2, GL_POSITION, position);
             glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1.0f);
@@ -221,50 +217,11 @@ namespace crust {
                 -1.0, 1.0);
         glMatrixMode(GL_MODELVIEW);
     }
-    
-    void RenderManager::drawBlockBounds()
-    {
-        Game::BlockVector const &blocks = game_->getBlocks();
-        for (Game::ConstBlockIterator i = blocks.begin(); i != blocks.end(); ++i) {
-            Box2 bounds = static_cast<BlockPhysicsComponent const *>(i->getPhysicsComponent())->getBounds();
-            if (!bounds.isEmpty()) {
-                float x = bounds.p1.x;
-                float y = bounds.p1.y;
-                float width = bounds.getWidth();
-                float height = bounds.getHeight();
-                
-                glBegin(GL_LINE_LOOP);
-                glVertex2f(x, y);
-                glVertex2f(x + width, y);
-                glVertex2f(x + width, y + height);
-                glVertex2f(x, y + height);
-                glEnd();
-            }
-        }
-    }
-    
-    void RenderManager::drawBlocks()
-    {
-        Game::BlockVector const &blocks = game_->getBlocks();
-        for (Game::ConstBlockIterator i = blocks.begin(); i != blocks.end(); ++i) {
-            if (intersects(frustum_, static_cast<BlockPhysicsComponent const *>(i->getPhysicsComponent())->getBounds())) {
-                i->getRenderComponent()->draw();
-            }
-        }
-    }
 
-    void RenderManager::drawMonsters()
+    void RenderManager::drawActors()
     {
-        Game::MonsterVector const &monsters = game_->getMonsters();
-        for (Game::ConstMonsterIterator i = monsters.begin(); i != monsters.end(); ++i) {
-            i->getRenderComponent()->draw();
-        }
-    }
-
-    void RenderManager::drawChains()
-    {
-        Game::ChainVector const &chains = game_->getChains();
-        for (Game::ConstChainIterator i = chains.begin(); i != chains.end(); ++i) {
+        Game::ActorVector const &actors = game_->getActors();
+        for (Game::ConstActorIterator i = actors.begin(); i != actors.end(); ++i) {
             i->getRenderComponent()->draw();
         }
     }

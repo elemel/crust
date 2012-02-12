@@ -34,18 +34,10 @@ namespace crust {
             MODE_COUNT
         };
 
-        typedef boost::ptr_vector<Actor> BlockVector;
-        typedef BlockVector::iterator BlockIterator;
-        typedef BlockVector::const_iterator ConstBlockIterator;
-        typedef std::map<b2Body *, b2Body *> CollisionMap;
-        typedef CollisionMap::iterator CollisionIterator;
-        typedef boost::ptr_vector<Actor> MonsterVector;
-        typedef MonsterVector::iterator MonsterIterator;
-        typedef MonsterVector::const_iterator ConstMonsterIterator;
-        typedef boost::ptr_vector<Actor> ChainVector;
-        typedef ChainVector::iterator ChainIterator;
-        typedef ChainVector::const_iterator ConstChainIterator;
-        
+        typedef boost::ptr_vector<Actor> ActorVector;
+        typedef ActorVector::iterator ActorIterator;
+        typedef ActorVector::const_iterator ConstActorIterator;
+
         explicit Game(Config const *config);
         ~Game();
         
@@ -82,21 +74,21 @@ namespace crust {
         float getRandomFloat();
         int getRandomInt(int size);
 
-        BlockVector const &getBlocks() const
+        ActorVector const &getActors() const
         {
-            return blocks_;
+            return actors_;
         }
 
-        MonsterVector const &getMonsters() const
+        Actor *getPlayerActor()
         {
-            return monsters_;
+            return playerActor_;
         }
 
-        ChainVector const &getChains() const
+        Actor const *getPlayerActor() const
         {
-            return chains_;
+            return playerActor_;
         }
-
+        
         const char *getFpsText() const
         {
             return fpsText_.c_str();
@@ -116,14 +108,12 @@ namespace crust {
 
         std::auto_ptr<b2World> physicsWorld_;
         std::auto_ptr<b2Draw> physicsDraw_;
-        BlockVector blocks_;
         bool blockGrowthDone_;
         bool dungeonGenerationDone_;
         std::vector<Actor *> blocksWithNeighbors_;
-        CollisionMap particleToBlockCollisions_;
-        MonsterVector monsters_;
-        ChainVector chains_;
-
+        ActorVector actors_;
+        Actor *playerActor_;
+        
         Box2 bounds_;
 
         double fpsTime_;

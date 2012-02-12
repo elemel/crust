@@ -15,6 +15,9 @@ namespace crust {
         initSprites();
     }
 
+    MonsterRenderComponent::~MonsterRenderComponent()
+    { }
+    
     void MonsterRenderComponent::draw() const
     {
         glPushMatrix();

@@ -69,10 +69,7 @@ namespace crust {
         void drawFps();
         void setWorldProjection();
         void setOverlayProjection();
-        void drawBlockBounds();
-        void drawBlocks();
-        void drawMonsters();
-        void drawChains();
+        void drawActors();
     };
 }
 

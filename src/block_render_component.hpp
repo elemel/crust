@@ -13,6 +13,7 @@ namespace crust {
     class BlockRenderComponent : public RenderComponent {
     public:
         explicit BlockRenderComponent(Actor *actor);
+        ~BlockRenderComponent();
 
         void draw() const;
         

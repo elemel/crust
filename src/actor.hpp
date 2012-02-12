@@ -37,10 +37,7 @@ namespace crust {
             return physicsComponent_.get();
         }
         
-        void setPhysicsComponent(std::auto_ptr<PhysicsComponent> component)
-        {
-            physicsComponent_ = component;
-        }
+        void setPhysicsComponent(std::auto_ptr<PhysicsComponent> component);
         
         ControlComponent *getControlComponent()
         {
@@ -52,10 +49,7 @@ namespace crust {
             return controlComponent_.get();
         }
         
-        void setControlComponent(std::auto_ptr<ControlComponent> component)
-        {
-            controlComponent_ = component;
-        }
+        void setControlComponent(std::auto_ptr<ControlComponent> component);
         
         RenderComponent *getRenderComponent()
         {
@@ -67,10 +61,7 @@ namespace crust {
             return renderComponent_.get();
         }
         
-        void setRenderComponent(std::auto_ptr<RenderComponent> component)
-        {
-            renderComponent_ = component;
-        }
+        void setRenderComponent(std::auto_ptr<RenderComponent> component);
         
         AnimationComponent *getAnimationComponent()
         {
@@ -82,10 +73,7 @@ namespace crust {
             return animationComponent_.get();
         }
         
-        void setAnimationComponent(std::auto_ptr<AnimationComponent> component)
-        {
-            animationComponent_ = component;
-        }
+        void setAnimationComponent(std::auto_ptr<AnimationComponent> component);
         
     // TODO: Make private once all subclasses are gone.
     protected:

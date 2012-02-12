@@ -15,6 +15,9 @@ namespace crust {
 
         spriteDirty_(true)
     { }
+
+    BlockRenderComponent::~BlockRenderComponent()
+    { }
     
     void BlockRenderComponent::draw() const
     {
