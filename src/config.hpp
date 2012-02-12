@@ -12,6 +12,8 @@ namespace crust {
         float cameraScale;
         float cameraPan;
         float cameraZoom;
+        float minCameraScale;
+        float maxCameraScale;
         bool drawFps;
         int fps;
 

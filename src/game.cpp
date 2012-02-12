@@ -336,7 +336,9 @@ namespace crust {
                 if (liftedBlock_ == 0) {
                     float scale = renderManager_->getCameraScale();
                     scale *= config_->cameraZoom;
-                    renderManager_->setCameraScale(scale);
+                    if (scale < config_->maxCameraScale) {
+                        renderManager_->setCameraScale(scale);
+                    }
                 }
                 break;
 
@@ -344,7 +346,9 @@ namespace crust {
                 if (liftedBlock_ == 0) {
                     float scale = renderManager_->getCameraScale();
                     scale /= config_->cameraZoom;
-                    renderManager_->setCameraScale(scale);
+                    if (scale > config_->minCameraScale) {
+                        renderManager_->setCameraScale(scale);
+                    }
                 }
                 break;
 
