@@ -568,6 +568,7 @@ namespace crust {
                 body->SetFixedRotation(true);
             }
             body->SetType(b2_dynamicBody);
+            body->SetGravityScale(0.0f);
 
             liftedBlock_ = actor;
 
@@ -575,7 +576,7 @@ namespace crust {
             liftJointDef.target.Set(point.x, point.y);
             liftJointDef.bodyA = body;
             liftJointDef.bodyB = body;
-            liftJointDef.maxForce = 5.0f * body->GetMass() * 10.0f;
+            liftJointDef.maxForce = 1.0f * body->GetMass() * 10.0f;
             liftJoint_ = static_cast<b2MouseJoint *>(physicsWorld_->CreateJoint(&liftJointDef));
 
             liftTime_ = time_;
@@ -602,6 +603,7 @@ namespace crust {
                 body->SetType(b2_staticBody);
             }
             body->SetFixedRotation(false);
+            body->SetGravityScale(1.0f);
 
             physicsWorld_->DestroyJoint(liftJoint_);
             liftJoint_ = 0;
