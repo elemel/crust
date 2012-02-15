@@ -7,6 +7,7 @@ namespace crust {
     MonsterPhysicsComponent::MonsterPhysicsComponent(Actor *actor,
                                                      Vector2 const &position) :
         actor_(actor),
+        position_(position),
     
         wheelRadius_(0.4f),
 
@@ -19,38 +20,19 @@ namespace crust {
         leftSensorFixture_(0),
         bottomSensorFixture_(0),
         rightSensorFixture_(0)
-    {
-        initPhysics(position);
-    }
+    { }
 
     MonsterPhysicsComponent::~MonsterPhysicsComponent()
+    { }
+
+    void MonsterPhysicsComponent::create()
     {
         b2World *world = actor_->getGame()->getPhysicsWorld();
-
-        world->DestroyJoint(wheelJoint_);
-        world->DestroyBody(wheelBody_);
-        world->DestroyBody(mainBody_);
-    }
-
-    Vector2 MonsterPhysicsComponent::getPosition() const
-    {
-        b2Vec2 const &position = mainBody_->GetPosition();
-        return Vector2(position.x, position.y);
-    }
-
-    float MonsterPhysicsComponent::getAngle() const
-    {
-        return mainBody_->GetAngle();
-    }
-
-    void MonsterPhysicsComponent::initPhysics(Vector2 const &position)
-    {
-        b2World *world = actor_->getGame()->getPhysicsWorld();
-
+        
         b2BodyDef mainBodyDef;
         mainBodyDef.type = b2_dynamicBody;
         mainBodyDef.fixedRotation = true;
-        mainBodyDef.position.Set(position.x, position.y);
+        mainBodyDef.position.Set(position_.x, position_.y);
         mainBodyDef.userData = actor_;
         mainBody_ = world->CreateBody(&mainBodyDef);
         
@@ -60,7 +42,7 @@ namespace crust {
         
         b2BodyDef wheelBodyDef;
         wheelBodyDef.type = b2_dynamicBody;
-        wheelBodyDef.position.Set(position.x, position.y - 0.4f);
+        wheelBodyDef.position.Set(position_.x, position_.y - 0.4f);
         wheelBodyDef.userData = actor_;
         wheelBody_ = world->CreateBody(&wheelBodyDef);
         
@@ -99,6 +81,26 @@ namespace crust {
         rightSensorShape.m_radius = wheelRadius_;
         rightSensorFixture_ = mainBody_->CreateFixture(&rightSensorShape, 0.0f);
         rightSensorFixture_->SetSensor(true);
+    }
+    
+    void MonsterPhysicsComponent::destroy()
+    {
+        b2World *world = actor_->getGame()->getPhysicsWorld();
+        
+        world->DestroyJoint(wheelJoint_);
+        world->DestroyBody(wheelBody_);
+        world->DestroyBody(mainBody_);
+    }
+    
+    Vector2 MonsterPhysicsComponent::getPosition() const
+    {
+        b2Vec2 const &position = mainBody_->GetPosition();
+        return Vector2(position.x, position.y);
+    }
+
+    float MonsterPhysicsComponent::getAngle() const
+    {
+        return mainBody_->GetAngle();
     }
 
     bool MonsterPhysicsComponent::isStanding() const

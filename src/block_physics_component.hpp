@@ -19,7 +19,10 @@ namespace crust {
         {
             return body_;
         }
-        
+
+        void create();
+        void destroy();
+
         Vector2 getPosition() const;
         void setPosition(float x, float y);
 
@@ -48,6 +51,7 @@ namespace crust {
 
     private:
         Actor *actor_;
+        Polygon2 polygon_;
 
         Polygon2 localPolygon_;
         

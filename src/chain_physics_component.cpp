@@ -6,14 +6,22 @@
 namespace crust {
     ChainPhysicsComponent::ChainPhysicsComponent(Actor *actor, Vector2 const &position, int linkCount) :
         actor_(actor),
+        position_(position),
+        linkCount_(linkCount),
         ropeJoint_(0)
+    { }
+    
+    ChainPhysicsComponent::~ChainPhysicsComponent()
+    { }
+
+    void ChainPhysicsComponent::create()
     {
         b2World *world = actor_->getGame()->getPhysicsWorld();
-
-        for (int i = 0; i < linkCount; ++i) {
+        
+        for (int i = 0; i < linkCount_; ++i) {
             b2BodyDef bodyDef;
             bodyDef.type = i ? b2_dynamicBody : b2_staticBody;
-            bodyDef.position.Set(position.x, position.y);
+            bodyDef.position.Set(position_.x, position_.y);
             bodyDef.angle = 0.25f * M_PI;
             b2Body *body = world->CreateBody(&bodyDef);
             bodies_.push_back(body);
@@ -41,18 +49,18 @@ namespace crust {
         ropeJointDef.maxLength = 1.1f * 0.2f * float(bodies_.size() - 2) * M_SQRT2;
         ropeJoint_ = static_cast<b2RopeJoint *>(world->CreateJoint(&ropeJointDef));
     }
-    
-    ChainPhysicsComponent::~ChainPhysicsComponent()
+
+    void ChainPhysicsComponent::destroy()
     {
         b2World *world = actor_->getGame()->getPhysicsWorld();
-
+        
         world->DestroyJoint(ropeJoint_);
         while (!bodies_.empty()) {
             world->DestroyBody(bodies_.back());
             bodies_.pop_back();
         }
     }
-    
+
     Vector2 ChainPhysicsComponent::getPosition() const
     {
         b2Vec2 position = bodies_.front()->GetPosition();

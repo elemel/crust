@@ -10,6 +10,13 @@ namespace crust {
     class ChainRenderComponent : public RenderComponent {
     public:
         explicit ChainRenderComponent(Actor *actor);
+
+        void create()
+        { }
+
+        void destroy()
+        { }
+
         void draw() const;
 
     private:

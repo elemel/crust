@@ -5,10 +5,16 @@
 
 namespace crust {
     BlockPhysicsComponent::BlockPhysicsComponent(Actor *actor, Polygon2 const &polygon) :
-        actor_(actor)
+        actor_(actor),
+        polygon_(polygon)
+    { }
+
+    BlockPhysicsComponent::~BlockPhysicsComponent()
+    { }
+
+    void BlockPhysicsComponent::create()
     {
-        
-        Vector2 centroid = polygon.getCentroid();
+        Vector2 centroid = polygon_.getCentroid();
         float angle = -M_PI + 2.0f * M_PI * actor_->getGame()->getRandomFloat();
         
         b2BodyDef bodyDef;
@@ -18,11 +24,11 @@ namespace crust {
         body_ = actor_->getGame()->getPhysicsWorld()->CreateBody(&bodyDef);
         
         b2Vec2 vertices[b2_maxPolygonVertices];
-        int32 vertexCount = std::min(int32(polygon.vertices.size()),
+        int32 vertexCount = std::min(int32(polygon_.vertices.size()),
                                      b2_maxPolygonVertices);
         
         for (int32 i = 0; i < vertexCount; ++i) {
-            b2Vec2 vertex(polygon.vertices[i].x, polygon.vertices[i].y);
+            b2Vec2 vertex(polygon_.vertices[i].x, polygon_.vertices[i].y);
             vertices[i] = body_->GetLocalPoint(vertex);
             localPolygon_.vertices.push_back(Vector2(vertices[i].x, vertices[i].y));
         }
@@ -34,7 +40,7 @@ namespace crust {
         fixtureDef.filter.groupIndex = -1;
         body_->CreateFixture(&fixtureDef);
         
-        Polygon2 innerPolygon = polygon;
+        Polygon2 innerPolygon = polygon_;
         innerPolygon.pad(-0.15f);
         for (int32 i = 0; i < vertexCount; ++i) {
             b2Vec2 vertex(innerPolygon.vertices[i].x, innerPolygon.vertices[i].y);
@@ -44,15 +50,14 @@ namespace crust {
         innerShape.Set(vertices, vertexCount);
         body_->CreateFixture(&innerShape, 0.0f);
         
-        rasterize(polygon);
+        rasterize(polygon_);
     }
 
-    BlockPhysicsComponent::~BlockPhysicsComponent()
+    void BlockPhysicsComponent::destroy()
     {
         actor_->getGame()->getPhysicsWorld()->DestroyBody(body_);
     }
 
-    
     Vector2 BlockPhysicsComponent::getPosition() const
     {
         b2Vec2 position = body_->GetPosition();

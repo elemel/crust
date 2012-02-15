@@ -1,6 +1,7 @@
 #ifndef CRUST_CHAIN_PHYSICS_COMPONENT_HPP
 #define CRUST_CHAIN_PHYSICS_COMPONENT_HPP
 
+#include "geometry.hpp"
 #include "physics_component.hpp"
 
 #include <vector>
@@ -16,6 +17,9 @@ namespace crust {
         ChainPhysicsComponent(Actor *actor, Vector2 const &position, int linkCount);
         ~ChainPhysicsComponent();
 
+        void create();
+        void destroy();
+
         Vector2 getPosition() const;
 
         float getAngle() const
@@ -30,6 +34,8 @@ namespace crust {
 
     private:
         Actor *actor_;
+        Vector2 position_;
+        int linkCount_;
         
         BodyVector bodies_;
         b2RopeJoint *ropeJoint_;

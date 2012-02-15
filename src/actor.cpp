@@ -32,4 +32,36 @@ namespace crust {
     {
         animationComponent_ = component;
     }
+
+    void Actor::create()
+    {
+        if (physicsComponent_.get()) {
+            physicsComponent_->create();
+        }
+        if (controlComponent_.get()) {
+            controlComponent_->create();
+        }
+        if (renderComponent_.get()) {
+            renderComponent_->create();
+        }
+        if (animationComponent_.get()) {
+            animationComponent_->create();
+        }
+    }
+
+    void Actor::destroy()
+    {
+        if (animationComponent_.get()) {
+            animationComponent_->destroy();
+        }
+        if (renderComponent_.get()) {
+            renderComponent_->destroy();
+        }
+        if (controlComponent_.get()) {
+            controlComponent_->destroy();
+        }
+        if (physicsComponent_.get()) {
+            physicsComponent_->destroy();
+        }
+    }
 }

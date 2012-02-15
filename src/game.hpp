@@ -93,7 +93,10 @@ namespace crust {
         {
             return fpsText_.c_str();
         }
-        
+
+        Actor *addActor(std::auto_ptr<Actor> actor);
+        void removeActor(Actor *actor);
+
     private:
         Config const *config_;
         Random random_;

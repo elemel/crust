@@ -13,6 +13,12 @@ namespace crust {
     public:
         MonsterAnimationComponent(Actor *actor);
 
+        void create()
+        { }
+
+        void destroy()
+        { }
+        
         void step(float dt);
         
     private:

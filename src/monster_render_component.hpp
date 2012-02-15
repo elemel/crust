@@ -15,6 +15,12 @@ namespace crust {
         explicit MonsterRenderComponent(Actor *actor);
         ~MonsterRenderComponent();
 
+        void create()
+        { }
+        
+        void destroy()
+        { }
+        
         Sprite *getHeadSprite()
         {
             return headSprite_.get();

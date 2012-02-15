@@ -15,6 +15,9 @@ namespace crust {
         MonsterPhysicsComponent(Actor *actor, Vector2 const &position);
         ~MonsterPhysicsComponent();
 
+        void create();
+        void destroy();
+        
         Vector2 getPosition() const;
         float getAngle() const;
 
@@ -42,6 +45,7 @@ namespace crust {
 
     private:
         Actor *actor_;
+        Vector2 position_;
 
         float wheelRadius_;
         
@@ -54,8 +58,6 @@ namespace crust {
         b2Fixture *leftSensorFixture_;
         b2Fixture *bottomSensorFixture_;
         b2Fixture *rightSensorFixture_;
-
-        void initPhysics(Vector2 const &position);
     };
 }
 

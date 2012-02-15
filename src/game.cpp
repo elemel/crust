@@ -87,6 +87,10 @@ namespace crust {
     Game::~Game()
     {
         releaseBlock();
+        while (!actors_.empty()) {
+            actors_.back().destroy();
+            actors_.pop_back();
+        }
         if (context_) {
             SDL_GL_DeleteContext(context_);
         }
@@ -135,6 +139,25 @@ namespace crust {
         return random_.getInt(size);
     }
 
+    Actor *Game::addActor(std::auto_ptr<Actor> actor)
+    {
+        actors_.push_back(actor);
+        actors_.back().create();
+        return &actors_.back();
+    }
+
+    void Game::removeActor(Actor *actor)
+    {
+        ActorVector::auto_type removedActor;
+        for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
+            if (&*i == actor) {
+                i->destroy();
+                actors_.erase(i);
+                break;
+            }
+        }
+    }
+    
     void Game::initWindow()
     {
         if (config_->fullscreen) {
@@ -220,7 +243,7 @@ namespace crust {
         for (int i = 0; i < voronoiDiagram_.getPolygonCount(); ++i) {
             Polygon2 polygon = voronoiDiagram_.getPolygon(i);
             if (contains(paddedBounds, polygon)) {
-                actors_.push_back(actorFactory_->createBlock(polygon));
+                addActor(actorFactory_->createBlock(polygon));
             }
         }
     }
@@ -240,8 +263,7 @@ namespace crust {
     {
         if (dungeonGenerator_.getRoomBoxCount()) {
             Vector2 position = dungeonGenerator_.getRoomBox(0).getCenter();
-            actors_.push_back(actorFactory_->createMonster(position));
-            playerActor_ = &actors_.back();
+            playerActor_ = addActor(actorFactory_->createMonster(position));
         }
     }
 
@@ -250,7 +272,7 @@ namespace crust {
         if (dungeonGenerator_.getRoomBoxCount()) {
             Box2 roomBox = dungeonGenerator_.getRoomBox(0);
             Vector2 position(roomBox.getCenter().x, roomBox.p2.y);
-            actors_.push_back(actorFactory_->createChain(position, 20));
+            addActor(actorFactory_->createChain(position, 20));
         }
     }
                 
@@ -340,7 +362,10 @@ namespace crust {
             case SDLK_BACKSPACE:
                 playerActor_ = 0;
                 releaseBlock();
-                actors_.clear();
+                while (!actors_.empty()) {
+                    actors_.back().destroy();
+                    actors_.pop_back();
+                }
                 initVoronoiDiagram();
                 initBlocks();
                 initDungeon();
@@ -510,7 +535,7 @@ namespace crust {
             Actor *actor = &*i;
             if (isBlock(actor) && box.containsPoint(i->getPhysicsComponent()->getPosition())) {
                 int j = i - actors_.begin();
-                actors_.erase(i);
+                removeActor(actor);
                 i = actors_.begin() + j - 1;
             }
         }
@@ -527,7 +552,7 @@ namespace crust {
             if (callback.actor) {
                 for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
                     if (&*i == callback.actor) {
-                        actors_.erase(i);
+                        removeActor(callback.actor);
                         break;
                     }
                 }

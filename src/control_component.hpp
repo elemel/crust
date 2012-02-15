@@ -9,6 +9,9 @@ namespace crust {
         virtual ~ControlComponent()
         { }
 
+        virtual void create() = 0;
+        virtual void destroy() = 0;
+        
         virtual bool getLeftControl() const = 0;
         virtual void setLeftControl(bool control) = 0;
 
@@ -17,7 +20,10 @@ namespace crust {
         
         virtual bool getJumpControl() const = 0;
         virtual void setJumpControl(bool control) = 0;
-        
+
+        virtual bool getActionControl() const = 0;
+        virtual void setActionControl(bool control) = 0;
+
         virtual Vector2 const &getTargetPosition() const = 0;
         virtual void setTargetPosition(Vector2 const &position) = 0;
 

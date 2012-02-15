@@ -3,6 +3,7 @@
 #include "actor.hpp"
 #include "game.hpp"
 #include "monster_physics_component.hpp"
+#include "task.hpp"
 #include "wire.hpp"
 
 namespace crust {
@@ -22,9 +23,15 @@ namespace crust {
 
         leftControl_(false),
         rightControl_(false),
-        jumpControl_(false)
+        jumpControl_(false),
+        actionControl_(false)
     { }
 
+    void MonsterControlComponent::setTask(std::auto_ptr<Task> task)
+    {
+        task_ = task;
+    }
+    
     void MonsterControlComponent::step(float dt)
     {
         bool standing = physicsComponent_->isStanding();
@@ -64,6 +71,10 @@ namespace crust {
         {
             physicsComponent_->getMainBody()->ApplyForce(b2Vec2(-driftForce_, 0.0f),
                                                          physicsComponent_->getMainBody()->GetPosition());
+        }
+
+        if (task_.get()) {
+            task_->step(dt);
         }
     }
 }

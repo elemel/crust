@@ -72,6 +72,9 @@ namespace crust {
         }
         
         void setAnimationComponent(std::auto_ptr<AnimationComponent> component);
+
+        void create();
+        void destroy();
         
     private:
         Game *game_;

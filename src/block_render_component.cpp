@@ -18,7 +18,7 @@ namespace crust {
 
     BlockRenderComponent::~BlockRenderComponent()
     { }
-    
+
     void BlockRenderComponent::draw() const
     {
         updateSprite();

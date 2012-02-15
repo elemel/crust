@@ -15,6 +15,12 @@ namespace crust {
         explicit BlockRenderComponent(Actor *actor);
         ~BlockRenderComponent();
 
+        void create()
+        { }
+
+        void destroy()
+        { }
+
         void draw() const;
         
     private:
