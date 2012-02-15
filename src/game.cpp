@@ -16,34 +16,11 @@
 #include <fstream>
 
 namespace crust {
-    
     namespace {        
         bool isBlock(Actor const *actor)
         {
             return dynamic_cast<BlockPhysicsComponent const *>(actor->getPhysicsComponent());
         }
-        
-        class DigCallback : public b2RayCastCallback {
-        public:
-            Actor *actor;
-            
-            DigCallback() :
-            actor(0)
-            { }
-            
-            float32 ReportFixture(b2Fixture *fixture, b2Vec2 const &point,
-                                  b2Vec2 const &normal, float32 fraction)
-            {
-                b2Body *body = fixture->GetBody();
-                Actor *tempActor = static_cast<Actor *>(body->GetUserData());
-                if (tempActor && isBlock(tempActor)) {
-                    actor = tempActor;
-                    return fraction;
-                } else {
-                    return 1.0f;
-                }
-            }
-        };
     }
 
     Game::Game(Config const *config) :
