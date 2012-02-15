@@ -2,7 +2,9 @@
 
 #include "actor.hpp"
 #include "game.hpp"
+#include "monster_idle_state.hpp"
 #include "monster_physics_component.hpp"
+#include "state.hpp"
 #include "task.hpp"
 #include "wire.hpp"
 
@@ -27,11 +29,21 @@ namespace crust {
         actionControl_(false)
     { }
 
-    void MonsterControlComponent::setTask(std::auto_ptr<Task> task)
+    MonsterControlComponent::~MonsterControlComponent()
+    { }
+
+    void MonsterControlComponent::create()
     {
-        task_ = task;
+        actionState_.reset(new MonsterIdleState(actor_));
+        actionState_->create();
     }
     
+    void MonsterControlComponent::destroy()
+    {
+        actionState_->destroy();
+        actionState_.reset();
+    }
+
     void MonsterControlComponent::step(float dt)
     {
         bool standing = physicsComponent_->isStanding();
@@ -73,8 +85,14 @@ namespace crust {
                                                          physicsComponent_->getMainBody()->GetPosition());
         }
 
-        if (task_.get()) {
-            task_->step(dt);
+        if (actionState_->getTask()) {
+            actionState_->getTask()->step(dt);
+        }
+        std::auto_ptr<State> newActionState = actionState_->transition();
+        if (newActionState.get()) {
+            actionState_->destroy();
+            actionState_ = newActionState;
+            actionState_->create();
         }
     }
 }

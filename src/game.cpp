@@ -467,37 +467,34 @@ namespace crust {
 
     void Game::handleInput()
     {
-        int x = 0;
-        int y = 0;
-        Uint8 buttons = SDL_GetMouseState(&x, &y);
         if (playerActor_) {
-            Vector2 targetPosition = renderManager_->getWorldPosition(Vector2(float(x), float(y)));
-            playerActor_->getControlComponent()->setTargetPosition(targetPosition);
-            if (liftedBlock_) {
-                liftJoint_->SetTarget(b2Vec2(targetPosition.x, targetPosition.y));
-            }
-            Uint8 *state = SDL_GetKeyboardState(0);
-            if (state[SDL_SCANCODE_LSHIFT] ||
-                (buttons & SDL_BUTTON_LMASK) != 0)
-            {
-                if (mode_ == DIG_MODE) {
-                    digBlock(targetPosition);
-                } else if (mode_ == COLLAPSE_MODE) {
-                    collapseBlocks(targetPosition, 2.0f);
-                }
-            }
-        }
-
-        Uint8 *state = SDL_GetKeyboardState(0);
-        if (playerActor_) {
-            bool leftControl = bool(state[SDL_SCANCODE_A]);
-            bool rightControl = bool(state[SDL_SCANCODE_D]);
-            bool jumpControl = bool(state[SDL_SCANCODE_SPACE]);
-
             ControlComponent *controlComponent = playerActor_->getControlComponent();
+
+            int x = 0;
+            int y = 0;
+            Uint8 mouseButtons = SDL_GetMouseState(&x, &y);
+            Uint8 *keyboardState = SDL_GetKeyboardState(0);
+
+            bool leftControl = bool(keyboardState[SDL_SCANCODE_A]);
+            bool rightControl = bool(keyboardState[SDL_SCANCODE_D]);
+            bool jumpControl = bool(keyboardState[SDL_SCANCODE_SPACE]);
+            bool actionControl = bool(keyboardState[SDL_SCANCODE_LSHIFT] || (mouseButtons & SDL_BUTTON_LMASK));
+            Vector2 targetPosition = renderManager_->getWorldPosition(Vector2(float(x), float(y)));
+
             controlComponent->setLeftControl(leftControl);
             controlComponent->setRightControl(rightControl);
             controlComponent->setJumpControl(jumpControl);
+            controlComponent->setActionControl(actionControl);
+            controlComponent->setTargetPosition(targetPosition);
+
+            if (actionControl) {
+                if (mode_ == COLLAPSE_MODE) {
+                    collapseBlocks(targetPosition, 2.0f);
+                }
+            }
+            if (liftedBlock_) {
+                liftJoint_->SetTarget(b2Vec2(targetPosition.x, targetPosition.y));
+            }
         }
     }
     
@@ -541,25 +538,6 @@ namespace crust {
         }
     }
     
-    void Game::digBlock(Vector2 const &point)
-    {
-        if (playerActor_) {
-            Vector2 p1 = playerActor_->getPhysicsComponent()->getPosition();
-            Vector2 p2 = p1 + clampLength(point - p1, 1.5f);
-            DigCallback callback;
-            physicsWorld_->RayCast(&callback, b2Vec2(p1.x, p1.y),
-                                   b2Vec2(p2.x, p2.y));
-            if (callback.actor) {
-                for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
-                    if (&*i == callback.actor) {
-                        removeActor(callback.actor);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
     void Game::liftBlock(Vector2 const &point)
     {
         if (liftedBlock_) {

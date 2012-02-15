@@ -7,17 +7,15 @@
 namespace crust {
     class Actor;
     class MonsterPhysicsComponent;
-    class Task;
+    class State;
     
     class MonsterControlComponent : public ControlComponent {
     public:
         explicit MonsterControlComponent(Actor *actor);
+        ~MonsterControlComponent();
 
-        void create()
-        { }
-        
-        void destroy()
-        { }
+        void create();
+        void destroy();
         
         bool getLeftControl() const
         {
@@ -69,8 +67,6 @@ namespace crust {
             targetPosition_ = position;
         }
 
-        void setTask(std::auto_ptr<Task> task);
-        
         void step(float dt);
 
     private:
@@ -94,7 +90,7 @@ namespace crust {
 
         Vector2 targetPosition_;
 
-        std::auto_ptr<Task> task_;
+        std::auto_ptr<State> actionState_;
     };
 }
 
