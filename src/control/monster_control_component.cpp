@@ -1,17 +1,17 @@
 #include "monster_control_component.hpp"
 
 #include "actor.hpp"
+#include "convert.hpp"
 #include "game.hpp"
 #include "monster_idle_state.hpp"
 #include "monster_physics_component.hpp"
 #include "state.hpp"
 #include "task.hpp"
-#include "wire.hpp"
 
 namespace crust {
     MonsterControlComponent::MonsterControlComponent(Actor *actor) :
         actor_(actor),
-        physicsComponent_(wire(actor->getPhysicsComponent())),
+        physicsComponent_(convert(actor->getPhysicsComponent())),
 
         maxVelocity_(5.0f),
         jumpDuration_(0.2f),

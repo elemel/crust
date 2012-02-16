@@ -2,7 +2,7 @@
 
 #include "actor.hpp"
 #include "chain_physics_component.hpp"
-#include "wire.hpp"
+#include "convert.hpp"
 
 #include <Box2D/Box2D.h>
 #include <SDL/SDL_opengl.h>
@@ -10,7 +10,7 @@
 namespace crust {    
     ChainRenderComponent::ChainRenderComponent(Actor *actor) :
         actor_(actor),
-        physicsComponent_(wire(actor->getPhysicsComponent()))
+        physicsComponent_(convert(actor->getPhysicsComponent()))
     { }
 
     void ChainRenderComponent::draw() const

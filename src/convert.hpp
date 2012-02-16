@@ -1,5 +1,5 @@
-#ifndef CRUST_WIRE_HPP
-#define CRUST_WIRE_HPP
+#ifndef CRUST_CONVERT_HPP
+#define CRUST_CONVERT_HPP
 
 #include "error.hpp"
 
@@ -7,15 +7,15 @@
 
 namespace crust {
     template <typename T>
-    class WireConversion {
+    class PointerConverter {
     public:
         T *ptr;
 
-        explicit WireConversion(T *ptr) :
+        explicit PointerConverter(T *ptr) :
             ptr(ptr)
         { }
 
-        operator T*() const
+        operator T *() const
         {
             return ptr;
         }
@@ -25,19 +25,19 @@ namespace crust {
         {
             U *result = dynamic_cast<U *>(ptr);
             if (result == 0) {
-                throw Error("Failed to convert wired pointer");
+                throw Error("Failed to convert pointer");
             }
             return result;
         }
     };
 
     template <typename T>
-    WireConversion<T> wire(T *ptr)
+    PointerConverter<T> convert(T *ptr)
     {
         if (ptr == 0) {
-            throw Error("Can't wire null pointer");
+            throw Error("Can't convert null pointer");
         }
-        return WireConversion<T>(ptr);
+        return PointerConverter<T>(ptr);
     }
 }
 

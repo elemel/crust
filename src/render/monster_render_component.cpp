@@ -1,16 +1,16 @@
 #include "monster_render_component.hpp"
 
 #include "actor.hpp"
+#include "convert.hpp"
 #include "monster_physics_component.hpp"
 #include "sprite.hpp"
-#include "wire.hpp"
 
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
     MonsterRenderComponent::MonsterRenderComponent(Actor *actor) :
         actor_(actor),
-        physicsComponent_(wire(actor->getPhysicsComponent()))
+        physicsComponent_(convert(actor->getPhysicsComponent()))
     {
         initSprites();
     }

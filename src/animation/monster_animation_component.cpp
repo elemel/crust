@@ -1,18 +1,18 @@
 #include "monster_animation_component.hpp"
 
 #include "actor.hpp"
+#include "convert.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
 #include "monster_render_component.hpp"
 #include "sprite.hpp"
-#include "wire.hpp"
 
 namespace crust {
     MonsterAnimationComponent::MonsterAnimationComponent(Actor *actor) :
         actor_(actor),
-        physicsComponent_(wire(actor->getPhysicsComponent())),
-        controlComponent_(wire(actor->getControlComponent())),
-        renderComponent_(wire(actor->getRenderComponent())),
+        physicsComponent_(convert(actor->getPhysicsComponent())),
+        controlComponent_(convert(actor->getControlComponent())),
+        renderComponent_(convert(actor->getRenderComponent())),
     
         headDirection_(1),
         trunkDirection_(1)

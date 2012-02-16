@@ -2,16 +2,16 @@
 
 #include "actor.hpp"
 #include "block_physics_component.hpp"
+#include "convert.hpp"
 #include "game.hpp"
 #include "grid.hpp"
 #include "hash.hpp"
 #include "sprite.hpp"
-#include "wire.hpp"
 
 namespace crust {
     BlockRenderComponent::BlockRenderComponent(Actor *actor) :
         actor_(actor),
-        physicsComponent_(wire(actor->getPhysicsComponent())),
+        physicsComponent_(convert(actor->getPhysicsComponent())),
 
         spriteDirty_(true)
     { }

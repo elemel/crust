@@ -2,10 +2,10 @@
 
 #include "actor.hpp"
 #include "block_physics_component.hpp"
+#include "convert.hpp"
 #include "game.hpp"
 #include "monster_control_component.hpp"
 #include "monster_idle_state.hpp"
-#include "wire.hpp"
 
 namespace crust {
     namespace {
@@ -18,7 +18,7 @@ namespace crust {
     MonsterLiftState::MonsterLiftState(Actor *actor) :
         actor_(actor),
         game_(actor->getGame()),
-        controlComponent_(wire(actor->getControlComponent())),
+        controlComponent_(convert(actor->getControlComponent())),
     
         targetActor_(0),
         joint_(0)
@@ -46,7 +46,7 @@ namespace crust {
     {
         liftBlock(false);
         if (targetActor_) {
-            BlockPhysicsComponent *physicsComponent = wire(targetActor_->getPhysicsComponent());
+            BlockPhysicsComponent *physicsComponent = convert(targetActor_->getPhysicsComponent());
             b2Body *body = physicsComponent->getBody();
             b2Vec2 velocity = body->GetLinearVelocity();
             Vector2 targetPosition = controlComponent_->getTargetPosition();
@@ -75,7 +75,7 @@ namespace crust {
         for (int i = 0; i < game_->getActorCount(); ++i) {
             Actor *actor = game_->getActor(i);
             if (isBlock(actor)) {
-                BlockPhysicsComponent *physicsComponent = wire(actor->getPhysicsComponent());
+                BlockPhysicsComponent *physicsComponent = convert(actor->getPhysicsComponent());
                 if (physicsComponent->containsPoint(targetPosition)) {
                     targetActor_ = actor;
                 }
@@ -83,7 +83,7 @@ namespace crust {
         }
         
         if (targetActor_) {
-            BlockPhysicsComponent *physicsComponent = wire(targetActor_->getPhysicsComponent());
+            BlockPhysicsComponent *physicsComponent = convert(targetActor_->getPhysicsComponent());
             b2Body *body = physicsComponent->getBody();
             
             b2Vec2 localPointVec2 = body->GetLocalPoint(b2Vec2(targetPosition.x, targetPosition.y));
@@ -113,7 +113,7 @@ namespace crust {
             return;
         }
 
-        BlockPhysicsComponent *physicsComponent = wire(targetActor_->getPhysicsComponent());
+        BlockPhysicsComponent *physicsComponent = convert(targetActor_->getPhysicsComponent());
         b2Body *body = physicsComponent->getBody();
         bool makeStatic = false;
         b2Vec2 linearVelocity = body->GetLinearVelocityFromWorldPoint(joint_->GetTarget());

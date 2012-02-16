@@ -2,11 +2,11 @@
 
 #include "actor.hpp"
 #include "block_physics_component.hpp"
+#include "convert.hpp"
 #include "game.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
 #include "monster_idle_state.hpp"
-#include "wire.hpp"
 
 #include <Box2D/Box2D.h>
 
@@ -42,8 +42,8 @@ namespace crust {
 
     MonsterDigState::MonsterDigState(Actor *actor) :
         actor_(actor),
-        controlComponent_(wire(actor->getControlComponent())),
-        physicsComponent_(wire(actor->getPhysicsComponent()))
+        controlComponent_(convert(actor->getControlComponent())),
+        physicsComponent_(convert(actor->getPhysicsComponent()))
     { }
 
     std::auto_ptr<State> MonsterDigState::transition()

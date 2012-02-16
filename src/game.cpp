@@ -6,6 +6,7 @@
 #include "block_physics_component.hpp"
 #include "config.hpp"
 #include "control_component.hpp"
+#include "convert.hpp"
 #include "dungeon_generator.hpp"
 #include "error.hpp"
 #include "geometry.hpp"
@@ -13,7 +14,6 @@
 #include "physics_component.hpp"
 #include "physics_draw.hpp"
 #include "render_manager.hpp"
-#include "wire.hpp"
 
 #include <fstream>
 
@@ -345,28 +345,28 @@ namespace crust {
 
             case SDLK_1:
                 if (playerActor_) {
-                    MonsterControlComponent *controlComponent = wire(playerActor_->getControlComponent());
+                    MonsterControlComponent *controlComponent = convert(playerActor_->getControlComponent());
                     controlComponent->setActionMode(MonsterControlComponent::DIG_MODE);
                 }
                 break;
 
             case SDLK_2:
                 if (playerActor_) {
-                    MonsterControlComponent *controlComponent = wire(playerActor_->getControlComponent());
+                    MonsterControlComponent *controlComponent = convert(playerActor_->getControlComponent());
                     controlComponent->setActionMode(MonsterControlComponent::CHAIN_MODE);
                 }
                 break;
 
             case SDLK_3:
                 if (playerActor_) {
-                    MonsterControlComponent *controlComponent = wire(playerActor_->getControlComponent());
+                    MonsterControlComponent *controlComponent = convert(playerActor_->getControlComponent());
                     controlComponent->setActionMode(MonsterControlComponent::LIFT_MODE);
                 }
                 break;
 
             case SDLK_4:
                 if (playerActor_) {
-                    MonsterControlComponent *controlComponent = wire(playerActor_->getControlComponent());
+                    MonsterControlComponent *controlComponent = convert(playerActor_->getControlComponent());
                     controlComponent->setActionMode(MonsterControlComponent::COLLAPSE_MODE);
                 }
                 break;

@@ -5,7 +5,7 @@
 #include "control_component.hpp"
 #include "game.hpp"
 #include "monster_idle_state.hpp"
-#include "wire.hpp"
+#include "convert.hpp"
 
 namespace crust {
     namespace {
@@ -17,7 +17,7 @@ namespace crust {
 
     MonsterCollapseState::MonsterCollapseState(Actor *actor) :
         actor_(actor),
-        controlComponent_(wire(actor->getControlComponent())),
+        controlComponent_(convert(actor->getControlComponent())),
         distance_(2.0f)
     { }
     

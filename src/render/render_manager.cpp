@@ -4,13 +4,13 @@
 #include "block_physics_component.hpp"
 #include "config.hpp"
 #include "control_component.hpp"
+#include "convert.hpp"
 #include "font.hpp"
 #include "font_reader.hpp"
 #include "game.hpp"
 #include "monster_control_component.hpp"
 #include "render_component.hpp"
 #include "text_renderer.hpp"
-#include "wire.hpp"
 
 #include <fstream>
 
@@ -165,7 +165,7 @@ namespace crust {
     void RenderManager::drawMode()
     {
         if (game_->getPlayerActor()) {
-            MonsterControlComponent *controlComponent = wire(game_->getPlayerActor()->getControlComponent());
+            MonsterControlComponent *controlComponent = convert(game_->getPlayerActor()->getControlComponent());
             
             int scale = 3;
             glPushMatrix();
