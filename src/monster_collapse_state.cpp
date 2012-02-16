@@ -25,9 +25,8 @@ namespace crust {
     {
         if (!controlComponent_->getActionControl()) {
             return std::auto_ptr<State>(new MonsterIdleState(actor_));
-        } else {
-            return std::auto_ptr<State>();
         }
+        return std::auto_ptr<State>();
     }
 
     void MonsterCollapseState::step(float dt)

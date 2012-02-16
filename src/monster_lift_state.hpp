@@ -1,23 +1,22 @@
-#ifndef CRUST_MONSTER_DIG_STATE_HPP
-#define CRUST_MONSTER_DIG_STATE_HPP
+#ifndef MONSTER_LIFT_STATE_HPP
+#define MONSTER_LIFT_STATE_HPP
 
 #include "state.hpp"
 #include "task.hpp"
 
+#include <Box2D/Box2D.h>
+
 namespace crust {
     class Actor;
+    class Game;
     class MonsterControlComponent;
-    class MonsterPhysicsComponent;
 
-    class MonsterDigState : public State, public Task {
+    class MonsterLiftState : public State, public Task {
     public:
-        explicit MonsterDigState(Actor *actor);
+        explicit MonsterLiftState(Actor *actor);
 
-        void create()
-        { }
-
-        void destroy()
-        { }
+        void create();
+        void destroy();
         
         std::auto_ptr<State> transition();
         
@@ -25,18 +24,24 @@ namespace crust {
         {
             return this;
         }
-
+        
         Task const *getTask() const
         {
             return this;
         }
-
+        
         void step(float dt);
 
     private:
         Actor *actor_;
+        Game *game_;
         MonsterControlComponent *controlComponent_;
-        MonsterPhysicsComponent *physicsComponent_;
+
+        Actor *targetActor_;
+        b2MouseJoint *joint_;
+
+        void liftBlock(bool fixedRotation);
+        void releaseBlock();
     };
 }
 

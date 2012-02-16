@@ -36,7 +36,7 @@ namespace crust {
         {
             cameraScale_ = scale;
         }
-        
+
         Vector2 getWorldPosition(Vector2 const &screenPosition) const;
         
     private:

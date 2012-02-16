@@ -2,10 +2,11 @@
 
 #include "actor.hpp"
 #include "block_physics_component.hpp"
-#include "control_component.hpp"
 #include "game.hpp"
+#include "monster_control_component.hpp"
+#include "monster_physics_component.hpp"
 #include "monster_idle_state.hpp"
-#include "physics_component.hpp"
+#include "wire.hpp"
 
 #include <Box2D/Box2D.h>
 
@@ -39,19 +40,24 @@ namespace crust {
         };
     }
 
+    MonsterDigState::MonsterDigState(Actor *actor) :
+        actor_(actor),
+        controlComponent_(wire(actor->getControlComponent())),
+        physicsComponent_(wire(actor->getPhysicsComponent()))
+    { }
+
     std::auto_ptr<State> MonsterDigState::transition()
     {
-        if (!actor_->getControlComponent()->getActionControl()) {
+        if (!controlComponent_->getActionControl()) {
             return std::auto_ptr<State>(new MonsterIdleState(actor_));
-        } else {
-            return std::auto_ptr<State>();
         }
+        return std::auto_ptr<State>();
     }
 
     void MonsterDigState::step(float dt)
     {
-        Vector2 p1 = actor_->getPhysicsComponent()->getPosition();
-        Vector2 p2 = p1 + clampLength(actor_->getControlComponent()->getTargetPosition() - p1, 1.5f);
+        Vector2 p1 = physicsComponent_->getPosition();
+        Vector2 p2 = p1 + clampLength(controlComponent_->getTargetPosition() - p1, 1.5f);
         DigCallback callback;
         actor_->getGame()->getPhysicsWorld()->RayCast(&callback, b2Vec2(p1.x, p1.y),
                                                       b2Vec2(p2.x, p2.y));

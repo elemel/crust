@@ -4,6 +4,7 @@
 #include "monster_collapse_state.hpp"
 #include "monster_control_component.hpp"
 #include "monster_dig_state.hpp"
+#include "monster_lift_state.hpp"
 #include "wire.hpp"
 
 namespace crust {
@@ -18,6 +19,9 @@ namespace crust {
             switch (controlComponent_->getActionMode()) {
                 case MonsterControlComponent::DIG_MODE:
                     return std::auto_ptr<State>(new MonsterDigState(actor_));
+
+                case MonsterControlComponent::LIFT_MODE:
+                    return std::auto_ptr<State>(new MonsterLiftState(actor_));
 
                 case MonsterControlComponent::COLLAPSE_MODE:
                     return std::auto_ptr<State>(new MonsterCollapseState(actor_));

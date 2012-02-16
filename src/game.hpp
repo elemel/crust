@@ -98,6 +98,11 @@ namespace crust {
             return &actors_[i];
         }
 
+        RenderManager *getRenderManager()
+        {
+            return renderManager_.get();
+        }
+        
     private:
         Config const *config_;
         Random random_;
@@ -124,10 +129,6 @@ namespace crust {
         int fpsCount_;
         std::string fpsText_;
         
-        Actor *liftedBlock_;
-        b2MouseJoint *liftJoint_;
-        double liftTime_;
-
         DelauneyTriangulation delauneyTriangulation_;
         VoronoiDiagram voronoiDiagram_;
         DungeonGenerator dungeonGenerator_;
@@ -160,9 +161,6 @@ namespace crust {
         void handleCollisions();
         
         void removeBlocks(Box2 const &box);
-
-        void liftBlock(Vector2 const &point);
-        void releaseBlock();
     };
 }
 

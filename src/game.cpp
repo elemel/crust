@@ -18,7 +18,7 @@
 #include <fstream>
 
 namespace crust {
-    namespace {        
+    namespace {
         bool isBlock(Actor const *actor)
         {
             return dynamic_cast<BlockPhysicsComponent const *>(actor->getPhysicsComponent());
@@ -44,11 +44,7 @@ namespace crust {
         fpsCount_(0),
     
         delauneyTriangulation_(bounds_),
-        dungeonGenerator_(&random_, bounds_),
-
-        liftedBlock_(0),
-        liftJoint_(0),
-        liftTime_(0.0)
+        dungeonGenerator_(&random_, bounds_)
     {
         actorFactory_.reset(new ActorFactory(this));
         initWindow();
@@ -64,7 +60,6 @@ namespace crust {
     
     Game::~Game()
     {
-        releaseBlock();
         while (!actors_.empty()) {
             actors_.back().destroy();
             actors_.pop_back();
@@ -286,10 +281,8 @@ namespace crust {
     
     void Game::updateCamera()
     {
-        if (playerActor_ && liftedBlock_ == 0) {
-            Vector2 position = playerActor_->getPhysicsComponent()->getPosition();
-            renderManager_->setCameraPosition(position);
-        }
+        Vector2 position = playerActor_->getPhysicsComponent()->getPosition();
+        renderManager_->setCameraPosition(position);
     }
     
     void Game::handleEvents()
@@ -339,7 +332,6 @@ namespace crust {
 
             case SDLK_BACKSPACE:
                 playerActor_ = 0;
-                releaseBlock();
                 while (!actors_.empty()) {
                     actors_.back().destroy();
                     actors_.pop_back();
@@ -380,7 +372,7 @@ namespace crust {
                 break;
 
             case SDLK_PLUS:
-                if (liftedBlock_ == 0) {
+                {
                     float scale = renderManager_->getCameraScale();
                     scale *= config_->cameraZoom;
                     if (scale < config_->maxCameraScale) {
@@ -390,7 +382,7 @@ namespace crust {
                 break;
 
             case SDLK_MINUS:
-                if (liftedBlock_ == 0) {
+                {
                     float scale = renderManager_->getCameraScale();
                     scale /= config_->cameraZoom;
                     if (scale > config_->minCameraScale) {
@@ -414,52 +406,17 @@ namespace crust {
             case SDLK_DOWN:
                 // cameraPosition_.y -= config_->cameraPan / cameraScale_;
                 break;
-
-            case SDLK_LSHIFT:
-            {
-                int x = 0;
-                int y = 0;
-                SDL_GetMouseState(&x, &y);
-                Vector2 targetPosition = renderManager_->getWorldPosition(Vector2(float(x), float(y)));
-                if (playerActor_) {
-                    MonsterControlComponent *controlComponent = wire(playerActor_->getControlComponent());
-                    if (controlComponent->getActionMode() == MonsterControlComponent::LIFT_MODE) {
-                        liftBlock(targetPosition);
-                    }
-                }
-                break;
-            }
         }
     }
 
     void Game::handleKeyUpEvent(SDL_Event *event)
-    {
-        switch (event->key.keysym.sym) {
-            case SDLK_LSHIFT:
-                releaseBlock();
-                break;
-        }
-    }
+    { }
 
     void Game::handleMouseButtonDownEvent(SDL_Event *event)
-    {
-        if (playerActor_) {
-            MonsterControlComponent *controlComponent = wire(playerActor_->getControlComponent());
-            if (controlComponent->getActionMode() == MonsterControlComponent::LIFT_MODE) {
-                Vector2 screenPosition(float(event->button.x), float(event->button.y));
-                Vector2 position = renderManager_->getWorldPosition(screenPosition);
-                liftBlock(position);
-            }
-        }
-    }
+    { }
 
     void Game::handleMouseButtonUpEvent(SDL_Event *event)
-    {
-        Uint8 *state = SDL_GetKeyboardState(0);
-        if (!state[SDL_SCANCODE_LSHIFT]) {
-            releaseBlock();
-        }
-    }
+    { }
 
     void Game::handleInput()
     {
@@ -482,10 +439,6 @@ namespace crust {
             controlComponent->setJumpControl(jumpControl);
             controlComponent->setActionControl(actionControl);
             controlComponent->setTargetPosition(targetPosition);
-
-            if (liftedBlock_) {
-                liftJoint_->SetTarget(b2Vec2(targetPosition.x, targetPosition.y));
-            }
         }
     }
     
@@ -505,7 +458,7 @@ namespace crust {
         }
         for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
             Actor *actor = &*i;
-            if (isBlock(actor) && actor != liftedBlock_) {
+            if (isBlock(actor)) {
                 b2Body *body = static_cast<BlockPhysicsComponent *>(actor->getPhysicsComponent())->getBody();
                 if (body->GetType() != b2_staticBody && !body->IsAwake()) {
                     body->SetType(b2_staticBody);
@@ -526,82 +479,6 @@ namespace crust {
                 removeActor(actor);
                 i = actors_.begin() + j - 1;
             }
-        }
-    }
-    
-    void Game::liftBlock(Vector2 const &point)
-    {
-        if (liftedBlock_) {
-            return;
-        }
-
-        Actor *actor = 0;
-        for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
-            if (isBlock(&*i) && static_cast<BlockPhysicsComponent *>(i->getPhysicsComponent())->containsPoint(point)) {
-                actor = &*i;
-            }
-        }
-
-        if (actor) {
-            b2Body *body = static_cast<BlockPhysicsComponent *>(actor->getPhysicsComponent())->getBody();
-
-            b2Vec2 localPointVec2 = body->GetLocalPoint(b2Vec2(point.x, point.y));
-            Vector2 localPoint(localPointVec2.x, localPointVec2.y);
-            Polygon2 const &localPolygon = static_cast<BlockPhysicsComponent *>(actor->getPhysicsComponent())->getLocalPolygon();
-            Vector2 localCentroid = localPolygon.getCentroid();
-            float squaredCentroidDistance = getSquaredDistance(localPoint, localCentroid);
-            bool fixedRotation = true;
-            for (std::size_t i = 0; i < localPolygon.vertices.size(); ++i) {
-                if (getSquaredDistance(localPoint, localPolygon.vertices[i]) < squaredCentroidDistance) {
-                    fixedRotation = false;
-                }
-            }
-
-            if (fixedRotation) {
-                body->SetAngularVelocity(0.0f);
-                body->SetFixedRotation(true);
-            }
-            body->SetType(b2_dynamicBody);
-            body->SetGravityScale(0.0f);
-
-            liftedBlock_ = actor;
-
-            b2MouseJointDef liftJointDef;
-            liftJointDef.target.Set(point.x, point.y);
-            liftJointDef.bodyA = body;
-            liftJointDef.bodyB = body;
-            liftJointDef.maxForce = 1.0f * body->GetMass() * 10.0f;
-            liftJoint_ = static_cast<b2MouseJoint *>(physicsWorld_->CreateJoint(&liftJointDef));
-
-            liftTime_ = time_;
-        }
-    }
-
-    void Game::releaseBlock()
-    {
-        if (liftedBlock_) {
-            b2Body *body = static_cast<BlockPhysicsComponent *>(liftedBlock_->getPhysicsComponent())->getBody();
-            bool makeStatic = false;
-            b2Vec2 linearVelocity = body->GetLinearVelocityFromWorldPoint(liftJoint_->GetTarget());
-            float angularVelocity = body->GetAngularVelocity();
-            if (linearVelocity.LengthSquared() < square(0.1f) &&
-                std::abs(angularVelocity) < 0.1f)
-            {
-                for (b2ContactEdge *i = body->GetContactList(); i; i = i->next) {
-                    if (i->contact->IsTouching() && i->other->GetType() == b2_staticBody) {
-                        makeStatic = true;
-                    }
-                }
-            }
-            if (makeStatic) {
-                body->SetType(b2_staticBody);
-            }
-            body->SetFixedRotation(false);
-            body->SetGravityScale(1.0f);
-
-            physicsWorld_->DestroyJoint(liftJoint_);
-            liftJoint_ = 0;
-            liftedBlock_ = 0;
         }
     }
 }
