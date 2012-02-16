@@ -1,13 +1,13 @@
-#ifndef CRUST_GRID_BOX_HPP
-#define CRUST_GRID_BOX_HPP
+#ifndef CRUST_INT_GEOMETRY_HPP
+#define CRUST_INT_GEOMETRY_HPP
 
 #include <algorithm>
 #include <limits>
 
 namespace crust {
-    class GridBox {
+    class IntBox2 {
     public:
-        GridBox() :
+        IntBox2() :
             minX_(std::numeric_limits<int>::max()),
             minY_(std::numeric_limits<int>::max()),
             maxX_(std::numeric_limits<int>::min()),

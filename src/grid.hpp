@@ -1,7 +1,7 @@
 #ifndef CRUST_GRID_HPP
 #define CRUST_GRID_HPP
 
-#include "grid_box.hpp"
+#include "int_geometry.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -88,7 +88,7 @@ namespace crust {
         void normalize()
         {
             if (!normalized_) {
-                GridBox box;
+                IntBox2 box;
                 for (int y = innerBox_.getY(); y < innerBox_.getY() + innerBox_.getHeight(); ++y) {
                     for (int x = innerBox_.getX(); x < innerBox_.getX() + innerBox_.getWidth(); ++x) {
                         if (elements_[getIndex(x, y)] != defaultValue_) {
@@ -102,7 +102,7 @@ namespace crust {
         }
 
     private:
-        explicit Grid(GridBox const &box, Element const &defaultValue) :
+        explicit Grid(IntBox2 const &box, Element const &defaultValue) :
             innerBox_(box),
             outerBox_(box),
             defaultValue_(defaultValue),
@@ -122,8 +122,8 @@ namespace crust {
         Grid(Grid const &other);
         Grid &operator=(Grid const &other);
 
-        GridBox innerBox_;
-        GridBox outerBox_;
+        IntBox2 innerBox_;
+        IntBox2 outerBox_;
         Element defaultValue_;
         Element *elements_;
         bool normalized_;
@@ -138,7 +138,7 @@ namespace crust {
             } else {
                 normalize();
                 
-                GridBox box(innerBox_);
+                IntBox2 box(innerBox_);
                 box.add(x, y);
                 
                 Grid other(box, defaultValue_);
