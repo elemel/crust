@@ -7,8 +7,10 @@
 #include "font.hpp"
 #include "font_reader.hpp"
 #include "game.hpp"
+#include "monster_control_component.hpp"
 #include "render_component.hpp"
 #include "text_renderer.hpp"
+#include "wire.hpp"
 
 #include <fstream>
 
@@ -162,32 +164,36 @@ namespace crust {
     
     void RenderManager::drawMode()
     {
-        int scale = 3;
-        glPushMatrix();
-        glTranslatef(0.0f, float(windowHeight_) - float(scale) * textRenderer_->getHeight("X"), 0.0f);
-        glTranslatef(2.0f * float(scale), -2.0f * float(scale), 0.0f);
-        glScalef(float(scale), float(scale), 1.0);
-        switch (game_->getMode()) {
-            case Game::DIG_MODE:
-                textRenderer_->draw("DIG");
-                break;
-
-            case Game::CHAIN_MODE:
-                textRenderer_->draw("CHAIN");
-                break;
-
-            case Game::LIFT_MODE:
-                textRenderer_->draw("LIFT");
-                break;
-
-            case Game::COLLAPSE_MODE:
-                textRenderer_->draw("COLLAPSE");
-                break;
-
-            default:
-                break;
+        if (game_->getPlayerActor()) {
+            MonsterControlComponent *controlComponent = wire(game_->getPlayerActor()->getControlComponent());
+            
+            int scale = 3;
+            glPushMatrix();
+            glTranslatef(0.0f, float(windowHeight_) - float(scale) * textRenderer_->getHeight("X"), 0.0f);
+            glTranslatef(2.0f * float(scale), -2.0f * float(scale), 0.0f);
+            glScalef(float(scale), float(scale), 1.0);
+            switch (controlComponent->getActionMode()) {
+                case MonsterControlComponent::DIG_MODE:
+                    textRenderer_->draw("DIG");
+                    break;
+                    
+                case MonsterControlComponent::CHAIN_MODE:
+                    textRenderer_->draw("CHAIN");
+                    break;
+                    
+                case MonsterControlComponent::LIFT_MODE:
+                    textRenderer_->draw("LIFT");
+                    break;
+                    
+                case MonsterControlComponent::COLLAPSE_MODE:
+                    textRenderer_->draw("COLLAPSE");
+                    break;
+                    
+                default:
+                    break;
+            }
+            glPopMatrix();
         }
-        glPopMatrix();
     }
     
     void RenderManager::drawFps()

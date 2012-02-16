@@ -26,7 +26,9 @@ namespace crust {
         leftControl_(false),
         rightControl_(false),
         jumpControl_(false),
-        actionControl_(false)
+        actionControl_(false),
+    
+        actionMode_(DIG_MODE)
     { }
 
     MonsterControlComponent::~MonsterControlComponent()

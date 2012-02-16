@@ -3,6 +3,8 @@
 
 #include "error.hpp"
 
+#include <typeinfo>
+
 namespace crust {
     template <typename T>
     class WireConversion {
@@ -13,6 +15,11 @@ namespace crust {
             ptr(ptr)
         { }
 
+        operator T*() const
+        {
+            return ptr;
+        }
+        
         template <typename U>
         operator U *() const
         {

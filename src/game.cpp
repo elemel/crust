@@ -9,9 +9,11 @@
 #include "dungeon_generator.hpp"
 #include "error.hpp"
 #include "geometry.hpp"
+#include "monster_control_component.hpp"
 #include "physics_component.hpp"
 #include "physics_draw.hpp"
 #include "render_manager.hpp"
+#include "wire.hpp"
 
 #include <fstream>
 
@@ -44,7 +46,6 @@ namespace crust {
         delauneyTriangulation_(bounds_),
         dungeonGenerator_(&random_, bounds_),
 
-        mode_(DIG_MODE),
         liftedBlock_(0),
         liftJoint_(0),
         liftTime_(0.0)
@@ -351,19 +352,31 @@ namespace crust {
                 break;
 
             case SDLK_1:
-                mode_ = DIG_MODE;
+                if (playerActor_) {
+                    MonsterControlComponent *controlComponent = wire(playerActor_->getControlComponent());
+                    controlComponent->setActionMode(MonsterControlComponent::DIG_MODE);
+                }
                 break;
 
             case SDLK_2:
-                mode_ = CHAIN_MODE;
+                if (playerActor_) {
+                    MonsterControlComponent *controlComponent = wire(playerActor_->getControlComponent());
+                    controlComponent->setActionMode(MonsterControlComponent::CHAIN_MODE);
+                }
                 break;
 
             case SDLK_3:
-                mode_ = LIFT_MODE;
+                if (playerActor_) {
+                    MonsterControlComponent *controlComponent = wire(playerActor_->getControlComponent());
+                    controlComponent->setActionMode(MonsterControlComponent::LIFT_MODE);
+                }
                 break;
 
             case SDLK_4:
-                mode_ = COLLAPSE_MODE;
+                if (playerActor_) {
+                    MonsterControlComponent *controlComponent = wire(playerActor_->getControlComponent());
+                    controlComponent->setActionMode(MonsterControlComponent::COLLAPSE_MODE);
+                }
                 break;
 
             case SDLK_PLUS:
@@ -408,8 +421,11 @@ namespace crust {
                 int y = 0;
                 SDL_GetMouseState(&x, &y);
                 Vector2 targetPosition = renderManager_->getWorldPosition(Vector2(float(x), float(y)));
-                if (mode_ == LIFT_MODE) {
-                    liftBlock(targetPosition);
+                if (playerActor_) {
+                    MonsterControlComponent *controlComponent = wire(playerActor_->getControlComponent());
+                    if (controlComponent->getActionMode() == MonsterControlComponent::LIFT_MODE) {
+                        liftBlock(targetPosition);
+                    }
                 }
                 break;
             }
@@ -427,10 +443,13 @@ namespace crust {
 
     void Game::handleMouseButtonDownEvent(SDL_Event *event)
     {
-        if (mode_ == LIFT_MODE) {
-            Vector2 screenPosition(float(event->button.x), float(event->button.y));
-            Vector2 position = renderManager_->getWorldPosition(screenPosition);
-            liftBlock(position);
+        if (playerActor_) {
+            MonsterControlComponent *controlComponent = wire(playerActor_->getControlComponent());
+            if (controlComponent->getActionMode() == MonsterControlComponent::LIFT_MODE) {
+                Vector2 screenPosition(float(event->button.x), float(event->button.y));
+                Vector2 position = renderManager_->getWorldPosition(screenPosition);
+                liftBlock(position);
+            }
         }
     }
 
@@ -464,11 +483,6 @@ namespace crust {
             controlComponent->setActionControl(actionControl);
             controlComponent->setTargetPosition(targetPosition);
 
-            if (actionControl) {
-                if (mode_ == COLLAPSE_MODE) {
-                    collapseBlocks(targetPosition, 2.0f);
-                }
-            }
             if (liftedBlock_) {
                 liftJoint_->SetTarget(b2Vec2(targetPosition.x, targetPosition.y));
             }
@@ -588,15 +602,6 @@ namespace crust {
             physicsWorld_->DestroyJoint(liftJoint_);
             liftJoint_ = 0;
             liftedBlock_ = 0;
-        }
-    }
-
-    void Game::collapseBlocks(Vector2 const &point, float distance)
-    {
-        for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
-            if (isBlock(&*i) && getSquaredDistance(i->getPhysicsComponent()->getPosition(), point) < square(distance)) {
-                static_cast<BlockPhysicsComponent *>(i->getPhysicsComponent())->getBody()->SetType(b2_dynamicBody);
-            }
         }
     }
 }

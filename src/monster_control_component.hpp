@@ -11,6 +11,15 @@ namespace crust {
     
     class MonsterControlComponent : public ControlComponent {
     public:
+        enum ActionMode {
+            DIG_MODE,
+            CHAIN_MODE,
+            LIFT_MODE,
+            COLLAPSE_MODE,
+            
+            ACTION_MODE_COUNT
+        };
+        
         explicit MonsterControlComponent(Actor *actor);
         ~MonsterControlComponent();
 
@@ -67,6 +76,16 @@ namespace crust {
             targetPosition_ = position;
         }
 
+        ActionMode getActionMode() const
+        {
+            return actionMode_;
+        }
+
+        void setActionMode(ActionMode mode)
+        {
+            actionMode_ = mode;
+        }
+        
         void step(float dt);
 
     private:
@@ -89,6 +108,7 @@ namespace crust {
         bool actionControl_;
 
         Vector2 targetPosition_;
+        ActionMode actionMode_;
 
         std::auto_ptr<State> actionState_;
     };

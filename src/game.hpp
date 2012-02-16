@@ -25,15 +25,6 @@ namespace crust {
 
     class Game : public b2ContactListener {
     public:
-        enum Mode {
-            DIG_MODE,
-            CHAIN_MODE,
-            LIFT_MODE,
-            COLLAPSE_MODE,
-
-            MODE_COUNT
-        };
-
         typedef boost::ptr_vector<Actor> ActorVector;
         typedef ActorVector::iterator ActorIterator;
         typedef ActorVector::const_iterator ConstActorIterator;
@@ -63,11 +54,6 @@ namespace crust {
             return physicsWorld_.get();
         }
 
-        Mode getMode() const
-        {
-            return mode_;
-        }
-        
         void BeginContact(b2Contact* contact);
         void EndContact(b2Contact* contact);
 
@@ -97,6 +83,21 @@ namespace crust {
         Actor *addActor(std::auto_ptr<Actor> actor);
         void removeActor(Actor *actor);
 
+        int getActorCount() const
+        {
+            return int(actors_.size());
+        }
+
+        Actor *getActor(int i)
+        {
+            return &actors_[i];
+        }
+
+        Actor const *getActor(int i) const
+        {
+            return &actors_[i];
+        }
+
     private:
         Config const *config_;
         Random random_;
@@ -123,7 +124,6 @@ namespace crust {
         int fpsCount_;
         std::string fpsText_;
         
-        Mode mode_;
         Actor *liftedBlock_;
         b2MouseJoint *liftJoint_;
         double liftTime_;
@@ -163,7 +163,6 @@ namespace crust {
 
         void liftBlock(Vector2 const &point);
         void releaseBlock();
-        void collapseBlocks(Vector2 const &point, float distance);
     };
 }
 

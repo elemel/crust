@@ -1,7 +1,8 @@
 #include "monster_idle_state.hpp"
 
 #include "actor.hpp"
-#include "control_component.hpp"
+#include "monster_collapse_state.hpp"
+#include "monster_control_component.hpp"
 #include "monster_dig_state.hpp"
 #include "wire.hpp"
 
@@ -14,9 +15,17 @@ namespace crust {
     std::auto_ptr<State> MonsterIdleState::transition()
     {
         if (controlComponent_->getActionControl()) {
-            return std::auto_ptr<State>(new MonsterDigState(actor_));
-        } else {
-            return std::auto_ptr<State>();
+            switch (controlComponent_->getActionMode()) {
+                case MonsterControlComponent::DIG_MODE:
+                    return std::auto_ptr<State>(new MonsterDigState(actor_));
+
+                case MonsterControlComponent::COLLAPSE_MODE:
+                    return std::auto_ptr<State>(new MonsterCollapseState(actor_));
+
+                default:
+                    break;
+            }
         }
+        return std::auto_ptr<State>();
     }
 }
