@@ -19,16 +19,6 @@ namespace crust {
                std::numeric_limits<int>::min())
         { }
         
-        int getX() const
-        {
-            return p1.x;
-        }
-        
-        int getY() const
-        {
-            return p1.y;
-        }
-        
         int getWidth() const
         {
             return (p1.x < p2.x) ? p2.x - p1.x : 0;
@@ -38,8 +28,13 @@ namespace crust {
         {
             return (p1.y < p2.y) ? p2.y - p1.y : 0;
         }
+
+        int getPerimeter() const
+        {
+            return 2 * (getWidth() + getHeight());
+        }
         
-        int getSize() const
+        int getArea() const
         {
             return getWidth() * getHeight();
         }
@@ -49,25 +44,33 @@ namespace crust {
             return p2.x <= p1.x || p2.y <= p1.y;
         }
         
-        bool contains(int x, int y) const
+        bool containsPoint(IntVector2 const &p) const
         {
-            return p1.x <= x && x < p2.x && p1.y <= y && y < p2.y;
+            return p1.x <= p.x && p.x < p2.x && p1.y <= p.y && p.y < p2.y;
+        }
+
+        void pad(int i)
+        {
+            p1.x -= i;
+            p1.y -= i;
+            p2.x += i;
+            p2.y += i;
+        }
+
+        void pad(IntVector2 const &p)
+        {
+            p1.x -= p.x;
+            p1.y -= p.y;
+            p2.x += p.x;
+            p2.y += p.y;
         }
         
-        void pad(int dx, int dy)
+        void mergePoint(IntVector2 const &p)
         {
-            p1.x -= dx;
-            p1.y -= dy;
-            p2.x += dx;
-            p2.y += dy;
-        }
-        
-        void add(int x, int y)
-        {
-            p1.x = std::min(x, p1.x);
-            p1.y = std::min(y, p1.y);
-            p2.x = std::max(x + 1, p2.x);
-            p2.y = std::max(y + 1, p2.y);
+            p1.x = std::min(p.x, p1.x);
+            p1.y = std::min(p.y, p1.y);
+            p2.x = std::max(p.x + 1, p2.x);
+            p2.y = std::max(p.y + 1, p2.y);
         }
     };
 }

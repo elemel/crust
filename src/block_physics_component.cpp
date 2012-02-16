@@ -175,6 +175,6 @@ namespace crust {
     {
         b2Vec2 localPoint = b2Vec2(0.1f * float(x), 0.1f * float(y));
         b2Vec2 worldPoint = body_->GetWorldPoint(localPoint);
-        bounds->mergePoint(worldPoint.x, worldPoint.y);
+        bounds->mergePoint(Vector2(worldPoint.x, worldPoint.y));
     }
 }

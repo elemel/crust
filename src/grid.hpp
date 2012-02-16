@@ -25,12 +25,12 @@ namespace crust {
 
         int getX() const
         {
-            return innerBox_.getX();
+            return innerBox_.p1.x;
         }
 
         int getY() const
         {
-            return innerBox_.getY();
+            return innerBox_.p1.y;
         }
 
         int getWidth() const
@@ -60,7 +60,7 @@ namespace crust {
 
         Element const &getElement(int x, int y) const
         {
-            if (innerBox_.contains(x, y)) {
+            if (innerBox_.containsPoint(IntVector2(x, y))) {
                 return elements_[getIndex(x, y)];
             } else {
                 return defaultValue_;
@@ -89,10 +89,10 @@ namespace crust {
         {
             if (!normalized_) {
                 IntBox2 box;
-                for (int y = innerBox_.getY(); y < innerBox_.getY() + innerBox_.getHeight(); ++y) {
-                    for (int x = innerBox_.getX(); x < innerBox_.getX() + innerBox_.getWidth(); ++x) {
+                for (int y = innerBox_.p1.y; y < innerBox_.p2.y; ++y) {
+                    for (int x = innerBox_.p1.x; x < innerBox_.p2.x; ++x) {
                         if (elements_[getIndex(x, y)] != defaultValue_) {
-                            box.add(x, y);
+                            box.mergePoint(IntVector2(x, y));
                         }
                     }
                 }
@@ -111,9 +111,9 @@ namespace crust {
         {
             int dx = std::max(1, int(0.5f * M_SQRT2 * float(box.getWidth()) + 0.5f));
             int dy = std::max(1, int(0.5f * M_SQRT2 * float(box.getHeight()) + 0.5f));
-            outerBox_.pad(dx, dy);
-            elements_ = new Element[outerBox_.getSize()];
-            std::fill(elements_, elements_ + outerBox_.getSize(), defaultValue);
+            outerBox_.pad(IntVector2(dx, dy));
+            elements_ = new Element[outerBox_.getArea()];
+            std::fill(elements_, elements_ + outerBox_.getArea(), defaultValue);
         }
 
         // Noncopyable.
@@ -130,16 +130,16 @@ namespace crust {
 
         void addElement(int x, int y, Element const &value)
         {
-            if (innerBox_.contains(x, y)) {
+            if (innerBox_.containsPoint(IntVector2(x, y))) {
                 elements_[getIndex(x, y)] = value;
-            } else if (outerBox_.contains(x, y)) {
-                innerBox_.add(x, y);
+            } else if (outerBox_.containsPoint(IntVector2(x, y))) {
+                innerBox_.mergePoint(IntVector2(x, y));
                 elements_[getIndex(x, y)] = value;
             } else {
                 normalize();
                 
                 IntBox2 box(innerBox_);
-                box.add(x, y);
+                box.mergePoint(IntVector2(x, y));
                 
                 Grid other(box, defaultValue_);
                 copyElements(other);
@@ -151,7 +151,7 @@ namespace crust {
 
         void removeElement(int x, int y)
         {
-            if (innerBox_.contains(x, y)) {
+            if (innerBox_.containsPoint(IntVector2(x, y))) {
                 elements_[getIndex(x, y)] = defaultValue_;
                 normalized_ = false;
             }
@@ -159,21 +159,15 @@ namespace crust {
 
         int getIndex(int x, int y) const
         {
-            return ((y - outerBox_.getY()) * outerBox_.getWidth() +
-                    (x - outerBox_.getX()));
+            return ((y - outerBox_.p1.y) * outerBox_.getWidth() +
+                    (x - outerBox_.p1.x));
         }
 
         void copyElements(Grid &target) const
         {
-            int x = innerBox_.getX();
-            int y = innerBox_.getY();
-            int width = innerBox_.getWidth();
-            int height = innerBox_.getHeight();
-            for (int dy = 0; dy < height; ++dy) {
-                for (int dx = 0; dx < width; ++dx) {
-                    int index = getIndex(x + dx, y + dy);
-                    int targetIndex = target.getIndex(x + dx, y + dy);
-                    target.elements_[targetIndex] = elements_[index];
+            for (int y = innerBox_.p1.y; y < innerBox_.p2.y; ++y) {
+                for (int x = innerBox_.p1.x; x < innerBox_.p2.x; ++x) {
+                    target.elements_[target.getIndex(x, y)] = elements_[getIndex(x, y)];
                 }
             }
         }

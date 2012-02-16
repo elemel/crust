@@ -81,14 +81,6 @@ namespace crust {
             p2.y += p.y;
         }
         
-        void mergePoint(float x, float y)
-        {
-            p1.x = std::min(x, p1.x);
-            p1.y = std::min(y, p1.y);
-            p2.x = std::max(x, p2.x);
-            p2.y = std::max(y, p2.y);
-        }
-
         void mergePoint(Vector2 const &p)
         {
             p1.x = std::min(p.x, p1.x);
