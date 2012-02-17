@@ -3,9 +3,11 @@
 #include "actor.hpp"
 #include "actor_factory.hpp"
 #include "animation_component.hpp"
+#include "animation_service.hpp"
 #include "block_physics_component.hpp"
 #include "config.hpp"
 #include "control_component.hpp"
+#include "control_service.hpp"
 #include "convert.hpp"
 #include "dungeon_generator.hpp"
 #include "error.hpp"
@@ -51,7 +53,9 @@ namespace crust {
         initContext();
         initVoronoiDiagram();
         physicsService_.reset(new PhysicsService(this));
+        controlService_.reset(new ControlService(this));
         sceneService_.reset(new SceneService(this));
+        animationService_.reset(new AnimationService(this));
         initBlocks();
         initDungeon();
         initMonsters();
@@ -424,11 +428,7 @@ namespace crust {
     
     void Game::step(float dt)
     {
-        for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
-            if (i->getControlComponent()) {
-                i->getControlComponent()->step(dt);
-            }
-        }
+        controlService_->step(dt);
         physicsService_->step(dt);
         handleCollisions();
         for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
@@ -440,11 +440,7 @@ namespace crust {
                 }
             }
         }
-        for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
-            if (i->getAnimationComponent()) {
-                i->getAnimationComponent()->step(dt);
-            }
-        }
+        animationService_->step(dt);
         sceneService_->step(dt);
     }
 

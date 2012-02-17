@@ -18,7 +18,9 @@
 namespace crust {
     class Actor;
     class ActorFactory;
+    class AnimationService;
     class Config;
+    class ControlService;
     class Font;
     class PhysicsService;
     class SceneService;
@@ -95,6 +97,16 @@ namespace crust {
             return physicsService_.get();
         }
 
+        ControlService *getControlService()
+        {
+            return controlService_.get();
+        }
+
+        AnimationService *getAnimationService()
+        {
+            return animationService_.get();
+        }
+
         SceneService *getSceneService()
         {
             return sceneService_.get();
@@ -126,7 +138,9 @@ namespace crust {
         DungeonGenerator dungeonGenerator_;
 
         std::auto_ptr<PhysicsService> physicsService_;
+        std::auto_ptr<ControlService> controlService_;
         std::auto_ptr<SceneService> sceneService_;
+        std::auto_ptr<AnimationService> animationService_;
         std::auto_ptr<ActorFactory> actorFactory_;
 
         ActorVector actors_;

@@ -1,7 +1,9 @@
 #include "monster_animation_component.hpp"
 
 #include "actor.hpp"
+#include "animation_service.hpp"
 #include "convert.hpp"
+#include "game.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
 #include "monster_scene_component.hpp"
@@ -13,10 +15,21 @@ namespace crust {
         physicsComponent_(convert(actor->getPhysicsComponent())),
         controlComponent_(convert(actor->getControlComponent())),
         sceneComponent_(convert(actor->getSceneComponent())),
-    
+        animationService_(actor->getGame()->getAnimationService()),
+
         headDirection_(1),
         trunkDirection_(1)
     { }
+
+    void MonsterAnimationComponent::create()
+    {
+        animationService_->addTask(this);
+    }
+    
+    void MonsterAnimationComponent::destroy()
+    {
+        animationService_->removeTask(this);
+    }
 
     void MonsterAnimationComponent::step(float dt)
     {

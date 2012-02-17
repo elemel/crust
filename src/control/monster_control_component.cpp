@@ -1,6 +1,7 @@
 #include "monster_control_component.hpp"
 
 #include "actor.hpp"
+#include "control_service.hpp"
 #include "convert.hpp"
 #include "game.hpp"
 #include "monster_idle_state.hpp"
@@ -12,6 +13,7 @@ namespace crust {
     MonsterControlComponent::MonsterControlComponent(Actor *actor) :
         actor_(actor),
         physicsComponent_(convert(actor->getPhysicsComponent())),
+        controlService_(actor->getGame()->getControlService()),
 
         maxVelocity_(5.0f),
         jumpDuration_(0.2f),
@@ -38,10 +40,12 @@ namespace crust {
     {
         actionState_.reset(new MonsterIdleState(actor_));
         actionState_->create();
+        controlService_->addTask(this);
     }
     
     void MonsterControlComponent::destroy()
     {
+        controlService_->removeTask(this);
         actionState_->destroy();
         actionState_.reset();
     }

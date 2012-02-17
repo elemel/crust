@@ -3,13 +3,15 @@
 
 #include "control_component.hpp"
 #include "geometry.hpp"
+#include "task.hpp"
 
 namespace crust {
     class Actor;
+    class ControlService;
     class MonsterPhysicsComponent;
     class State;
     
-    class MonsterControlComponent : public ControlComponent {
+    class MonsterControlComponent : public ControlComponent, public Task {
     public:
         enum ActionMode {
             DIG_MODE,
@@ -91,6 +93,7 @@ namespace crust {
     private:
         Actor *actor_;
         MonsterPhysicsComponent *physicsComponent_;
+        ControlService *controlService_;
 
         float maxVelocity_;
         float jumpDuration_;
