@@ -13,7 +13,7 @@ namespace crust {
         physicsComponent_(convert(actor->getPhysicsComponent()))
     { }
 
-    void ChainSceneComponent::draw() const
+    void ChainSceneComponent::draw()
     {
         ChainPhysicsComponent::BodyVector const &bodies = physicsComponent_->getBodies();
 

@@ -51,11 +51,11 @@ namespace crust {
         initContext();
         initPhysics();
         initVoronoiDiagram();
+        sceneService_.reset(new SceneService(this));
         initBlocks();
         initDungeon();
         initMonsters();
         initChains();
-        sceneService_.reset(new SceneService(this));
     }
     
     Game::~Game()
@@ -452,11 +452,6 @@ namespace crust {
         physicsWorld_->Step(dt, 10, 10);
         handleCollisions();
         for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
-            if (i->getAnimationComponent()) {
-                i->getAnimationComponent()->step(dt);
-            }
-        }
-        for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
             Actor *actor = &*i;
             if (isBlock(actor)) {
                 b2Body *body = static_cast<BlockPhysicsComponent *>(actor->getPhysicsComponent())->getBody();
@@ -465,6 +460,12 @@ namespace crust {
                 }
             }
         }
+        for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
+            if (i->getAnimationComponent()) {
+                i->getAnimationComponent()->step(dt);
+            }
+        }
+        sceneService_->step(dt);
     }
 
     void Game::handleCollisions()

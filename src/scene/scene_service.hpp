@@ -3,18 +3,25 @@
 
 #include "geometry.hpp"
 
+#include <vector>
 #include <SDL/SDL.h>
 
 namespace crust {
     class Font;
     class Game;
+    class Sprite;
+    class Task;
     class TextRenderer;
 
     class SceneService {
     public:
+        typedef std::vector<Sprite *> SpriteVector;
+        typedef std::vector<Task *> TaskVector;
+
         explicit SceneService(Game *game);
         ~SceneService();
 
+        void step(float dt);
         void draw();
 
         Vector2 const &getCameraPosition() const
@@ -38,7 +45,13 @@ namespace crust {
         }
 
         Vector2 getWorldPosition(Vector2 const &screenPosition) const;
-        
+
+        void addSprite(Sprite *sprite);
+        void removeSprite(Sprite *sprite);
+
+        void addTask(Task *task);
+        void removeTask(Task *task);
+
     private:
         Game *game_;
         SDL_Window *window_;
@@ -56,6 +69,9 @@ namespace crust {
         std::auto_ptr<Font> font_;
         std::auto_ptr<TextRenderer> textRenderer_;
 
+        SpriteVector sprites_;
+        TaskVector tasks_;
+        
         void initFont();
 
         void updateFrustum();
@@ -69,7 +85,7 @@ namespace crust {
         void drawFps();
         void setWorldProjection();
         void setOverlayProjection();
-        void drawActors();
+        void drawSprites();
     };
 }
 

@@ -16,8 +16,8 @@ namespace crust {
 
         void destroy()
         { }
-
-        void draw() const;
+        
+        void draw();
 
     private:
         Actor *actor_;

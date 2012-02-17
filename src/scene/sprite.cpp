@@ -4,10 +4,9 @@
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
-    Sprite::Sprite(Vector2 const &position, float angle, float scale) :
-        position_(position),
-        angle_(angle),
-        scale_(scale),
+    Sprite::Sprite() :
+        angle_(0.0f),
+        scale_(1.0f),
 
         pixels_(Color4(0, 0)),
 

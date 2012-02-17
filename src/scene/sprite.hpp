@@ -23,9 +23,7 @@ namespace crust {
             GLfloat y;
         };
 
-        explicit Sprite(Vector2 const &position = Vector2(),
-                        float angle = 0.0f, float scale = 1.0f);
-
+        Sprite();
         ~Sprite();
         
         Vector2 const &getPosition() const

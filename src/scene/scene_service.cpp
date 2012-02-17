@@ -10,8 +10,11 @@
 #include "game.hpp"
 #include "monster_control_component.hpp"
 #include "scene_component.hpp"
+#include "sprite.hpp"
+#include "task.hpp"
 #include "text_renderer.hpp"
 
+#include <algorithm>
 #include <fstream>
 
 namespace crust {
@@ -34,7 +37,13 @@ namespace crust {
 
     SceneService::~SceneService()
     { }
-    
+
+    void SceneService::step(float dt)
+    {
+        for (TaskVector::iterator i = tasks_.begin(); i != tasks_.end(); ++i) {
+            (*i)->step(dt);
+        }
+    }
     
     void SceneService::draw()
     {
@@ -50,6 +59,28 @@ namespace crust {
         worldPosition.x = cameraPosition_.x + invScale * (screenPosition.x - float(windowWidth_ / 2));
         worldPosition.y = cameraPosition_.y + invScale * -(screenPosition.y - float(windowHeight_ / 2));
         return worldPosition;
+    }
+
+    void SceneService::addSprite(Sprite *sprite)
+    {
+        sprites_.push_back(sprite);
+    }
+
+    void SceneService::removeSprite(Sprite *sprite)
+    {
+        SpriteVector::iterator i = std::find(sprites_.begin(), sprites_.end(), sprite);
+        sprites_.erase(i);
+    }
+
+    void SceneService::addTask(Task *task)
+    {
+        tasks_.push_back(task);
+    }
+    
+    void SceneService::removeTask(Task *task)
+    {
+        TaskVector::iterator i = std::find(tasks_.begin(), tasks_.end(), task);
+        tasks_.erase(i);
     }
 
     void SceneService::initFont()
@@ -79,7 +110,7 @@ namespace crust {
             // glEnable(GL_BLEND);
             // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             setLighting();
-            drawActors();
+            drawSprites();
             // glDisable(GL_BLEND);
             glDisable(GL_LIGHTING);
         }
@@ -224,11 +255,10 @@ namespace crust {
         glMatrixMode(GL_MODELVIEW);
     }
 
-    void SceneService::drawActors()
+    void SceneService::drawSprites()
     {
-        Game::ActorVector const &actors = game_->getActors();
-        for (Game::ConstActorIterator i = actors.begin(); i != actors.end(); ++i) {
-            i->getSceneComponent()->draw();
+        for (SpriteVector::iterator i = sprites_.begin(); i != sprites_.end(); ++i) {
+            (*i)->draw();
         }
     }
 }

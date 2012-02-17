@@ -2,27 +2,35 @@
 
 #include "actor.hpp"
 #include "convert.hpp"
+#include "game.hpp"
 #include "monster_physics_component.hpp"
+#include "scene_service.hpp"
 #include "sprite.hpp"
 
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
     MonsterSceneComponent::MonsterSceneComponent(Actor *actor) :
-        actor_(actor)
-    {
-        initSprites();
-    }
+        actor_(actor),
+        sceneService_(actor->getGame()->getSceneService())
+    { }
 
     MonsterSceneComponent::~MonsterSceneComponent()
     { }
-    
-    void MonsterSceneComponent::draw() const
+
+    void MonsterSceneComponent::create()
     {
-        trunkSprite_->draw();
-        headSprite_->draw();
+        initSprites();
+        sceneService_->addSprite(trunkSprite_.get());
+        sceneService_->addSprite(headSprite_.get());
     }
     
+    void MonsterSceneComponent::destroy()
+    {
+        sceneService_->removeSprite(headSprite_.get());
+        sceneService_->removeSprite(trunkSprite_.get());
+    }
+
     void MonsterSceneComponent::initSprites()
     {
         headSprite_.reset(new Sprite);
@@ -196,8 +204,5 @@ namespace crust {
         trunkSprite_->setPixel(2, -6, bootColor);
         trunkSprite_->setPixel(3, -6, bootColor);
         trunkSprite_->setPixel(4, -6, bootColor);
-        
-        headSprite_->setPosition(Vector2(0.0f, 0.25f));
-        trunkSprite_->setPosition(Vector2(0.0f, -0.15f));
     }
 }

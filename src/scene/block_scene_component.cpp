@@ -6,46 +6,44 @@
 #include "game.hpp"
 #include "grid.hpp"
 #include "hash.hpp"
+#include "scene_service.hpp"
 #include "sprite.hpp"
 
 namespace crust {
     BlockSceneComponent::BlockSceneComponent(Actor *actor) :
         actor_(actor),
         physicsComponent_(convert(actor->getPhysicsComponent())),
-
-        spriteDirty_(true)
+        sceneService_(actor->getGame()->getSceneService())
     { }
 
     BlockSceneComponent::~BlockSceneComponent()
     { }
 
-    void BlockSceneComponent::draw() const
+    void BlockSceneComponent::create()
     {
-        updateSprite();
-        
-        Vector2 position = physicsComponent_->getPosition();
-        float angle = physicsComponent_->getAngle();
-
-        glPushMatrix();
-        glTranslatef(position.x, position.y, 0.0f);
-        glRotatef(angle * 180.0f / M_PI, 0.0f, 0.0f, 1.0f);
-        glScalef(0.1f, 0.1f, 1.0f);
-        glTranslatef(-0.5f, -0.5f, 0.0f);
-
-        sprite_->draw();
-
-        glPopMatrix();
+        initSprite();
+        sceneService_->addSprite(sprite_.get());
+        sceneService_->addTask(this);
     }
     
-    void BlockSceneComponent::updateSprite() const
+    void BlockSceneComponent::destroy()
     {
-        if (!spriteDirty_) {
-            return;
-        }
-        
+        sceneService_->removeTask(this);
+        sceneService_->removeSprite(sprite_.get());
+    }
+    
+    void BlockSceneComponent::step(float dt)
+    {
+        sprite_->setPosition(physicsComponent_->getPosition());
+        sprite_->setAngle(physicsComponent_->getAngle());
+    }
+    
+    void BlockSceneComponent::initSprite()
+    {
         Grid<unsigned char> const &grid = physicsComponent_->getGrid();
 
         sprite_.reset(new Sprite);
+        sprite_->setScale(Vector2(0.1f));
 
         int x = grid.getX();
         int y = grid.getY();
@@ -69,7 +67,5 @@ namespace crust {
                 }
             }
         }
-
-        spriteDirty_ = false;
     }
 }

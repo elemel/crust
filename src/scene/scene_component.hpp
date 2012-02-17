@@ -9,8 +9,6 @@ namespace crust {
 
         virtual void create() = 0;
         virtual void destroy() = 0;
-
-        virtual void draw() const = 0;
     };
 }
 

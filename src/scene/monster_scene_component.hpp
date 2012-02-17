@@ -7,6 +7,7 @@
 
 namespace crust {
     class Actor;
+    class SceneService;
     class Sprite;
 
     class MonsterSceneComponent : public SceneComponent {
@@ -14,12 +15,9 @@ namespace crust {
         explicit MonsterSceneComponent(Actor *actor);
         ~MonsterSceneComponent();
 
-        void create()
-        { }
-        
-        void destroy()
-        { }
-        
+        void create();
+        void destroy();
+
         Sprite *getHeadSprite()
         {
             return headSprite_.get();
@@ -30,10 +28,9 @@ namespace crust {
             return trunkSprite_.get();
         }
 
-        void draw() const;
-
     private:
         Actor *actor_;
+        SceneService *sceneService_;
 
         std::auto_ptr<Sprite> headSprite_;
         std::auto_ptr<Sprite> trunkSprite_;
