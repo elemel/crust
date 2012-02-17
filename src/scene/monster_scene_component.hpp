@@ -7,7 +7,6 @@
 
 namespace crust {
     class Actor;
-    class MonsterPhysicsComponent;
     class Sprite;
 
     class MonsterSceneComponent : public SceneComponent {
@@ -35,7 +34,6 @@ namespace crust {
 
     private:
         Actor *actor_;
-        MonsterPhysicsComponent *physicsComponent_;
 
         std::auto_ptr<Sprite> headSprite_;
         std::auto_ptr<Sprite> trunkSprite_;

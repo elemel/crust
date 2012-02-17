@@ -9,8 +9,7 @@
 
 namespace crust {
     MonsterSceneComponent::MonsterSceneComponent(Actor *actor) :
-        actor_(actor),
-        physicsComponent_(convert(actor->getPhysicsComponent()))
+        actor_(actor)
     {
         initSprites();
     }
@@ -20,14 +19,8 @@ namespace crust {
     
     void MonsterSceneComponent::draw() const
     {
-        glPushMatrix();
-        Vector2 const &position = physicsComponent_->getPosition();
-        float angle = physicsComponent_->getAngle();
-        glTranslatef(position.x, position.y, 0.0f);
-        glRotatef((180.0f / M_PI) * angle, 0.0f, 0.0f, 1.0f);
         trunkSprite_->draw();
         headSprite_->draw();
-        glPopMatrix();
     }
     
     void MonsterSceneComponent::initSprites()
