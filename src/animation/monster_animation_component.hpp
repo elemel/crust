@@ -7,7 +7,7 @@ namespace crust {
     class Actor;
     class MonsterControlComponent;
     class MonsterPhysicsComponent;
-    class MonsterRenderComponent;
+    class MonsterSceneComponent;
 
     class MonsterAnimationComponent : public AnimationComponent {
     public:
@@ -25,7 +25,7 @@ namespace crust {
         Actor *actor_;
         MonsterPhysicsComponent *physicsComponent_;
         MonsterControlComponent *controlComponent_;
-        MonsterRenderComponent *renderComponent_;
+        MonsterSceneComponent *sceneComponent_;
 
         int headDirection_;
         int trunkDirection_;

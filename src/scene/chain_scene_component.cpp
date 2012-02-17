@@ -1,4 +1,4 @@
-#include "chain_render_component.hpp"
+#include "chain_scene_component.hpp"
 
 #include "actor.hpp"
 #include "chain_physics_component.hpp"
@@ -8,12 +8,12 @@
 #include <SDL/SDL_opengl.h>
 
 namespace crust {    
-    ChainRenderComponent::ChainRenderComponent(Actor *actor) :
+    ChainSceneComponent::ChainSceneComponent(Actor *actor) :
         actor_(actor),
         physicsComponent_(convert(actor->getPhysicsComponent()))
     { }
 
-    void ChainRenderComponent::draw() const
+    void ChainSceneComponent::draw() const
     {
         ChainPhysicsComponent::BodyVector const &bodies = physicsComponent_->getBodies();
 

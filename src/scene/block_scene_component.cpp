@@ -1,4 +1,4 @@
-#include "block_render_component.hpp"
+#include "block_scene_component.hpp"
 
 #include "actor.hpp"
 #include "block_physics_component.hpp"
@@ -9,17 +9,17 @@
 #include "sprite.hpp"
 
 namespace crust {
-    BlockRenderComponent::BlockRenderComponent(Actor *actor) :
+    BlockSceneComponent::BlockSceneComponent(Actor *actor) :
         actor_(actor),
         physicsComponent_(convert(actor->getPhysicsComponent())),
 
         spriteDirty_(true)
     { }
 
-    BlockRenderComponent::~BlockRenderComponent()
+    BlockSceneComponent::~BlockSceneComponent()
     { }
 
-    void BlockRenderComponent::draw() const
+    void BlockSceneComponent::draw() const
     {
         updateSprite();
         
@@ -37,7 +37,7 @@ namespace crust {
         glPopMatrix();
     }
     
-    void BlockRenderComponent::updateSprite() const
+    void BlockSceneComponent::updateSprite() const
     {
         if (!spriteDirty_) {
             return;

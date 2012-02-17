@@ -1,4 +1,4 @@
-#include "render_manager.hpp"
+#include "scene_service.hpp"
 
 #include "actor.hpp"
 #include "block_physics_component.hpp"
@@ -9,13 +9,13 @@
 #include "font_reader.hpp"
 #include "game.hpp"
 #include "monster_control_component.hpp"
-#include "render_component.hpp"
+#include "scene_component.hpp"
 #include "text_renderer.hpp"
 
 #include <fstream>
 
 namespace crust {
-    RenderManager::RenderManager(Game *game) :
+    SceneService::SceneService(Game *game) :
         game_(game),
         window_(game->getWindow()),
         windowWidth_(0),
@@ -32,18 +32,18 @@ namespace crust {
         initFont();
     }
 
-    RenderManager::~RenderManager()
+    SceneService::~SceneService()
     { }
     
     
-    void RenderManager::draw()
+    void SceneService::draw()
     {
         updateFrustum();
         drawWorld();
         drawOverlay();
     }
     
-    Vector2 RenderManager::getWorldPosition(Vector2 const &screenPosition) const
+    Vector2 SceneService::getWorldPosition(Vector2 const &screenPosition) const
     {
         float invScale = 2.0f / cameraScale_ / float(windowHeight_);
         Vector2 worldPosition;
@@ -52,7 +52,7 @@ namespace crust {
         return worldPosition;
     }
 
-    void RenderManager::initFont()
+    void SceneService::initFont()
     {
         font_.reset(new Font);
         std::ifstream in("../../../data/font.txt");
@@ -61,7 +61,7 @@ namespace crust {
         textRenderer_.reset(new TextRenderer(font_.get()));
     }
     
-    void RenderManager::updateFrustum()
+    void SceneService::updateFrustum()
     {
         float invScale = 1.0f / cameraScale_;
         float aspectRatio = float(windowWidth_) / float(windowHeight_);
@@ -71,7 +71,7 @@ namespace crust {
                                 cameraPosition_.y + invScale));
     }
 
-    void RenderManager::drawWorld()
+    void SceneService::drawWorld()
     {
         setWorldProjection();
         if (drawEnabled_) {
@@ -93,7 +93,7 @@ namespace crust {
         }
     }
     
-    void RenderManager::setLighting()
+    void SceneService::setLighting()
     {
         if (lightingEnabled_) {
             GLfloat ambient[] = { 0.05f, 0.05f, 0.05f, 1.0f };
@@ -108,7 +108,7 @@ namespace crust {
         }
     }
     
-    void RenderManager::setWorldLight()
+    void SceneService::setWorldLight()
     { 
         glEnable(GL_LIGHT0);
         GLfloat diffuse[] = { 0.1f, 0.1f, 0.1f, 1.0f };
@@ -122,7 +122,7 @@ namespace crust {
         glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.0f);
     }
     
-    void RenderManager::setCameraLight()
+    void SceneService::setCameraLight()
     {
         glEnable(GL_LIGHT1);
         GLfloat diffuse[] = { 4.0f, 4.0f, 4.0f, 1.0f };
@@ -136,7 +136,7 @@ namespace crust {
         glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.0f);
     }
     
-    void RenderManager::setTargetLight()
+    void SceneService::setTargetLight()
     {
         if (game_->getPlayerActor()) {
             glEnable(GL_LIGHT2);
@@ -153,7 +153,7 @@ namespace crust {
         }
     }
     
-    void RenderManager::drawOverlay()
+    void SceneService::drawOverlay()
     {
         setOverlayProjection();
         drawMode();
@@ -162,7 +162,7 @@ namespace crust {
         }
     }
     
-    void RenderManager::drawMode()
+    void SceneService::drawMode()
     {
         if (game_->getPlayerActor()) {
             MonsterControlComponent *controlComponent = convert(game_->getPlayerActor()->getControlComponent());
@@ -196,7 +196,7 @@ namespace crust {
         }
     }
     
-    void RenderManager::drawFps()
+    void SceneService::drawFps()
     {
         int scale = 3;
         glPushMatrix();
@@ -206,7 +206,7 @@ namespace crust {
         glPopMatrix();
     }
     
-    void RenderManager::setWorldProjection()
+    void SceneService::setWorldProjection()
     {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -215,7 +215,7 @@ namespace crust {
         glMatrixMode(GL_MODELVIEW);
     }
     
-    void RenderManager::setOverlayProjection()
+    void SceneService::setOverlayProjection()
     {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -224,11 +224,11 @@ namespace crust {
         glMatrixMode(GL_MODELVIEW);
     }
 
-    void RenderManager::drawActors()
+    void SceneService::drawActors()
     {
         Game::ActorVector const &actors = game_->getActors();
         for (Game::ConstActorIterator i = actors.begin(); i != actors.end(); ++i) {
-            i->getRenderComponent()->draw();
+            i->getSceneComponent()->draw();
         }
     }
 }

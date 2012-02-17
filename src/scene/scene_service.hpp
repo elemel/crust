@@ -1,5 +1,5 @@
-#ifndef CRUST_RENDER_MANAGER_HPP
-#define CRUST_RENDER_MANAGER_HPP
+#ifndef CRUST_SCENE_SERVICE_HPP
+#define CRUST_SCENE_SERVICE_HPP
 
 #include "geometry.hpp"
 
@@ -10,10 +10,10 @@ namespace crust {
     class Game;
     class TextRenderer;
 
-    class RenderManager {
+    class SceneService {
     public:
-        explicit RenderManager(Game *game);
-        ~RenderManager();
+        explicit SceneService(Game *game);
+        ~SceneService();
 
         void draw();
 

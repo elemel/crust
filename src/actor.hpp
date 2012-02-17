@@ -8,7 +8,7 @@ namespace crust {
     class ControlComponent;
     class Game;
     class PhysicsComponent;
-    class RenderComponent;
+    class SceneComponent;
     
     class Actor {
     public:
@@ -49,17 +49,17 @@ namespace crust {
         
         void setControlComponent(std::auto_ptr<ControlComponent> component);
         
-        RenderComponent *getRenderComponent()
+        SceneComponent *getSceneComponent()
         {
-            return renderComponent_.get();
+            return sceneComponent_.get();
         }
         
-        RenderComponent const *getRenderComponent() const
+        SceneComponent const *getSceneComponent() const
         {
-            return renderComponent_.get();
+            return sceneComponent_.get();
         }
         
-        void setRenderComponent(std::auto_ptr<RenderComponent> component);
+        void setSceneComponent(std::auto_ptr<SceneComponent> component);
         
         AnimationComponent *getAnimationComponent()
         {
@@ -81,7 +81,7 @@ namespace crust {
         
         std::auto_ptr<PhysicsComponent> physicsComponent_;
         std::auto_ptr<ControlComponent> controlComponent_;
-        std::auto_ptr<RenderComponent> renderComponent_;
+        std::auto_ptr<SceneComponent> sceneComponent_;
         std::auto_ptr<AnimationComponent> animationComponent_;
     };
 }

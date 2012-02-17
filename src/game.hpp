@@ -21,7 +21,7 @@ namespace crust {
     class ActorFactory;
     class Config;
     class Font;
-    class RenderManager;
+    class SceneService;
 
     class Game : public b2ContactListener {
     public:
@@ -98,9 +98,9 @@ namespace crust {
             return &actors_[i];
         }
 
-        RenderManager *getRenderManager()
+        SceneService *getSceneService()
         {
-            return renderManager_.get();
+            return sceneService_.get();
         }
         
     private:
@@ -133,7 +133,7 @@ namespace crust {
         VoronoiDiagram voronoiDiagram_;
         DungeonGenerator dungeonGenerator_;
 
-        std::auto_ptr<RenderManager> renderManager_;
+        std::auto_ptr<SceneService> sceneService_;
         std::auto_ptr<ActorFactory> actorFactory_;
         
         void initWindow();

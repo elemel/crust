@@ -3,7 +3,7 @@
 #include "animation_component.hpp"
 #include "control_component.hpp"
 #include "physics_component.hpp"
-#include "render_component.hpp"
+#include "scene_component.hpp"
 
 namespace crust {
     Actor::Actor(Game *game) :
@@ -23,9 +23,9 @@ namespace crust {
         controlComponent_ = component;
     }
 
-    void Actor::setRenderComponent(std::auto_ptr<RenderComponent> component)
+    void Actor::setSceneComponent(std::auto_ptr<SceneComponent> component)
     {
-        renderComponent_ = component;
+        sceneComponent_ = component;
     }
 
     void Actor::setAnimationComponent(std::auto_ptr<AnimationComponent> component)
@@ -41,8 +41,8 @@ namespace crust {
         if (controlComponent_.get()) {
             controlComponent_->create();
         }
-        if (renderComponent_.get()) {
-            renderComponent_->create();
+        if (sceneComponent_.get()) {
+            sceneComponent_->create();
         }
         if (animationComponent_.get()) {
             animationComponent_->create();
@@ -54,8 +54,8 @@ namespace crust {
         if (animationComponent_.get()) {
             animationComponent_->destroy();
         }
-        if (renderComponent_.get()) {
-            renderComponent_->destroy();
+        if (sceneComponent_.get()) {
+            sceneComponent_->destroy();
         }
         if (controlComponent_.get()) {
             controlComponent_->destroy();

@@ -1,7 +1,7 @@
-#ifndef CRUST_MONSTER_RENDER_COMPONENT_HPP
-#define CRUST_MONSTER_RENDER_COMPONENT_HPP
+#ifndef CRUST_MONSTER_SCENE_COMPONENT_HPP
+#define CRUST_MONSTER_SCENE_COMPONENT_HPP
 
-#include "render_component.hpp"
+#include "scene_component.hpp"
 
 #include <memory>
 
@@ -10,10 +10,10 @@ namespace crust {
     class MonsterPhysicsComponent;
     class Sprite;
 
-    class MonsterRenderComponent : public RenderComponent {
+    class MonsterSceneComponent : public SceneComponent {
     public:
-        explicit MonsterRenderComponent(Actor *actor);
-        ~MonsterRenderComponent();
+        explicit MonsterSceneComponent(Actor *actor);
+        ~MonsterSceneComponent();
 
         void create()
         { }

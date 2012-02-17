@@ -1,4 +1,4 @@
-#include "monster_render_component.hpp"
+#include "monster_scene_component.hpp"
 
 #include "actor.hpp"
 #include "convert.hpp"
@@ -8,17 +8,17 @@
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
-    MonsterRenderComponent::MonsterRenderComponent(Actor *actor) :
+    MonsterSceneComponent::MonsterSceneComponent(Actor *actor) :
         actor_(actor),
         physicsComponent_(convert(actor->getPhysicsComponent()))
     {
         initSprites();
     }
 
-    MonsterRenderComponent::~MonsterRenderComponent()
+    MonsterSceneComponent::~MonsterSceneComponent()
     { }
     
-    void MonsterRenderComponent::draw() const
+    void MonsterSceneComponent::draw() const
     {
         glPushMatrix();
         Vector2 const &position = physicsComponent_->getPosition();
@@ -30,7 +30,7 @@ namespace crust {
         glPopMatrix();
     }
     
-    void MonsterRenderComponent::initSprites()
+    void MonsterSceneComponent::initSprites()
     {
         headSprite_.reset(new Sprite);
         trunkSprite_.reset(new Sprite);

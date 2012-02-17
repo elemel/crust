@@ -4,7 +4,7 @@
 #include "convert.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
-#include "monster_render_component.hpp"
+#include "monster_scene_component.hpp"
 #include "sprite.hpp"
 
 namespace crust {
@@ -12,7 +12,7 @@ namespace crust {
         actor_(actor),
         physicsComponent_(convert(actor->getPhysicsComponent())),
         controlComponent_(convert(actor->getControlComponent())),
-        renderComponent_(convert(actor->getRenderComponent())),
+        sceneComponent_(convert(actor->getSceneComponent())),
     
         headDirection_(1),
         trunkDirection_(1)
@@ -24,7 +24,7 @@ namespace crust {
         bool trunkTurned = false;
         if (xControl && xControl != trunkDirection_) {
             trunkDirection_ = xControl;
-            renderComponent_->getTrunkSprite()->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
+            sceneComponent_->getTrunkSprite()->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
             trunkTurned = true;
         }
         Vector2 const &targetPosition = controlComponent_->getTargetPosition();
@@ -42,7 +42,7 @@ namespace crust {
         b2Vec2 eyeToTargetOffset = localTargetPosition - localEyePosition;
         float targetAngle = std::atan2(eyeToTargetOffset.y, eyeToTargetOffset.x);
         float headAngle = 0.5f * float(headDirection_) * targetAngle;
-        renderComponent_->getHeadSprite()->setAngle(headAngle);
-        renderComponent_->getHeadSprite()->setScale(Vector2(0.1f * float(headDirection_), 0.1f));
+        sceneComponent_->getHeadSprite()->setAngle(headAngle);
+        sceneComponent_->getHeadSprite()->setScale(Vector2(0.1f * float(headDirection_), 0.1f));
     }
 }

@@ -13,7 +13,7 @@
 #include "monster_control_component.hpp"
 #include "physics_component.hpp"
 #include "physics_draw.hpp"
-#include "render_manager.hpp"
+#include "scene_service.hpp"
 
 #include <fstream>
 
@@ -55,7 +55,7 @@ namespace crust {
         initDungeon();
         initMonsters();
         initChains();
-        renderManager_.reset(new RenderManager(this));
+        sceneService_.reset(new SceneService(this));
     }
     
     Game::~Game()
@@ -262,7 +262,7 @@ namespace crust {
 
         glClearColor(0.2, 0.2, 0.3, 0.0);
         glClear(GL_COLOR_BUFFER_BIT);
-        renderManager_->draw();
+        sceneService_->draw();
         SDL_GL_SwapWindow(window_);
     }
 
@@ -282,7 +282,7 @@ namespace crust {
     void Game::updateCamera()
     {
         Vector2 position = playerActor_->getPhysicsComponent()->getPosition();
-        renderManager_->setCameraPosition(position);
+        sceneService_->setCameraPosition(position);
     }
     
     void Game::handleEvents()
@@ -373,20 +373,20 @@ namespace crust {
 
             case SDLK_PLUS:
                 {
-                    float scale = renderManager_->getCameraScale();
+                    float scale = sceneService_->getCameraScale();
                     scale *= config_->cameraZoom;
                     if (scale < config_->maxCameraScale) {
-                        renderManager_->setCameraScale(scale);
+                        sceneService_->setCameraScale(scale);
                     }
                 }
                 break;
 
             case SDLK_MINUS:
                 {
-                    float scale = renderManager_->getCameraScale();
+                    float scale = sceneService_->getCameraScale();
                     scale /= config_->cameraZoom;
                     if (scale > config_->minCameraScale) {
-                        renderManager_->setCameraScale(scale);
+                        sceneService_->setCameraScale(scale);
                     }
                 }
                 break;
@@ -432,7 +432,7 @@ namespace crust {
             bool rightControl = bool(keyboardState[SDL_SCANCODE_D]);
             bool jumpControl = bool(keyboardState[SDL_SCANCODE_SPACE]);
             bool actionControl = bool(keyboardState[SDL_SCANCODE_LSHIFT] || (mouseButtons & SDL_BUTTON_LMASK));
-            Vector2 targetPosition = renderManager_->getWorldPosition(Vector2(float(x), float(y)));
+            Vector2 targetPosition = sceneService_->getWorldPosition(Vector2(float(x), float(y)));
 
             controlComponent->setLeftControl(leftControl);
             controlComponent->setRightControl(rightControl);

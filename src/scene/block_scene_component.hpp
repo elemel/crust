@@ -1,7 +1,7 @@
-#ifndef CRUST_BLOCK_RENDER_COMPONENT_HPP
-#define CRUST_BLOCK_RENDER_COMPONENT_HPP
+#ifndef CRUST_BLOCK_SCENE_COMPONENT_HPP
+#define CRUST_BLOCK_SCENE_COMPONENT_HPP
 
-#include "render_component.hpp"
+#include "scene_component.hpp"
 
 #include <memory>
 
@@ -10,10 +10,10 @@ namespace crust {
     class BlockPhysicsComponent;
     class Sprite;
     
-    class BlockRenderComponent : public RenderComponent {
+    class BlockSceneComponent : public SceneComponent {
     public:
-        explicit BlockRenderComponent(Actor *actor);
-        ~BlockRenderComponent();
+        explicit BlockSceneComponent(Actor *actor);
+        ~BlockSceneComponent();
 
         void create()
         { }
