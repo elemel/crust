@@ -9,6 +9,7 @@
 
 namespace crust {
     class Actor;
+    class PhysicsService;
 
     class ChainPhysicsComponent : public PhysicsComponent {
     public:
@@ -34,6 +35,8 @@ namespace crust {
 
     private:
         Actor *actor_;
+        PhysicsService *physicsService_;
+
         Vector2 position_;
         int linkCount_;
         

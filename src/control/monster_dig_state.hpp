@@ -8,6 +8,7 @@ namespace crust {
     class Actor;
     class MonsterControlComponent;
     class MonsterPhysicsComponent;
+    class PhysicsService;
 
     class MonsterDigState : public State, public Task {
     public:
@@ -37,6 +38,7 @@ namespace crust {
         Actor *actor_;
         MonsterControlComponent *controlComponent_;
         MonsterPhysicsComponent *physicsComponent_;
+        PhysicsService *physicsService_;
     };
 }
 

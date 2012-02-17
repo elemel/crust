@@ -6,9 +6,9 @@
 #include <Box2D/Box2D.h>
 
 namespace crust {
-    class PhysicsDraw : public b2Draw {
+    class PhysicsDrawCallback : public b2Draw {
     public:
-        PhysicsDraw();
+        PhysicsDrawCallback();
         
         void DrawPolygon(b2Vec2 const *vertices, int32 vertexCount,
                          b2Color const &color);

@@ -9,6 +9,7 @@
 #include "font_reader.hpp"
 #include "game.hpp"
 #include "monster_control_component.hpp"
+#include "physics_service.hpp"
 #include "scene_component.hpp"
 #include "sprite.hpp"
 #include "task.hpp"
@@ -116,7 +117,7 @@ namespace crust {
         }
         if (debugDrawEnabled_) {
             glColor3f(0.0f, 1.0f, 0.0f);
-            game_->getPhysicsWorld()->DrawDebugData();
+            game_->getPhysicsService()->getWorld()->DrawDebugData();
             // glColor3f(0.0f, 0.5f, 1.0f);
             // delauneyTriangulation_.draw();
             // glColor3f(1.0f, 0.5f, 0.0f);

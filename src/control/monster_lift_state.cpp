@@ -6,6 +6,7 @@
 #include "game.hpp"
 #include "monster_control_component.hpp"
 #include "monster_idle_state.hpp"
+#include "physics_service.hpp"
 
 namespace crust {
     namespace {
@@ -17,8 +18,9 @@ namespace crust {
 
     MonsterLiftState::MonsterLiftState(Actor *actor) :
         actor_(actor),
-        game_(actor->getGame()),
         controlComponent_(convert(actor->getControlComponent())),
+        game_(actor->getGame()),
+        physicsService_(actor->getGame()->getPhysicsService()),
     
         targetActor_(0),
         joint_(0)
@@ -103,7 +105,7 @@ namespace crust {
             jointDef.bodyA = body;
             jointDef.bodyB = body;
             jointDef.maxForce = 5.0f * body->GetMass() * 10.0f;
-            joint_ = static_cast<b2MouseJoint *>(game_->getPhysicsWorld()->CreateJoint(&jointDef));
+            joint_ = static_cast<b2MouseJoint *>(physicsService_->getWorld()->CreateJoint(&jointDef));
         }
     }
     
@@ -133,7 +135,7 @@ namespace crust {
         body->SetFixedRotation(false);
         body->SetSleepingAllowed(true);
         
-        game_->getPhysicsWorld()->DestroyJoint(joint_);
+        physicsService_->getWorld()->DestroyJoint(joint_);
         joint_ = 0;
         targetActor_ = 0;
     }

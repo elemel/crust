@@ -12,7 +12,6 @@
 #include <memory>
 #include <sstream>
 #include <boost/ptr_container/ptr_vector.hpp>
-#include <Box2D/Box2D.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
 
@@ -21,9 +20,10 @@ namespace crust {
     class ActorFactory;
     class Config;
     class Font;
+    class PhysicsService;
     class SceneService;
 
-    class Game : public b2ContactListener {
+    class Game {
     public:
         typedef boost::ptr_vector<Actor> ActorVector;
         typedef ActorVector::iterator ActorIterator;
@@ -49,14 +49,6 @@ namespace crust {
             return time_;
         }
         
-        b2World *getPhysicsWorld()
-        {
-            return physicsWorld_.get();
-        }
-
-        void BeginContact(b2Contact* contact);
-        void EndContact(b2Contact* contact);
-
         float getRandomFloat();
         int getRandomInt(int size);
 
@@ -98,6 +90,11 @@ namespace crust {
             return &actors_[i];
         }
 
+        PhysicsService *getPhysicsService()
+        {
+            return physicsService_.get();
+        }
+
         SceneService *getSceneService()
         {
             return sceneService_.get();
@@ -115,13 +112,8 @@ namespace crust {
         double appTime_;
         double time_;
 
-        std::auto_ptr<b2World> physicsWorld_;
-        std::auto_ptr<b2Draw> physicsDraw_;
         bool blockGrowthDone_;
         bool dungeonGenerationDone_;
-        std::vector<Actor *> blocksWithNeighbors_;
-        ActorVector actors_;
-        Actor *playerActor_;
         
         Box2 bounds_;
 
@@ -133,12 +125,15 @@ namespace crust {
         VoronoiDiagram voronoiDiagram_;
         DungeonGenerator dungeonGenerator_;
 
+        std::auto_ptr<PhysicsService> physicsService_;
         std::auto_ptr<SceneService> sceneService_;
         std::auto_ptr<ActorFactory> actorFactory_;
-        
+
+        ActorVector actors_;
+        Actor *playerActor_;
+
         void initWindow();
         void initContext();
-        void initPhysics();
         void initVoronoiDiagram();
         void initBlocks();
         void initDungeon();

@@ -12,7 +12,7 @@
 #include "geometry.hpp"
 #include "monster_control_component.hpp"
 #include "physics_component.hpp"
-#include "physics_draw.hpp"
+#include "physics_service.hpp"
 #include "scene_service.hpp"
 
 #include <fstream>
@@ -36,21 +36,21 @@ namespace crust {
         appTime_(0.0),
         time_(0.0),
 
-        playerActor_(0),
-    
         bounds_(Vector2(-15.0f, -15.0f), Vector2(15.0f, 15.0f)),
 
         fpsTime_(0.0),
         fpsCount_(0),
     
         delauneyTriangulation_(bounds_),
-        dungeonGenerator_(&random_, bounds_)
+        dungeonGenerator_(&random_, bounds_),
+
+        playerActor_(0)
     {
         actorFactory_.reset(new ActorFactory(this));
         initWindow();
         initContext();
-        initPhysics();
         initVoronoiDiagram();
+        physicsService_.reset(new PhysicsService(this));
         sceneService_.reset(new SceneService(this));
         initBlocks();
         initDungeon();
@@ -91,17 +91,6 @@ namespace crust {
         }
     }
     
-    void Game::BeginContact(b2Contact* contact)
-    {
-        // b2Body *bodyA = contact->GetFixtureA()->GetBody();
-        // b2Body *bodyB = contact->GetFixtureB()->GetBody();
-        // void *userDataA = bodyA->GetUserData();
-        // void *userDataB = bodyB->GetUserData();
-    }
-    
-    void Game::EndContact(b2Contact* contact)
-    { }
-
     float Game::getRandomFloat()
     {
         return random_.getFloat();
@@ -180,15 +169,6 @@ namespace crust {
         }
     }
     
-    void Game::initPhysics()
-    {
-        b2Vec2 gravity(0.0f, -10.0f);
-        physicsWorld_.reset(new b2World(gravity));
-        physicsWorld_->SetContactListener(this);
-        physicsDraw_.reset(new PhysicsDraw);
-        physicsWorld_->SetDebugDraw(physicsDraw_.get());
-    }
-
     void Game::initVoronoiDiagram()
     {
         Box2 vertexBounds = bounds_;
@@ -449,7 +429,7 @@ namespace crust {
                 i->getControlComponent()->step(dt);
             }
         }
-        physicsWorld_->Step(dt, 10, 10);
+        physicsService_->step(dt);
         handleCollisions();
         for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
             Actor *actor = &*i;

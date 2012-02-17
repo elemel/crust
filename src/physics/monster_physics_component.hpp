@@ -9,6 +9,7 @@
 
 namespace crust {
     class Actor;
+    class PhysicsService;
     
     class MonsterPhysicsComponent : public PhysicsComponent {
     public:
@@ -45,6 +46,7 @@ namespace crust {
 
     private:
         Actor *actor_;
+        PhysicsService *physicsService_;
         Vector2 position_;
 
         float wheelRadius_;

@@ -7,6 +7,7 @@
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
 #include "monster_idle_state.hpp"
+#include "physics_service.hpp"
 
 #include <Box2D/Box2D.h>
 
@@ -43,7 +44,8 @@ namespace crust {
     MonsterDigState::MonsterDigState(Actor *actor) :
         actor_(actor),
         controlComponent_(convert(actor->getControlComponent())),
-        physicsComponent_(convert(actor->getPhysicsComponent()))
+        physicsComponent_(convert(actor->getPhysicsComponent())),
+        physicsService_(actor->getGame()->getPhysicsService())
     { }
 
     std::auto_ptr<State> MonsterDigState::transition()
@@ -59,8 +61,8 @@ namespace crust {
         Vector2 p1 = physicsComponent_->getPosition();
         Vector2 p2 = p1 + clampLength(controlComponent_->getTargetPosition() - p1, 1.5f);
         DigCallback callback;
-        actor_->getGame()->getPhysicsWorld()->RayCast(&callback, b2Vec2(p1.x, p1.y),
-                                                      b2Vec2(p2.x, p2.y));
+        physicsService_->getWorld()->RayCast(&callback, b2Vec2(p1.x, p1.y),
+                                            b2Vec2(p2.x, p2.y));
         if (callback.actor) {
             actor_->getGame()->removeActor(callback.actor);
         }
