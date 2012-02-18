@@ -12,9 +12,9 @@ namespace crust {
     class MonsterControlComponent;
     class PhysicsService;
 
-    class MonsterLiftState : public State, public Task {
+    class MonsterDragState : public State, public Task {
     public:
-        explicit MonsterLiftState(Actor *actor);
+        explicit MonsterDragState(Actor *actor);
 
         void create();
         void destroy();

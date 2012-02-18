@@ -1,22 +1,20 @@
-#ifndef CRUST_MONSTER_DIG_STATE_HPP
-#define CRUST_MONSTER_DIG_STATE_HPP
+#ifndef CRUST_MONSTER_DROP_STATE_HPP
+#define CRUST_MONSTER_DROP_STATE_HPP
 
 #include "state.hpp"
 #include "task.hpp"
 
 namespace crust {
     class Actor;
-    class MonsterControlComponent;
-    class MonsterPhysicsComponent;
-    class PhysicsService;
-
-    class MonsterDigState : public State, public Task {
+    class ControlComponent;
+    
+    class MonsterDropState : public State, public Task {
     public:
-        explicit MonsterDigState(Actor *actor);
-
+        explicit MonsterDropState(Actor *actor);
+        
         void create()
         { }
-
+        
         void destroy()
         { }
         
@@ -26,19 +24,18 @@ namespace crust {
         {
             return this;
         }
-
+        
         Task const *getTask() const
         {
             return this;
         }
-
+        
         void step(float dt);
-
+        
     private:
         Actor *actor_;
-        MonsterControlComponent *controlComponent_;
-        MonsterPhysicsComponent *physicsComponent_;
-        PhysicsService *physicsService_;
+        ControlComponent *controlComponent_;
+        float distance_;
     };
 }
 

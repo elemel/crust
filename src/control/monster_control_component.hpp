@@ -14,10 +14,9 @@ namespace crust {
     class MonsterControlComponent : public ControlComponent, public Task {
     public:
         enum ActionMode {
-            DIG_MODE,
-            CHAIN_MODE,
-            LIFT_MODE,
-            COLLAPSE_MODE,
+            MINE_MODE,
+            DRAG_MODE,
+            DROP_MODE,
             
             ACTION_MODE_COUNT
         };

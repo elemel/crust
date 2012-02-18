@@ -205,20 +205,16 @@ namespace crust {
             glTranslatef(2.0f * float(scale), -2.0f * float(scale), 0.0f);
             glScalef(float(scale), float(scale), 1.0);
             switch (controlComponent->getActionMode()) {
-                case MonsterControlComponent::DIG_MODE:
-                    textRenderer_->draw("DIG");
+                case MonsterControlComponent::MINE_MODE:
+                    textRenderer_->draw("MINE");
                     break;
                     
-                case MonsterControlComponent::CHAIN_MODE:
-                    textRenderer_->draw("CHAIN");
+                case MonsterControlComponent::DRAG_MODE:
+                    textRenderer_->draw("DRAG");
                     break;
                     
-                case MonsterControlComponent::LIFT_MODE:
-                    textRenderer_->draw("LIFT");
-                    break;
-                    
-                case MonsterControlComponent::COLLAPSE_MODE:
-                    textRenderer_->draw("COLLAPSE");
+                case MonsterControlComponent::DROP_MODE:
+                    textRenderer_->draw("DROP");
                     break;
                     
                 default:

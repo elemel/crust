@@ -30,7 +30,7 @@ namespace crust {
         jumpControl_(false),
         actionControl_(false),
     
-        actionMode_(DIG_MODE)
+        actionMode_(MINE_MODE)
     { }
 
     MonsterControlComponent::~MonsterControlComponent()

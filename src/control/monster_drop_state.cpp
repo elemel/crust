@@ -1,4 +1,4 @@
-#include "monster_collapse_state.hpp"
+#include "monster_drop_state.hpp"
 
 #include "actor.hpp"
 #include "block_physics_component.hpp"
@@ -15,13 +15,13 @@ namespace crust {
         }
     }
 
-    MonsterCollapseState::MonsterCollapseState(Actor *actor) :
+    MonsterDropState::MonsterDropState(Actor *actor) :
         actor_(actor),
         controlComponent_(convert(actor->getControlComponent())),
         distance_(2.0f)
     { }
     
-    std::auto_ptr<State> MonsterCollapseState::transition()
+    std::auto_ptr<State> MonsterDropState::transition()
     {
         if (!controlComponent_->getActionControl()) {
             return std::auto_ptr<State>(new MonsterIdleState(actor_));
@@ -29,7 +29,7 @@ namespace crust {
         return std::auto_ptr<State>();
     }
 
-    void MonsterCollapseState::step(float dt)
+    void MonsterDropState::step(float dt)
     {
         Vector2 targetPosition = controlComponent_->getTargetPosition();
         for (int i = 0; i < actor_->getGame()->getActorCount(); ++i) {

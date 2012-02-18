@@ -324,34 +324,27 @@ namespace crust {
                 initBlocks();
                 initDungeon();
                 initMonsters();
-                initChains();
+                // initChains();
                 break;
 
             case SDLK_1:
                 if (playerActor_) {
                     MonsterControlComponent *controlComponent = convert(playerActor_->getControlComponent());
-                    controlComponent->setActionMode(MonsterControlComponent::DIG_MODE);
+                    controlComponent->setActionMode(MonsterControlComponent::MINE_MODE);
                 }
                 break;
 
             case SDLK_2:
                 if (playerActor_) {
                     MonsterControlComponent *controlComponent = convert(playerActor_->getControlComponent());
-                    controlComponent->setActionMode(MonsterControlComponent::CHAIN_MODE);
+                    controlComponent->setActionMode(MonsterControlComponent::DRAG_MODE);
                 }
                 break;
 
             case SDLK_3:
                 if (playerActor_) {
                     MonsterControlComponent *controlComponent = convert(playerActor_->getControlComponent());
-                    controlComponent->setActionMode(MonsterControlComponent::LIFT_MODE);
-                }
-                break;
-
-            case SDLK_4:
-                if (playerActor_) {
-                    MonsterControlComponent *controlComponent = convert(playerActor_->getControlComponent());
-                    controlComponent->setActionMode(MonsterControlComponent::COLLAPSE_MODE);
+                    controlComponent->setActionMode(MonsterControlComponent::DROP_MODE);
                 }
                 break;
 

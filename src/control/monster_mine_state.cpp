@@ -1,4 +1,4 @@
-#include "monster_dig_state.hpp"
+#include "monster_mine_state.hpp"
 
 #include "actor.hpp"
 #include "block_physics_component.hpp"
@@ -18,11 +18,11 @@ namespace crust {
             return dynamic_cast<BlockPhysicsComponent const *>(actor->getPhysicsComponent());
         }
         
-        class DigCallback : public b2RayCastCallback {
+        class MineCallback : public b2RayCastCallback {
         public:
             Actor *actor;
             
-            DigCallback() :
+            MineCallback() :
                 actor(0)
             { }
             
@@ -41,14 +41,14 @@ namespace crust {
         };
     }
 
-    MonsterDigState::MonsterDigState(Actor *actor) :
+    MonsterMineState::MonsterMineState(Actor *actor) :
         actor_(actor),
         controlComponent_(convert(actor->getControlComponent())),
         physicsComponent_(convert(actor->getPhysicsComponent())),
         physicsService_(actor->getGame()->getPhysicsService())
     { }
 
-    std::auto_ptr<State> MonsterDigState::transition()
+    std::auto_ptr<State> MonsterMineState::transition()
     {
         if (!controlComponent_->getActionControl()) {
             return std::auto_ptr<State>(new MonsterIdleState(actor_));
@@ -56,11 +56,11 @@ namespace crust {
         return std::auto_ptr<State>();
     }
 
-    void MonsterDigState::step(float dt)
+    void MonsterMineState::step(float dt)
     {
         Vector2 p1 = physicsComponent_->getPosition();
         Vector2 p2 = p1 + clampLength(controlComponent_->getTargetPosition() - p1, 1.5f);
-        DigCallback callback;
+        MineCallback callback;
         physicsService_->getWorld()->RayCast(&callback, b2Vec2(p1.x, p1.y),
                                             b2Vec2(p2.x, p2.y));
         if (callback.actor) {

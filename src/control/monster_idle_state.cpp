@@ -2,10 +2,10 @@
 
 #include "actor.hpp"
 #include "convert.hpp"
-#include "monster_collapse_state.hpp"
 #include "monster_control_component.hpp"
-#include "monster_dig_state.hpp"
-#include "monster_lift_state.hpp"
+#include "monster_drag_state.hpp"
+#include "monster_drop_state.hpp"
+#include "monster_mine_state.hpp"
 
 namespace crust {
     MonsterIdleState::MonsterIdleState(Actor *actor) :
@@ -17,14 +17,14 @@ namespace crust {
     {
         if (controlComponent_->getActionControl()) {
             switch (controlComponent_->getActionMode()) {
-                case MonsterControlComponent::DIG_MODE:
-                    return std::auto_ptr<State>(new MonsterDigState(actor_));
+                case MonsterControlComponent::MINE_MODE:
+                    return std::auto_ptr<State>(new MonsterMineState(actor_));
 
-                case MonsterControlComponent::LIFT_MODE:
-                    return std::auto_ptr<State>(new MonsterLiftState(actor_));
+                case MonsterControlComponent::DRAG_MODE:
+                    return std::auto_ptr<State>(new MonsterDragState(actor_));
 
-                case MonsterControlComponent::COLLAPSE_MODE:
-                    return std::auto_ptr<State>(new MonsterCollapseState(actor_));
+                case MonsterControlComponent::DROP_MODE:
+                    return std::auto_ptr<State>(new MonsterDropState(actor_));
 
                 default:
                     break;

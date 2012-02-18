@@ -1,4 +1,4 @@
-#include "monster_lift_state.hpp"
+#include "monster_drag_state.hpp"
 
 #include "actor.hpp"
 #include "block_physics_component.hpp"
@@ -16,7 +16,7 @@ namespace crust {
         }
     }
 
-    MonsterLiftState::MonsterLiftState(Actor *actor) :
+    MonsterDragState::MonsterDragState(Actor *actor) :
         actor_(actor),
         controlComponent_(convert(actor->getControlComponent())),
         game_(actor->getGame()),
@@ -26,17 +26,17 @@ namespace crust {
         joint_(0)
     { }
 
-    void MonsterLiftState::create()
+    void MonsterDragState::create()
     {
         liftBlock(true);
     }
 
-    void MonsterLiftState::destroy()
+    void MonsterDragState::destroy()
     {
         releaseBlock();
     }
 
-    std::auto_ptr<State> MonsterLiftState::transition()
+    std::auto_ptr<State> MonsterDragState::transition()
     {
         if (!controlComponent_->getActionControl()) {
             return std::auto_ptr<State>(new MonsterIdleState(actor_));
@@ -44,7 +44,7 @@ namespace crust {
         return std::auto_ptr<State>();
     }
 
-    void MonsterLiftState::step(float dt)
+    void MonsterDragState::step(float dt)
     {
         liftBlock(false);
         if (targetActor_) {
@@ -66,7 +66,7 @@ namespace crust {
         }
     }
 
-    void MonsterLiftState::liftBlock(bool fixedRotation)
+    void MonsterDragState::liftBlock(bool fixedRotation)
     {
         if (targetActor_) {
             return;
@@ -109,7 +109,7 @@ namespace crust {
         }
     }
     
-    void MonsterLiftState::releaseBlock()
+    void MonsterDragState::releaseBlock()
     {
         if (targetActor_ == 0) {
             return;
