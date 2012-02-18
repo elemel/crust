@@ -1,7 +1,7 @@
 #ifndef CRUST_MONSTER_SCENE_COMPONENT_HPP
 #define CRUST_MONSTER_SCENE_COMPONENT_HPP
 
-#include "scene_component.hpp"
+#include "component.hpp"
 
 #include <memory>
 
@@ -10,7 +10,7 @@ namespace crust {
     class SceneService;
     class Sprite;
 
-    class MonsterSceneComponent : public SceneComponent {
+    class MonsterSceneComponent : public Component {
     public:
         explicit MonsterSceneComponent(Actor *actor);
         ~MonsterSceneComponent();

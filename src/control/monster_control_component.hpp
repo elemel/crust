@@ -1,7 +1,7 @@
 #ifndef CRUST_MONSTER_CONTROL_COMPONENT_HPP
 #define CRUST_MONSTER_CONTROL_COMPONENT_HPP
 
-#include "control_component.hpp"
+#include "component.hpp"
 #include "geometry.hpp"
 #include "task.hpp"
 
@@ -11,7 +11,7 @@ namespace crust {
     class MonsterPhysicsComponent;
     class State;
     
-    class MonsterControlComponent : public ControlComponent, public Task {
+    class MonsterControlComponent : public Component, public Task {
     public:
         enum ActionMode {
             MINE_MODE,

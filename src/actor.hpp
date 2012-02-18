@@ -4,11 +4,8 @@
 #include <memory>
 
 namespace crust {
-    class AnimationComponent;
-    class ControlComponent;
+    class Component;
     class Game;
-    class PhysicsComponent;
-    class SceneComponent;
     
     class Actor {
     public:
@@ -25,53 +22,53 @@ namespace crust {
             return game_;
         }
         
-        PhysicsComponent *getPhysicsComponent()
+        Component *getPhysicsComponent()
         {
             return physicsComponent_.get();
         }
         
-        PhysicsComponent const *getPhysicsComponent() const
+        Component const *getPhysicsComponent() const
         {
             return physicsComponent_.get();
         }
         
-        void setPhysicsComponent(std::auto_ptr<PhysicsComponent> component);
+        void setPhysicsComponent(std::auto_ptr<Component> component);
         
-        ControlComponent *getControlComponent()
+        Component *getControlComponent()
         {
             return controlComponent_.get();
         }
         
-        ControlComponent const *getControlComponent() const
+        Component const *getControlComponent() const
         {
             return controlComponent_.get();
         }
         
-        void setControlComponent(std::auto_ptr<ControlComponent> component);
+        void setControlComponent(std::auto_ptr<Component> component);
         
-        SceneComponent *getSceneComponent()
+        Component *getSceneComponent()
         {
             return sceneComponent_.get();
         }
         
-        SceneComponent const *getSceneComponent() const
+        Component const *getSceneComponent() const
         {
             return sceneComponent_.get();
         }
         
-        void setSceneComponent(std::auto_ptr<SceneComponent> component);
+        void setSceneComponent(std::auto_ptr<Component> component);
         
-        AnimationComponent *getAnimationComponent()
+        Component *getAnimationComponent()
         {
             return animationComponent_.get();
         }
         
-        AnimationComponent const *getAnimationComponent() const
+        Component const *getAnimationComponent() const
         {
             return animationComponent_.get();
         }
         
-        void setAnimationComponent(std::auto_ptr<AnimationComponent> component);
+        void setAnimationComponent(std::auto_ptr<Component> component);
 
         void create();
         void destroy();
@@ -79,10 +76,10 @@ namespace crust {
     private:
         Game *game_;
         
-        std::auto_ptr<PhysicsComponent> physicsComponent_;
-        std::auto_ptr<ControlComponent> controlComponent_;
-        std::auto_ptr<SceneComponent> sceneComponent_;
-        std::auto_ptr<AnimationComponent> animationComponent_;
+        std::auto_ptr<Component> physicsComponent_;
+        std::auto_ptr<Component> controlComponent_;
+        std::auto_ptr<Component> sceneComponent_;
+        std::auto_ptr<Component> animationComponent_;
     };
 }
 

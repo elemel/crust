@@ -1,9 +1,6 @@
 #include "actor.hpp"
 
-#include "animation_component.hpp"
-#include "control_component.hpp"
-#include "physics_component.hpp"
-#include "scene_component.hpp"
+#include "component.hpp"
 
 namespace crust {
     Actor::Actor(Game *game) :
@@ -13,22 +10,22 @@ namespace crust {
     Actor::~Actor()
     { }
 
-    void Actor::setPhysicsComponent(std::auto_ptr<PhysicsComponent> component)
+    void Actor::setPhysicsComponent(std::auto_ptr<Component> component)
     {
         physicsComponent_ = component;
     }
 
-    void Actor::setControlComponent(std::auto_ptr<ControlComponent> component)
+    void Actor::setControlComponent(std::auto_ptr<Component> component)
     {
         controlComponent_ = component;
     }
 
-    void Actor::setSceneComponent(std::auto_ptr<SceneComponent> component)
+    void Actor::setSceneComponent(std::auto_ptr<Component> component)
     {
         sceneComponent_ = component;
     }
 
-    void Actor::setAnimationComponent(std::auto_ptr<AnimationComponent> component)
+    void Actor::setAnimationComponent(std::auto_ptr<Component> component)
     {
         animationComponent_ = component;
     }

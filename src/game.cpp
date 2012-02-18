@@ -2,11 +2,9 @@
 
 #include "actor.hpp"
 #include "actor_factory.hpp"
-#include "animation_component.hpp"
 #include "animation_service.hpp"
 #include "block_physics_component.hpp"
 #include "config.hpp"
-#include "control_component.hpp"
 #include "control_service.hpp"
 #include "convert.hpp"
 #include "dungeon_generator.hpp"
@@ -14,7 +12,6 @@
 #include "geometry.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
-#include "physics_component.hpp"
 #include "physics_service.hpp"
 #include "scene_service.hpp"
 

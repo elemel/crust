@@ -1,10 +1,10 @@
-#ifndef CRUST_SCENE_COMPONENT_HPP
-#define CRUST_SCENE_COMPONENT_HPP
+#ifndef CRUST_COMPONENT_HPP
+#define CRUST_COMPONENT_HPP
 
 namespace crust {
-    class SceneComponent {
+    class Component {
     public:
-        virtual ~SceneComponent()
+        virtual ~Component()
         { }
 
         virtual void create() = 0;

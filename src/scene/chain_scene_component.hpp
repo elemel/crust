@@ -1,13 +1,13 @@
 #ifndef CRUST_CHAIN_SCENE_COMPONENT_HPP
 #define CRUST_CHAIN_SCENE_COMPONENT_HPP
 
-#include "scene_component.hpp"
+#include "component.hpp"
 
 namespace crust {
     class Actor;
     class ChainPhysicsComponent;
 
-    class ChainSceneComponent : public SceneComponent {
+    class ChainSceneComponent : public Component {
     public:
         explicit ChainSceneComponent(Actor *actor);
 

@@ -6,6 +6,7 @@ solution "crust"
         language "C++"
         files { "../src/**.hpp", "../src/**.cpp" }
         includedirs {
+            "../src",
             "../src/**",
             "../ext/Box2D/include",
             "../ext/SDL/include"

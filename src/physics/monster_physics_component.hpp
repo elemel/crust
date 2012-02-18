@@ -2,7 +2,7 @@
 #define CRUST_MONSTER_PHYSICS_COMPONENT_HPP
 
 #include "geometry.hpp"
-#include "physics_component.hpp"
+#include "component.hpp"
 
 #include <memory>
 #include <Box2D/Box2D.h>
@@ -11,7 +11,7 @@ namespace crust {
     class Actor;
     class PhysicsService;
     
-    class MonsterPhysicsComponent : public PhysicsComponent {
+    class MonsterPhysicsComponent : public Component {
     public:
         MonsterPhysicsComponent(Actor *actor, Vector2 const &position);
         ~MonsterPhysicsComponent();

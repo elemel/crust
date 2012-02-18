@@ -2,7 +2,7 @@
 #define CRUST_CHAIN_PHYSICS_COMPONENT_HPP
 
 #include "geometry.hpp"
-#include "physics_component.hpp"
+#include "component.hpp"
 
 #include <vector>
 #include <Box2D/Box2D.h>
@@ -11,7 +11,7 @@ namespace crust {
     class Actor;
     class PhysicsService;
 
-    class ChainPhysicsComponent : public PhysicsComponent {
+    class ChainPhysicsComponent : public Component {
     public:
         typedef std::vector<b2Body *> BodyVector;
         

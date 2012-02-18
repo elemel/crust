@@ -1,7 +1,7 @@
 #ifndef CRUST_MONSTER_ANIMATION_COMPONENT_HPP
 #define CRUST_MONSTER_ANIMATION_COMPONENT_HPP
 
-#include "animation_component.hpp"
+#include "component.hpp"
 #include "task.hpp"
 
 namespace crust {
@@ -11,7 +11,7 @@ namespace crust {
     class MonsterPhysicsComponent;
     class MonsterSceneComponent;
 
-    class MonsterAnimationComponent : public AnimationComponent, public Task {
+    class MonsterAnimationComponent : public Component, public Task {
     public:
         MonsterAnimationComponent(Actor *actor);
 

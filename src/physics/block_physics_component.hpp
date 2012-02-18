@@ -1,7 +1,7 @@
 #ifndef CRUST_BLOCK_PHYSICS_COMPONENT_HPP
 #define CRUST_BLOCK_PHYSICS_COMPONENT_HPP
 
-#include "physics_component.hpp"
+#include "component.hpp"
 
 #include "geometry.hpp"
 #include "grid.hpp"
@@ -11,7 +11,7 @@ namespace crust {
     class Actor;
     class PhysicsService;
     
-    class BlockPhysicsComponent : public PhysicsComponent {
+    class BlockPhysicsComponent : public Component {
     public:
         explicit BlockPhysicsComponent(Actor *actor, Polygon2 const &polygon);
         ~BlockPhysicsComponent();
