@@ -22,6 +22,7 @@ namespace crust {
     class Config;
     class ControlService;
     class Font;
+    class InputService;
     class PhysicsService;
     class SceneService;
 
@@ -36,6 +37,11 @@ namespace crust {
         
         void run();
 
+        void setQuitting(bool quitting)
+        {
+            quitting_ = quitting;
+        }
+        
         Config const *getConfig() const
         {
             return config_;
@@ -92,6 +98,11 @@ namespace crust {
             return &actors_[i];
         }
 
+        InputService *getInputService()
+        {
+            return inputService_.get();
+        }
+
         PhysicsService *getPhysicsService()
         {
             return physicsService_.get();
@@ -115,7 +126,7 @@ namespace crust {
     private:
         Config const *config_;
         Random random_;
-        bool quit_;
+        bool quitting_;
         int windowWidth_;
         int windowHeight_;
         SDL_Window *window_;
@@ -137,6 +148,7 @@ namespace crust {
         VoronoiDiagram voronoiDiagram_;
         DungeonGenerator dungeonGenerator_;
 
+        std::auto_ptr<InputService> inputService_;
         std::auto_ptr<PhysicsService> physicsService_;
         std::auto_ptr<ControlService> controlService_;
         std::auto_ptr<SceneService> sceneService_;
@@ -157,14 +169,6 @@ namespace crust {
         void runStep(float dt);
         void updateFps();
         void updateCamera();
-
-        void handleEvents();
-        void handleEvent(SDL_Event *event);
-        void handleKeyDownEvent(SDL_Event *event);
-        void handleKeyUpEvent(SDL_Event *event);
-        void handleMouseButtonDownEvent(SDL_Event *event);
-        void handleMouseButtonUpEvent(SDL_Event *event);
-        void handleInput();
 
         void step(float dt);
         void handleCollisions();

@@ -10,6 +10,7 @@
 #include "dungeon_generator.hpp"
 #include "error.hpp"
 #include "geometry.hpp"
+#include "input_service.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
 #include "physics_service.hpp"
@@ -27,7 +28,7 @@ namespace crust {
 
     Game::Game(Config const *config) :
         config_(config),
-        quit_(false),
+        quitting_(false),
         windowWidth_(config->windowWidth),
         windowHeight_(config->windowHeight),
         window_(0),
@@ -50,6 +51,7 @@ namespace crust {
         initWindow();
         initContext();
         initVoronoiDiagram();
+        inputService_.reset(new InputService(this));
         physicsService_.reset(new PhysicsService(this));
         controlService_.reset(new ControlService(this));
         sceneService_.reset(new SceneService(this));
@@ -76,7 +78,7 @@ namespace crust {
 
     void Game::run()
     {
-        while (!quit_) {
+        while (!quitting_) {
             double newAppTime = 0.001 * double(SDL_GetTicks());
             if (0.1 < newAppTime - appTime_) {
                 appTime_ = newAppTime;
@@ -237,8 +239,6 @@ namespace crust {
         time_ += dt;
         
         updateFps();
-        handleEvents();
-        handleInput();
         step(float(dt));
         updateCamera();
 
@@ -268,158 +268,9 @@ namespace crust {
         sceneService_->setCameraPosition(Vector2(position.x, position.y));
     }
     
-    void Game::handleEvents()
-    {
-        SDL_Event event;
-#if 1
-        while (SDL_PollEvent(&event)) {
-            handleEvent(&event);
-        }
-#else
-        SDL_WaitEvent(&event);
-        handleEvent(&event);
-#endif
-    }
-
-    void Game::handleEvent(SDL_Event *event)
-    {
-        switch (event->type) {
-            case SDL_QUIT:
-                quit_ = true;
-                break;
-                
-            case SDL_KEYDOWN:
-                handleKeyDownEvent(event);
-                break;
-
-            case SDL_KEYUP:
-                handleKeyUpEvent(event);
-                break;
-
-            case SDL_MOUSEBUTTONDOWN:
-                handleMouseButtonDownEvent(event);
-                break;
-
-            case SDL_MOUSEBUTTONUP:
-                handleMouseButtonUpEvent(event);
-                break;
-        }
-    }
-    
-    void Game::handleKeyDownEvent(SDL_Event *event)
-    {
-        switch (event->key.keysym.sym) {
-            case SDLK_ESCAPE:                
-                quit_ = true;
-                break;
-
-            case SDLK_BACKSPACE:
-                playerActor_ = 0;
-                while (!actors_.empty()) {
-                    actors_.back().destroy();
-                    actors_.pop_back();
-                }
-                initVoronoiDiagram();
-                initBlocks();
-                initDungeon();
-                initMonsters();
-                // initChains();
-                break;
-
-            case SDLK_1:
-                if (playerActor_) {
-                    MonsterControlComponent *controlComponent = convert(playerActor_->getControlComponent());
-                    controlComponent->setActionMode(MonsterControlComponent::MINE_MODE);
-                }
-                break;
-
-            case SDLK_2:
-                if (playerActor_) {
-                    MonsterControlComponent *controlComponent = convert(playerActor_->getControlComponent());
-                    controlComponent->setActionMode(MonsterControlComponent::DRAG_MODE);
-                }
-                break;
-
-            case SDLK_3:
-                if (playerActor_) {
-                    MonsterControlComponent *controlComponent = convert(playerActor_->getControlComponent());
-                    controlComponent->setActionMode(MonsterControlComponent::DROP_MODE);
-                }
-                break;
-
-            case SDLK_PLUS:
-                {
-                    float scale = sceneService_->getCameraScale();
-                    scale *= config_->cameraZoom;
-                    if (scale < config_->maxCameraScale) {
-                        sceneService_->setCameraScale(scale);
-                    }
-                }
-                break;
-
-            case SDLK_MINUS:
-                {
-                    float scale = sceneService_->getCameraScale();
-                    scale /= config_->cameraZoom;
-                    if (scale > config_->minCameraScale) {
-                        sceneService_->setCameraScale(scale);
-                    }
-                }
-                break;
-
-            case SDLK_UP:
-                // cameraPosition_.y += config_->cameraPan / cameraScale_;
-                break;
-
-            case SDLK_LEFT:
-                // cameraPosition_.x -= config_->cameraPan / cameraScale_;
-                break;
-
-            case SDLK_RIGHT:
-                // cameraPosition_.x += config_->cameraPan / cameraScale_;
-                break;
-
-            case SDLK_DOWN:
-                // cameraPosition_.y -= config_->cameraPan / cameraScale_;
-                break;
-        }
-    }
-
-    void Game::handleKeyUpEvent(SDL_Event *event)
-    { }
-
-    void Game::handleMouseButtonDownEvent(SDL_Event *event)
-    { }
-
-    void Game::handleMouseButtonUpEvent(SDL_Event *event)
-    { }
-
-    void Game::handleInput()
-    {
-        if (playerActor_) {
-            MonsterControlComponent *controlComponent = convert(playerActor_->getControlComponent());
-
-            int x = 0;
-            int y = 0;
-            Uint8 mouseButtons = SDL_GetMouseState(&x, &y);
-            Uint8 *keyboardState = SDL_GetKeyboardState(0);
-
-            bool leftControl = bool(keyboardState[SDL_SCANCODE_A]);
-            bool rightControl = bool(keyboardState[SDL_SCANCODE_D]);
-            bool jumpControl = bool(keyboardState[SDL_SCANCODE_SPACE]);
-            bool actionControl = bool(keyboardState[SDL_SCANCODE_LSHIFT] || (mouseButtons & SDL_BUTTON_LMASK));
-            Vector2 targetPosition = sceneService_->getWorldPosition(Vector2(float(x), float(y)));
-
-            controlComponent->setLeftControl(leftControl);
-            controlComponent->setRightControl(rightControl);
-            controlComponent->setJumpControl(jumpControl);
-            controlComponent->setActionControl(actionControl);
-            controlComponent->setTargetPosition(targetPosition);
-        }
-    }
-    
     void Game::step(float dt)
     {
+        inputService_->step(dt);
         controlService_->step(dt);
         physicsService_->step(dt);
         handleCollisions();
