@@ -90,17 +90,6 @@ namespace crust {
         physicsService_->getWorld()->DestroyBody(mainBody_);
     }
     
-    Vector2 MonsterPhysicsComponent::getPosition() const
-    {
-        b2Vec2 const &position = mainBody_->GetPosition();
-        return Vector2(position.x, position.y);
-    }
-
-    float MonsterPhysicsComponent::getAngle() const
-    {
-        return mainBody_->GetAngle();
-    }
-
     bool MonsterPhysicsComponent::isStanding() const
     {
         for (b2ContactEdge const *edge = mainBody_->GetContactList(); edge;

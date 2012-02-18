@@ -171,12 +171,14 @@ namespace crust {
     void SceneService::setTargetLight()
     {
         if (game_->getPlayerActor()) {
+            MonsterControlComponent *controlComponent = convert(game_->getPlayerActor()->getControlComponent());
+
             glEnable(GL_LIGHT2);
             GLfloat diffuse[] = { 2.0f, 2.0f, 2.0f, 1.0f };
             GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
             glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse);
             glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
-            Vector2 const &targetPosition = game_->getPlayerActor()->getControlComponent()->getTargetPosition();
+            Vector2 const &targetPosition = controlComponent->getTargetPosition();
             GLfloat position[] = { targetPosition.x, targetPosition.y, 1.0f, 1.0f };
             glLightfv(GL_LIGHT2, GL_POSITION, position);
             glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1.0f);

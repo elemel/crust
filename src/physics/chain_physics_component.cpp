@@ -58,10 +58,4 @@ namespace crust {
             bodies_.pop_back();
         }
     }
-
-    Vector2 ChainPhysicsComponent::getPosition() const
-    {
-        b2Vec2 position = bodies_.front()->GetPosition();
-        return Vector2(position.x, position.y);
-    }
 }

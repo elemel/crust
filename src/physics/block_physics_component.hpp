@@ -24,12 +24,6 @@ namespace crust {
         void create();
         void destroy();
 
-        Vector2 getPosition() const;
-        void setPosition(float x, float y);
-
-        float getAngle() const;
-        void setAngle(float angle);
-        
         int getElement(int x, int y);
         void setElement(int x, int y, int type);
         

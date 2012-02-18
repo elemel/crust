@@ -60,27 +60,6 @@ namespace crust {
         physicsService_->getWorld()->DestroyBody(body_);
     }
 
-    Vector2 BlockPhysicsComponent::getPosition() const
-    {
-        b2Vec2 position = body_->GetPosition();
-        return Vector2(position.x, position.y);
-    }
-    
-    void BlockPhysicsComponent::setPosition(float x, float y)
-    {
-        body_->SetTransform(b2Vec2(x, y), body_->GetAngle());
-    }
-
-    float BlockPhysicsComponent::getAngle() const
-    {
-        return body_->GetAngle();
-    }
-
-    void BlockPhysicsComponent::setAngle(float angle)
-    {
-        body_->SetTransform(body_->GetPosition(), angle);
-    }
-    
     int BlockPhysicsComponent::getElement(int x, int y)
     {
         return grid_.getElement(x, y);

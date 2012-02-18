@@ -6,7 +6,7 @@
 
 namespace crust {
     class Actor;
-    class ControlComponent;
+    class MonsterControlComponent;
     
     class MonsterDropState : public State, public Task {
     public:
@@ -34,7 +34,7 @@ namespace crust {
         
     private:
         Actor *actor_;
-        ControlComponent *controlComponent_;
+        MonsterControlComponent *controlComponent_;
         float distance_;
     };
 }

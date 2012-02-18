@@ -58,7 +58,8 @@ namespace crust {
 
     void MonsterMineState::step(float dt)
     {
-        Vector2 p1 = physicsComponent_->getPosition();
+        b2Vec2 p1Vec2 = physicsComponent_->getMainBody()->GetPosition();
+        Vector2 p1(p1Vec2.x, p1Vec2.y);
         Vector2 p2 = p1 + clampLength(controlComponent_->getTargetPosition() - p1, 1.5f);
         MineCallback callback;
         physicsService_->getWorld()->RayCast(&callback, b2Vec2(p1.x, p1.y),

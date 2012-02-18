@@ -34,8 +34,9 @@ namespace crust {
     
     void BlockSceneComponent::step(float dt)
     {
-        sprite_->setPosition(physicsComponent_->getPosition());
-        sprite_->setAngle(physicsComponent_->getAngle());
+        b2Vec2 position = physicsComponent_->getBody()->GetPosition();
+        sprite_->setPosition(Vector2(position.x, position.y));
+        sprite_->setAngle(physicsComponent_->getBody()->GetAngle());
     }
     
     void BlockSceneComponent::initSprite()

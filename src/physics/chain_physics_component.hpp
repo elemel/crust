@@ -21,13 +21,6 @@ namespace crust {
         void create();
         void destroy();
 
-        Vector2 getPosition() const;
-
-        float getAngle() const
-        {
-            return 0.0f;
-        }
-        
         BodyVector const &getBodies() const
         {
             return bodies_;

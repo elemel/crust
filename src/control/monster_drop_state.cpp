@@ -2,8 +2,8 @@
 
 #include "actor.hpp"
 #include "block_physics_component.hpp"
-#include "control_component.hpp"
 #include "game.hpp"
+#include "monster_control_component.hpp"
 #include "monster_idle_state.hpp"
 #include "convert.hpp"
 
@@ -33,9 +33,15 @@ namespace crust {
     {
         Vector2 targetPosition = controlComponent_->getTargetPosition();
         for (int i = 0; i < actor_->getGame()->getActorCount(); ++i) {
-            Actor *actor = actor_->getGame()->getActor(i);
-            if (isBlock(actor) && getSquaredDistance(actor->getPhysicsComponent()->getPosition(), targetPosition) < square(distance_)) {
-                static_cast<BlockPhysicsComponent *>(actor->getPhysicsComponent())->getBody()->SetType(b2_dynamicBody);
+            Actor *tempActor = actor_->getGame()->getActor(i);
+            if (isBlock(tempActor)) {
+                BlockPhysicsComponent *tempPhysicsComponent = convert(tempActor->getPhysicsComponent());
+                b2Body *tempBody = tempPhysicsComponent->getBody();
+                b2Vec2 tempPositionVec2 = tempBody->GetPosition();
+                Vector2 tempPosition(tempPositionVec2.x, tempPositionVec2.y);
+                if (getSquaredDistance(tempPosition, targetPosition) < square(distance_)) {
+                    tempBody->SetType(b2_dynamicBody);
+                }
             }
         }
     }

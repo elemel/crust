@@ -13,6 +13,7 @@
 #include "error.hpp"
 #include "geometry.hpp"
 #include "monster_control_component.hpp"
+#include "monster_physics_component.hpp"
 #include "physics_component.hpp"
 #include "physics_service.hpp"
 #include "scene_service.hpp"
@@ -265,8 +266,9 @@ namespace crust {
     
     void Game::updateCamera()
     {
-        Vector2 position = playerActor_->getPhysicsComponent()->getPosition();
-        sceneService_->setCameraPosition(position);
+        MonsterPhysicsComponent *physicsComponent = convert(playerActor_->getPhysicsComponent());
+        b2Vec2 position = physicsComponent->getMainBody()->GetPosition();
+        sceneService_->setCameraPosition(Vector2(position.x, position.y));
     }
     
     void Game::handleEvents()
@@ -398,7 +400,7 @@ namespace crust {
     void Game::handleInput()
     {
         if (playerActor_) {
-            ControlComponent *controlComponent = playerActor_->getControlComponent();
+            MonsterControlComponent *controlComponent = convert(playerActor_->getControlComponent());
 
             int x = 0;
             int y = 0;
@@ -444,10 +446,14 @@ namespace crust {
     {
         for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
             Actor *actor = &*i;
-            if (isBlock(actor) && box.containsPoint(i->getPhysicsComponent()->getPosition())) {
-                int j = i - actors_.begin();
-                removeActor(actor);
-                i = actors_.begin() + j - 1;
+            if (isBlock(actor)) {
+                BlockPhysicsComponent *physicsComponent = convert(actor->getPhysicsComponent());
+                b2Vec2 position = physicsComponent->getBody()->GetPosition();
+                if (box.containsPoint(Vector2(position.x, position.y))) {
+                    int j = i - actors_.begin();
+                    removeActor(actor);
+                    i = actors_.begin() + j - 1;
+                }
             }
         }
     }

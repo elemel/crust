@@ -88,11 +88,6 @@ namespace crust {
             BlockPhysicsComponent *physicsComponent = convert(targetActor_->getPhysicsComponent());
             b2Body *body = physicsComponent->getBody();
             
-            b2Vec2 localPointVec2 = body->GetLocalPoint(b2Vec2(targetPosition.x, targetPosition.y));
-            Vector2 localPoint(localPointVec2.x, localPointVec2.y);
-            Polygon2 const &localPolygon = physicsComponent->getLocalPolygon();
-            Vector2 localCentroid = localPolygon.getCentroid();
-            
             if (fixedRotation) {
                 body->SetAngularVelocity(0.0f);
                 body->SetFixedRotation(true);

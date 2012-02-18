@@ -19,9 +19,6 @@ namespace crust {
         void create();
         void destroy();
         
-        Vector2 getPosition() const;
-        float getAngle() const;
-
         float getWheelRadius() const
         {
             return wheelRadius_;
