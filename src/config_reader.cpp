@@ -33,6 +33,9 @@ namespace crust {
         if (key_ == "multisampling") {
             target_->multisampling = parseBool(value_.c_str());
         }
+        if (key_ == "supersampling") {
+            target_->supersampling = parseBool(value_.c_str());
+        }
         if (key_ == "window_width") {
             target_->windowWidth = parseInt(value_.c_str());
         }

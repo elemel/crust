@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <SDL/SDL.h>
+#include <SDL/SDL_opengl.h>
 
 namespace crust {
     class Font;
@@ -71,6 +72,9 @@ namespace crust {
 
         SpriteVector sprites_;
         TaskVector tasks_;
+
+        GLuint targetFramebuffer_;
+        GLuint targetTexture_;
         
         void initFont();
 

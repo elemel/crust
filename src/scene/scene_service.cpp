@@ -27,15 +27,39 @@ namespace crust {
     
         drawEnabled_(true),
         debugDrawEnabled_(false),
-        lightingEnabled_(true)
+        lightingEnabled_(true),
+
+        targetFramebuffer_(0),
+        targetTexture_(0)
     {
         SDL_GetWindowSize(window_, &windowWidth_, &windowHeight_);
 
         initFont();
+
+        if (game_->getConfig()->supersampling) {
+            glGenTextures(1, &targetTexture_);
+            glBindTexture(GL_TEXTURE_2D, targetTexture_);
+            glTexImage2D(GL_TEXTURE_2D, 0, 4, 2 * windowWidth_, 2 * windowHeight_, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            
+            glGenFramebuffers(1, &targetFramebuffer_);
+            glBindFramebuffer(GL_FRAMEBUFFER, targetFramebuffer_);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targetTexture_, 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
     }
 
     SceneService::~SceneService()
-    { }
+    {
+        if (targetFramebuffer_) {
+            glDeleteFramebuffers(1, &targetFramebuffer_);
+        }
+        if (targetTexture_) {
+            glDeleteTextures(1, &targetTexture_);
+        }
+    }
 
     void SceneService::step(float dt)
     {
@@ -47,7 +71,39 @@ namespace crust {
     void SceneService::draw()
     {
         updateFrustum();
+        if (game_->getConfig()->supersampling) {
+            glViewport(0, 0, 2 * windowWidth_, 2 * windowHeight_);
+            glBindFramebuffer(GL_FRAMEBUFFER, targetFramebuffer_);
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
         drawWorld();
+        if (game_->getConfig()->supersampling) {
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            
+            glViewport(0, 0, windowWidth_, windowHeight_);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(0.0, double(windowWidth_), 0.0, double(windowHeight_), -1.0, 1.0);
+            glMatrixMode(GL_MODELVIEW);
+            
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, targetTexture_);
+
+            glColor3f(1.0f, 1.0f, 1.0f);
+            glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex2f(0.0f, 0.0f);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex2f(float(windowWidth_), 0.0f);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex2f(float(windowWidth_), float(windowHeight_));
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex2f(0.0f, float(windowHeight_));
+            glEnd();
+            
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glDisable(GL_TEXTURE_2D);
+        }
         drawOverlay();
     }
     
