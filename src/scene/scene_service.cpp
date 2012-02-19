@@ -162,11 +162,11 @@ namespace crust {
         setWorldProjection();
         if (drawEnabled_) {
             glEnable(GL_LIGHTING);
-            // glEnable(GL_BLEND);
-            // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             setLighting();
             drawSprites();
-            // glDisable(GL_BLEND);
+            glDisable(GL_BLEND);
             glDisable(GL_LIGHTING);
         }
         if (debugDrawEnabled_) {

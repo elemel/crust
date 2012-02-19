@@ -61,6 +61,7 @@ namespace crust {
             pixels_.setElement(x, y, color);
             verticesDirty_ = true;
             bufferDirty_ = true;
+            textureDirty_ = true;
         }
         
         void draw() const;
@@ -79,12 +80,18 @@ namespace crust {
         mutable GLuint bufferName_;
         mutable GLsizei bufferCount_;
 
+        mutable bool textureDirty_;
+        mutable GLuint texture_;
+        mutable GLuint shadowTexture_;
+        
         void drawDirectMode() const;
         void drawVertices() const;
         void drawBuffer() const;
+        void drawTexture() const;
 
         void updateVertices() const;
         void updateBuffer() const;
+        void updateTexture() const;
     };
 }
 
