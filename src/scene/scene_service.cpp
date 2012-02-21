@@ -30,25 +30,14 @@ namespace crust {
         lightingEnabled_(true),
 
         targetFramebuffer_(0),
-        targetTexture_(0)
+        targetTexture_(0),
+        shaderProgram_(0)
     {
         SDL_GetWindowSize(window_, &windowWidth_, &windowHeight_);
 
         initFont();
-
-        if (game_->getConfig()->supersampling) {
-            glGenTextures(1, &targetTexture_);
-            glBindTexture(GL_TEXTURE_2D, targetTexture_);
-            glTexImage2D(GL_TEXTURE_2D, 0, 4, 2 * windowWidth_, 2 * windowHeight_, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glBindTexture(GL_TEXTURE_2D, 0);
-            
-            glGenFramebuffers(1, &targetFramebuffer_);
-            glBindFramebuffer(GL_FRAMEBUFFER, targetFramebuffer_);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targetTexture_, 0);
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        }
+        initTargetFramebuffer();
+        initShaders();
     }
 
     SceneService::~SceneService()
@@ -58,6 +47,15 @@ namespace crust {
         }
         if (targetTexture_) {
             glDeleteTextures(1, &targetTexture_);
+        }
+        if (shaderProgram_) {
+            glDeleteProgram(shaderProgram_);
+        }
+        if (vertexShader_) {
+            glDeleteShader(vertexShader_);
+        }
+        if (fragmentShader_) {
+            glDeleteShader(fragmentShader_);
         }
     }
 
@@ -146,7 +144,32 @@ namespace crust {
         reader.read(&in, font_.get());
         textRenderer_.reset(new TextRenderer(font_.get()));
     }
-    
+
+    void SceneService::initTargetFramebuffer()
+    {
+        
+        if (game_->getConfig()->supersampling) {
+            glGenTextures(1, &targetTexture_);
+            glBindTexture(GL_TEXTURE_2D, targetTexture_);
+            glTexImage2D(GL_TEXTURE_2D, 0, 4, 2 * windowWidth_, 2 * windowHeight_, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            
+            glGenFramebuffers(1, &targetFramebuffer_);
+            glBindFramebuffer(GL_FRAMEBUFFER, targetFramebuffer_);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targetTexture_, 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+    }
+
+    void SceneService::initShaders()
+    {
+        vertexShader_ = shaderFactory_.compileShader(GL_VERTEX_SHADER, "../../../data/vertex.glsl");
+        fragmentShader_ = shaderFactory_.compileShader(GL_FRAGMENT_SHADER, "../../../data/fragment.glsl");
+        shaderProgram_ = shaderFactory_.linkProgram(vertexShader_, fragmentShader_);
+    }
+
     void SceneService::updateFrustum()
     {
         float invScale = 1.0f / cameraScale_;
@@ -165,7 +188,9 @@ namespace crust {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             // setLighting();
+            glUseProgram(shaderProgram_);
             drawSprites();
+            glUseProgram(0);
             glDisable(GL_BLEND);
             // glDisable(GL_LIGHTING);
         }

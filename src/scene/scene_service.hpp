@@ -2,6 +2,7 @@
 #define CRUST_SCENE_SERVICE_HPP
 
 #include "geometry.hpp"
+#include "shader_factory.hpp"
 
 #include <vector>
 #include <SDL/SDL.h>
@@ -75,8 +76,16 @@ namespace crust {
 
         GLuint targetFramebuffer_;
         GLuint targetTexture_;
+
+        ShaderFactory shaderFactory_;
+        GLuint vertexShader_;
+        GLuint fragmentShader_;
+        GLuint shaderProgram_;
         
         void initFont();
+        void initTargetFramebuffer();
+        void initShaders();
+        GLchar const *loadShaderSource(char const *file);
 
         void updateFrustum();
         void drawWorld();
