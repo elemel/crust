@@ -34,9 +34,15 @@ namespace crust {
     
     void BlockSceneComponent::step(float dt)
     {
+        float duration = physicsComponent_->getMineDuration();
+
         b2Vec2 position = physicsComponent_->getBody()->GetPosition();
+        float angle = physicsComponent_->getBody()->GetAngle();
+        position.x += 0.03f * std::sin(30.0f * duration);
+        position.y += 0.03f * std::sin(40.0f * duration);
+        angle += 0.03f * std::sin(50.0f * duration);
         sprite_->setPosition(Vector2(position.x, position.y));
-        sprite_->setAngle(physicsComponent_->getBody()->GetAngle());
+        sprite_->setAngle(angle);
     }
     
     void BlockSceneComponent::initSprite()

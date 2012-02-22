@@ -188,9 +188,9 @@ namespace crust {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             // setLighting();
-            glUseProgram(shaderProgram_);
+            // glUseProgram(shaderProgram_);
             drawSprites();
-            glUseProgram(0);
+            // glUseProgram(0);
             glDisable(GL_BLEND);
             // glDisable(GL_LIGHTING);
         }

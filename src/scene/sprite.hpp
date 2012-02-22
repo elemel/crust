@@ -56,6 +56,16 @@ namespace crust {
             scale_ = scale;
         }
 
+        Color4 const &getColor() const
+        {
+            return color_;
+        }
+
+        void setColor(Color4 const &color)
+        {
+            color_ = color;
+        }
+        
         void setPixel(int x, int y, Color4 const &color)
         {
             pixels_.setElement(x, y, color);
@@ -70,6 +80,7 @@ namespace crust {
         Vector2 position_;
         float angle_;
         Vector2 scale_;
+        Color4 color_;
 
         Grid<Color4> pixels_;
 

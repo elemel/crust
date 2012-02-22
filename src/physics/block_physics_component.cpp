@@ -8,7 +8,9 @@ namespace crust {
     BlockPhysicsComponent::BlockPhysicsComponent(Actor *actor, Polygon2 const &polygon) :
         actor_(actor),
         physicsService_(actor->getGame()->getPhysicsService()),
-        polygon_(polygon)
+        polygon_(polygon),
+        body_(0),
+        mineDuration_(0.0f)
     { }
 
     BlockPhysicsComponent::~BlockPhysicsComponent()

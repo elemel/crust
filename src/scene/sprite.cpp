@@ -7,6 +7,7 @@ namespace crust {
     Sprite::Sprite() :
         angle_(0.0f),
         scale_(1.0f),
+        color_(255),
 
         pixels_(Color4(0, 0)),
 
@@ -173,7 +174,7 @@ namespace crust {
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, shadowTexture_);
 
-        glColor3f(0.0f, 0.0f, 0.0f);
+        glColor4ub(0, 0, 0, color_.alpha);
         glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f);
         glVertex2f(x1 - 2.0f, y1 - 2.0f);
@@ -187,7 +188,7 @@ namespace crust {
         
         glBindTexture(GL_TEXTURE_2D, texture_);
 
-        glColor3f(1.0f, 1.0f, 1.0f);
+        glColor4ub(color_.red, color_.green, color_.blue, color_.alpha);
         glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f);
         glVertex2f(x1, y1);
@@ -376,7 +377,7 @@ namespace crust {
                                                                 pixels_.getElement(x + dx + 1, y + dy - 1).alpha),
                                                        std::max(pixels_.getElement(x + dx + 1, y + dy + 1).alpha,
                                                                 pixels_.getElement(x + dx - 1, y + dy + 1).alpha));
-                unsigned char combinedAlpha = std::max(alpha / 1, std::max(neighborAlpha / 2, diagonalAlpha / 4));
+                unsigned char combinedAlpha = std::max(alpha / 1, std::max(neighborAlpha / 3, diagonalAlpha / 9));
                 shadowData.push_back(0);
                 shadowData.push_back(0);
                 shadowData.push_back(0);

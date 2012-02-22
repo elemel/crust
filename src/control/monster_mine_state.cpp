@@ -45,7 +45,10 @@ namespace crust {
         actor_(actor),
         controlComponent_(convert(actor->getControlComponent())),
         physicsComponent_(convert(actor->getPhysicsComponent())),
-        physicsService_(actor->getGame()->getPhysicsService())
+        physicsService_(actor->getGame()->getPhysicsService()),
+
+        targetActor_(0),
+        targetPhysicsComponent_(0)
     { }
 
     std::auto_ptr<State> MonsterMineState::transition()
@@ -64,8 +67,20 @@ namespace crust {
         MineCallback callback;
         physicsService_->getWorld()->RayCast(&callback, b2Vec2(p1.x, p1.y),
                                             b2Vec2(p2.x, p2.y));
-        if (callback.actor) {
-            actor_->getGame()->removeActor(callback.actor);
+        if (callback.actor && callback.actor == targetActor_) {
+            float duration = targetPhysicsComponent_->getMineDuration();
+            duration += dt;
+            targetPhysicsComponent_->setMineDuration(duration);
+            if (0.5f < duration) {
+                actor_->getGame()->removeActor(callback.actor);
+            }
+        } else {
+            targetActor_ = callback.actor;
+            if (targetActor_) {
+                targetPhysicsComponent_ = convert(targetActor_->getPhysicsComponent());
+            } else {
+                targetPhysicsComponent_ = 0;
+            }
         }
     }
 }

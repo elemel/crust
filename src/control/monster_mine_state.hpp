@@ -6,6 +6,7 @@
 
 namespace crust {
     class Actor;
+    class BlockPhysicsComponent;
     class MonsterControlComponent;
     class MonsterPhysicsComponent;
     class PhysicsService;
@@ -39,6 +40,9 @@ namespace crust {
         MonsterControlComponent *controlComponent_;
         MonsterPhysicsComponent *physicsComponent_;
         PhysicsService *physicsService_;
+
+        Actor *targetActor_;
+        BlockPhysicsComponent *targetPhysicsComponent_;
     };
 }
 

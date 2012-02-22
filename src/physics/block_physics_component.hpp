@@ -44,6 +44,16 @@ namespace crust {
             return grid_;
         }
 
+        float getMineDuration() const
+        {
+            return mineDuration_;
+        }
+        
+        void setMineDuration(float duration)
+        {
+            mineDuration_ = duration;
+        }
+        
     private:
         Actor *actor_;
         PhysicsService *physicsService_;
@@ -54,6 +64,8 @@ namespace crust {
         
         Grid<unsigned char> grid_;
         b2Body *body_;
+
+        float mineDuration_;
         
         void rasterize(Polygon2 const &polygon);
         
