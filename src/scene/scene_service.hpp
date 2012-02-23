@@ -78,9 +78,14 @@ namespace crust {
         GLuint targetTexture_;
 
         ShaderFactory shaderFactory_;
+
         GLuint vertexShader_;
         GLuint fragmentShader_;
         GLuint shaderProgram_;
+
+        GLuint fxaaVertexShader_;
+        GLuint fxaaFragmentShader_;
+        GLuint fxaaShaderProgram_;
         
         void initFont();
         void initTargetFramebuffer();

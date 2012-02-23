@@ -14,6 +14,7 @@ namespace crust {
         minCameraScale(0.02f),
         maxCameraScale(1.0f),
         drawFps(true),
-        fps(60)
+        fps(60),
+        fxaa(false)
     { }
 }

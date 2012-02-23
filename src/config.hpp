@@ -17,6 +17,7 @@ namespace crust {
         float maxCameraScale;
         bool drawFps;
         int fps;
+        bool fxaa;
 
         Config();
     };

@@ -3,6 +3,7 @@
 #include "error.hpp"
 
 #include <fstream>
+#include <iostream>
 #include <sstream>
 
 namespace crust {
@@ -15,6 +16,8 @@ namespace crust {
         GLint compileStatus = GL_FALSE;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
         if (compileStatus != GL_TRUE) {
+            std::cerr << getShaderInfoLog(shader) << std::endl;
+
             std::stringstream message;
             message << "Failed to compile shader from file: " << file;
             throw Error(message.str());            
@@ -36,6 +39,8 @@ namespace crust {
         GLint linkStatus = GL_FALSE;
         glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
         if (linkStatus != GL_TRUE) {
+            std::cerr << getProgramInfoLog(program) << std::endl;
+
             std::stringstream message;
             message << "Failed to link shader program";
             throw Error(message.str());
@@ -54,14 +59,40 @@ namespace crust {
         stream.seekg(0, std::ifstream::end);
         std::size_t size(stream.tellg());        
         stream.seekg(0, std::ifstream::beg);
-        source_.resize(size + 1);
-        stream.read(&source_.front(), size);
+        buffer_.resize(size + 1);
+        stream.read(&buffer_.front(), size);
         if (std::size_t(stream.tellg()) != size) {
             std::stringstream message;
             message << "Failed to read shader file: " << file;
             throw Error(message.str());
         }
-        source_.back() = 0;
-        return reinterpret_cast<GLchar const *>(&source_.front());
+        buffer_.back() = 0;
+        return reinterpret_cast<GLchar const *>(&buffer_.front());
+    }
+
+    GLchar const *ShaderFactory::getShaderInfoLog(GLuint shader)
+    {
+        GLint length = 0;
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
+        if (length) {
+            buffer_.resize(length);
+            glGetShaderInfoLog(shader, GLsizei(buffer_.size()), 0, reinterpret_cast<GLchar *>(&buffer_.front()));
+        } else {
+            buffer_.resize(1, 0);
+        }
+        return reinterpret_cast<GLchar const *>(&buffer_.front());
+    }
+
+    GLchar const *ShaderFactory::getProgramInfoLog(GLuint program)
+    {
+        GLint length = 0;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+        if (length) {
+            buffer_.resize(length);
+            glGetProgramInfoLog(program, GLsizei(buffer_.size()), 0, reinterpret_cast<GLchar *>(&buffer_.front()));
+        } else {
+            buffer_.resize(1, 0);
+        }
+        return reinterpret_cast<GLchar const *>(&buffer_.front());
     }
 }

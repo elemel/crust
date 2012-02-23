@@ -60,6 +60,9 @@ namespace crust {
         if (key_ == "fps") {
             target_->fps = parseInt(value_.c_str());
         }
+        if (key_ == "fxaa") {
+            target_->fxaa = parseBool(value_.c_str());
+        }
     }
 
     bool ConfigReader::parseBool(char const *arg)

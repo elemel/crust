@@ -172,6 +172,7 @@ namespace crust {
         float y2 = float(pixels_.getY() + pixels_.getHeight());
         
         glEnable(GL_TEXTURE_2D);
+
         glBindTexture(GL_TEXTURE_2D, shadowTexture_);
 
         glColor4ub(0, 0, 0, color_.alpha);

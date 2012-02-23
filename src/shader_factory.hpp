@@ -11,9 +11,11 @@ namespace crust {
         GLuint linkProgram(GLuint shader1, GLuint shader2 = 0, GLuint shader3 = 0);
 
     private:
-        std::vector<char> source_;
+        std::vector<char> buffer_;
 
         GLchar const *loadSource(char const *file);
+        GLchar const *getShaderInfoLog(GLuint shader);
+        GLchar const *getProgramInfoLog(GLuint program);
     };
 }
 

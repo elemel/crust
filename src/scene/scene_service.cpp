@@ -31,7 +31,11 @@ namespace crust {
 
         targetFramebuffer_(0),
         targetTexture_(0),
-        shaderProgram_(0)
+        shaderProgram_(0),
+
+        fxaaVertexShader_(0),
+        fxaaFragmentShader_(0),
+        fxaaShaderProgram_(0)
     {
         SDL_GetWindowSize(window_, &windowWidth_, &windowHeight_);
 
@@ -48,6 +52,7 @@ namespace crust {
         if (targetTexture_) {
             glDeleteTextures(1, &targetTexture_);
         }
+
         if (shaderProgram_) {
             glDeleteProgram(shaderProgram_);
         }
@@ -56,6 +61,16 @@ namespace crust {
         }
         if (fragmentShader_) {
             glDeleteShader(fragmentShader_);
+        }
+
+        if (fxaaShaderProgram_) {
+            glDeleteProgram(fxaaShaderProgram_);
+        }
+        if (fxaaVertexShader_) {
+            glDeleteShader(fxaaVertexShader_);
+        }
+        if (fxaaFragmentShader_) {
+            glDeleteShader(fxaaFragmentShader_);
         }
     }
 
@@ -69,24 +84,36 @@ namespace crust {
     void SceneService::draw()
     {
         updateFrustum();
-        if (game_->getConfig()->supersampling) {
-            glViewport(0, 0, 2 * windowWidth_, 2 * windowHeight_);
+
+        if (game_->getConfig()->supersampling || game_->getConfig()->fxaa) {
+            if (game_->getConfig()->supersampling) {
+                glViewport(0, 0, windowWidth_ * 2, windowHeight_ * 2);
+            }
             glBindFramebuffer(GL_FRAMEBUFFER, targetFramebuffer_);
             glClear(GL_COLOR_BUFFER_BIT);
         }
+
         drawWorld();
-        if (game_->getConfig()->supersampling) {
+
+        if (game_->getConfig()->supersampling || game_->getConfig()->fxaa) {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            if (game_->getConfig()->supersampling) {
+                glViewport(0, 0, windowWidth_, windowHeight_);
+            }
             
-            glViewport(0, 0, windowWidth_, windowHeight_);
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             glOrtho(0.0, double(windowWidth_), 0.0, double(windowHeight_), -1.0, 1.0);
             glMatrixMode(GL_MODELVIEW);
-            
+
+            if (game_->getConfig()->fxaa) {
+                glUseProgram(fxaaShaderProgram_);
+            }
+            GLint location = glGetUniformLocation(fxaaShaderProgram_, "fxaaQualityRcpFrame");
+            glUniform2f(location, 1.0f / float(windowWidth_), 1.0f / float(windowHeight_));
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, targetTexture_);
-
+            
             glColor3f(1.0f, 1.0f, 1.0f);
             glBegin(GL_QUADS);
             glTexCoord2f(0.0f, 0.0f);
@@ -101,7 +128,11 @@ namespace crust {
             
             glBindTexture(GL_TEXTURE_2D, 0);
             glDisable(GL_TEXTURE_2D);
+            if (game_->getConfig()->fxaa) {
+                glUseProgram(0);
+            }
         }
+        
         drawOverlay();
     }
     
@@ -147,11 +178,14 @@ namespace crust {
 
     void SceneService::initTargetFramebuffer()
     {
-        
-        if (game_->getConfig()->supersampling) {
+        if (game_->getConfig()->supersampling || game_->getConfig()->fxaa) {
             glGenTextures(1, &targetTexture_);
             glBindTexture(GL_TEXTURE_2D, targetTexture_);
-            glTexImage2D(GL_TEXTURE_2D, 0, 4, 2 * windowWidth_, 2 * windowHeight_, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+            if (game_->getConfig()->supersampling) {
+                glTexImage2D(GL_TEXTURE_2D, 0, 4, 2 * windowWidth_, 2 * windowHeight_, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+            } else {
+                glTexImage2D(GL_TEXTURE_2D, 0, 4, windowWidth_, windowHeight_, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+            }
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glBindTexture(GL_TEXTURE_2D, 0);
@@ -168,6 +202,12 @@ namespace crust {
         vertexShader_ = shaderFactory_.compileShader(GL_VERTEX_SHADER, "../../../data/vertex.glsl");
         fragmentShader_ = shaderFactory_.compileShader(GL_FRAGMENT_SHADER, "../../../data/fragment.glsl");
         shaderProgram_ = shaderFactory_.linkProgram(vertexShader_, fragmentShader_);
+
+        if (game_->getConfig()->fxaa) {
+            fxaaVertexShader_ = shaderFactory_.compileShader(GL_VERTEX_SHADER, "../../../data/fxaa.vertex.glsl");
+            fxaaFragmentShader_ = shaderFactory_.compileShader(GL_FRAGMENT_SHADER, "../../../data/fxaa.fragment.glsl");
+            fxaaShaderProgram_ = shaderFactory_.linkProgram(fxaaVertexShader_, fxaaFragmentShader_);
+        }
     }
 
     void SceneService::updateFrustum()
@@ -188,9 +228,9 @@ namespace crust {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             // setLighting();
-            // glUseProgram(shaderProgram_);
+            glUseProgram(shaderProgram_);
             drawSprites();
-            // glUseProgram(0);
+            glUseProgram(0);
             glDisable(GL_BLEND);
             // glDisable(GL_LIGHTING);
         }
