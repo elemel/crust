@@ -4,6 +4,7 @@
 #include "color.hpp"
 #include "geometry.hpp"
 #include "grid.hpp"
+#include "int_geometry.hpp"
 
 #include <SDL/SDL_opengl.h>
 
@@ -25,7 +26,12 @@ namespace crust {
 
         Sprite();
         ~Sprite();
-        
+
+        IntVector2 const &getSize() const
+        {
+            return size_;
+        }
+
         Vector2 const &getPosition() const
         {
             return position_;
@@ -69,6 +75,8 @@ namespace crust {
         void setPixel(int x, int y, Color4 const &color)
         {
             pixels_.setElement(x, y, color);
+            size_.x = pixels_.getWidth() + 4;
+            size_.y = pixels_.getHeight() + 4;
             verticesDirty_ = true;
             bufferDirty_ = true;
             textureDirty_ = true;
@@ -77,6 +85,7 @@ namespace crust {
         void draw() const;
 
     private:
+        IntVector2 size_;
         Vector2 position_;
         float angle_;
         Vector2 scale_;

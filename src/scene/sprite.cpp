@@ -170,12 +170,16 @@ namespace crust {
         float y1 = float(pixels_.getY());
         float x2 = float(pixels_.getX() + pixels_.getWidth());
         float y2 = float(pixels_.getY() + pixels_.getHeight());
-        
+
         glEnable(GL_TEXTURE_2D);
 
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture_);
+
+        glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, shadowTexture_);
 
-        glColor4ub(0, 0, 0, color_.alpha);
+        glColor4ub(color_.red, color_.green, color_.blue, color_.alpha);
         glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f);
         glVertex2f(x1 - 2.0f, y1 - 2.0f);
@@ -186,23 +190,14 @@ namespace crust {
         glTexCoord2f(0.0f, 1.0f);
         glVertex2f(x1 - 2.0f, y2 + 2.0f);
         glEnd();
-        
-        glBindTexture(GL_TEXTURE_2D, texture_);
 
-        glColor4ub(color_.red, color_.green, color_.blue, color_.alpha);
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f);
-        glVertex2f(x1, y1);
-        glTexCoord2f(1.0f, 0.0f);
-        glVertex2f(x2, y1);
-        glTexCoord2f(1.0f, 1.0f);
-        glVertex2f(x2, y2);
-        glTexCoord2f(0.0f, 1.0f);
-        glVertex2f(x1, y2);
-        glEnd();
-
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);
-        glDisable(GL_TEXTURE_2D);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // glDisable(GL_TEXTURE_2D);
         
         glPopMatrix();
     }
@@ -345,8 +340,8 @@ namespace crust {
         glGenTextures(1, &texture_);
 
         std::vector<unsigned char> data;
-        for (int dy = 0; dy < height; ++dy) {
-            for (int dx = 0; dx < width; ++dx) {
+        for (int dy = -2; dy < height + 2; ++dy) {
+            for (int dx = -2; dx < width + 2; ++dx) {
                 Color4 const &color = pixels_.getElement(x + dx, y + dy);
                 data.push_back(color.red);
                 data.push_back(color.green);
@@ -356,7 +351,7 @@ namespace crust {
         }
         
         glBindTexture(GL_TEXTURE_2D, texture_);
-        glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data.front());
+        glTexImage2D(GL_TEXTURE_2D, 0, 4, width + 4, height + 4, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data.front());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D, 0);

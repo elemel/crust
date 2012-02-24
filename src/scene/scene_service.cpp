@@ -108,9 +108,9 @@ namespace crust {
 
             if (game_->getConfig()->fxaa) {
                 glUseProgram(fxaaShaderProgram_);
+                GLint location = glGetUniformLocation(fxaaShaderProgram_, "fxaaQualityRcpFrame");
+                glUniform2f(location, 1.0f / float(windowWidth_), 1.0f / float(windowHeight_));
             }
-            GLint location = glGetUniformLocation(fxaaShaderProgram_, "fxaaQualityRcpFrame");
-            glUniform2f(location, 1.0f / float(windowWidth_), 1.0f / float(windowHeight_));
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, targetTexture_);
             
@@ -375,7 +375,16 @@ namespace crust {
 
     void SceneService::drawSprites()
     {
+        GLint colorTexturelocation = glGetUniformLocation(shaderProgram_, "colorTexture");
+        glUniform1i(colorTexturelocation, 0);
+        GLint shadowTexturelocation = glGetUniformLocation(shaderProgram_, "shadowTexture");
+        glUniform1i(shadowTexturelocation, 1);
+        GLint offsetLocation = glGetUniformLocation(shaderProgram_, "offset");
         for (SpriteVector::iterator i = sprites_.begin(); i != sprites_.end(); ++i) {
+            float scale = 0.25 * 10.0f * frustum_.getHeight() / float(windowHeight_);
+            IntVector2 size = (*i)->getSize();
+            Vector2 offset(scale / float(size.x), scale / float(size.y));
+            glUniform2f(offsetLocation, GLfloat(offset.x), GLfloat(offset.y));
             (*i)->draw();
         }
     }
