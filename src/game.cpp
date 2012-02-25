@@ -2,7 +2,6 @@
 
 #include "actor.hpp"
 #include "actor_factory.hpp"
-#include "animation_service.hpp"
 #include "block_physics_component.hpp"
 #include "config.hpp"
 #include "control_service.hpp"
@@ -55,7 +54,6 @@ namespace crust {
         physicsService_.reset(new PhysicsService(this));
         controlService_.reset(new ControlService(this));
         sceneService_.reset(new SceneService(this));
-        animationService_.reset(new AnimationService(this));
         initBlocks();
         initDungeon();
         initMonsters();
@@ -285,7 +283,6 @@ namespace crust {
                 }
             }
         }
-        animationService_->step(dt);
         sceneService_->step(dt);
     }
 

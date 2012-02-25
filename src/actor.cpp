@@ -25,11 +25,6 @@ namespace crust {
         sceneComponent_ = component;
     }
 
-    void Actor::setAnimationComponent(std::auto_ptr<Component> component)
-    {
-        animationComponent_ = component;
-    }
-
     void Actor::create()
     {
         if (physicsComponent_.get()) {
@@ -41,16 +36,10 @@ namespace crust {
         if (sceneComponent_.get()) {
             sceneComponent_->create();
         }
-        if (animationComponent_.get()) {
-            animationComponent_->create();
-        }
     }
 
     void Actor::destroy()
     {
-        if (animationComponent_.get()) {
-            animationComponent_->destroy();
-        }
         if (sceneComponent_.get()) {
             sceneComponent_->destroy();
         }

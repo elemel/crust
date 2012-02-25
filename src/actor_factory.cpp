@@ -6,7 +6,6 @@
 #include "chain_physics_component.hpp"
 #include "chain_scene_component.hpp"
 #include "component.hpp"
-#include "monster_animation_component.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
 #include "monster_scene_component.hpp"
@@ -38,7 +37,6 @@ namespace crust {
         actor->setPhysicsComponent(std::auto_ptr<Component>(new MonsterPhysicsComponent(actor.get(), position)));
         actor->setControlComponent(std::auto_ptr<Component>(new MonsterControlComponent(actor.get())));
         actor->setSceneComponent(std::auto_ptr<Component>(new MonsterSceneComponent(actor.get())));
-        actor->setAnimationComponent(std::auto_ptr<Component>(new MonsterAnimationComponent(actor.get())));
         return actor;
     }
 }

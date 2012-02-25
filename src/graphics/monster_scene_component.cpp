@@ -3,6 +3,7 @@
 #include "actor.hpp"
 #include "convert.hpp"
 #include "game.hpp"
+#include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
 #include "scene_service.hpp"
 #include "sprite.hpp"
@@ -12,7 +13,12 @@
 namespace crust {
     MonsterSceneComponent::MonsterSceneComponent(Actor *actor) :
         actor_(actor),
-        sceneService_(actor->getGame()->getSceneService())
+        controlComponent_(convert(actor->getControlComponent())),
+        physicsComponent_(convert(actor->getPhysicsComponent())),
+        sceneService_(actor->getGame()->getSceneService()),
+    
+        headDirection_(1),
+        trunkDirection_(1)
     { }
 
     MonsterSceneComponent::~MonsterSceneComponent()
@@ -23,14 +29,47 @@ namespace crust {
         initSprites();
         sceneService_->addSprite(trunkSprite_.get());
         sceneService_->addSprite(headSprite_.get());
+        sceneService_->addTask(this);
     }
     
     void MonsterSceneComponent::destroy()
     {
+        sceneService_->removeTask(this);
         sceneService_->removeSprite(headSprite_.get());
         sceneService_->removeSprite(trunkSprite_.get());
     }
 
+    void MonsterSceneComponent::step(float dt)
+    {
+        b2Vec2 mainBodyPosition = physicsComponent_->getMainBody()->GetPosition();
+        int xControl = int(controlComponent_->getRightControl()) - int(controlComponent_->getLeftControl());
+        bool trunkTurned = false;
+        if (xControl && xControl != trunkDirection_) {
+            trunkDirection_ = xControl;
+            trunkSprite_->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
+            trunkTurned = true;
+        }
+        trunkSprite_->setPosition(Vector2(mainBodyPosition.x, mainBodyPosition.y - 0.15f));
+        Vector2 const &targetPosition = controlComponent_->getTargetPosition();
+        b2Vec2 localEyePosition = b2Vec2(0.0f, 0.35f);
+        b2Vec2 localTargetPosition = physicsComponent_->getMainBody()->GetLocalPoint(b2Vec2(targetPosition.x, targetPosition.y));
+        if (trunkTurned || 0.05f < std::abs(localTargetPosition.x)) {
+            headDirection_ = (localTargetPosition.x < 0) ? -1 : 1;
+        }
+        if (trunkDirection_ == -1) {
+            localTargetPosition.x = -localTargetPosition.x;
+        }
+        if (headDirection_ != trunkDirection_) {
+            localTargetPosition.x = -localTargetPosition.x;
+        }
+        b2Vec2 eyeToTargetOffset = localTargetPosition - localEyePosition;
+        float targetAngle = std::atan2(eyeToTargetOffset.y, eyeToTargetOffset.x);
+        float headAngle = 0.5f * float(headDirection_) * targetAngle;
+        headSprite_->setPosition(Vector2(mainBodyPosition.x, mainBodyPosition.y + 0.25f));
+        headSprite_->setAngle(headAngle);
+        headSprite_->setScale(Vector2(0.1f * float(headDirection_), 0.1f));
+    }
+    
     void MonsterSceneComponent::initSprites()
     {
         headSprite_.reset(new Sprite);

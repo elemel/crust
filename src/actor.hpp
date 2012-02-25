@@ -58,18 +58,6 @@ namespace crust {
         
         void setSceneComponent(std::auto_ptr<Component> component);
         
-        Component *getAnimationComponent()
-        {
-            return animationComponent_.get();
-        }
-        
-        Component const *getAnimationComponent() const
-        {
-            return animationComponent_.get();
-        }
-        
-        void setAnimationComponent(std::auto_ptr<Component> component);
-
         void create();
         void destroy();
         
@@ -79,7 +67,6 @@ namespace crust {
         std::auto_ptr<Component> physicsComponent_;
         std::auto_ptr<Component> controlComponent_;
         std::auto_ptr<Component> sceneComponent_;
-        std::auto_ptr<Component> animationComponent_;
     };
 }
 
