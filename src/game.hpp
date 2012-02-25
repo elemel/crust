@@ -21,9 +21,9 @@ namespace crust {
     class Config;
     class ControlService;
     class Font;
+    class GraphicsManager;
     class InputService;
     class PhysicsService;
-    class SceneService;
 
     class Game {
     public:
@@ -112,11 +112,16 @@ namespace crust {
             return controlService_.get();
         }
 
-        SceneService *getSceneService()
+        GraphicsManager *getGraphicsManager()
         {
-            return sceneService_.get();
+            return graphicsManager_.get();
         }
-        
+
+        GraphicsManager const *getGraphicsManager() const
+        {
+            return graphicsManager_.get();
+        }
+
     private:
         Config const *config_;
         Random random_;
@@ -145,7 +150,7 @@ namespace crust {
         std::auto_ptr<InputService> inputService_;
         std::auto_ptr<PhysicsService> physicsService_;
         std::auto_ptr<ControlService> controlService_;
-        std::auto_ptr<SceneService> sceneService_;
+        std::auto_ptr<GraphicsManager> graphicsManager_;
         std::auto_ptr<ActorFactory> actorFactory_;
 
         ActorVector actors_;

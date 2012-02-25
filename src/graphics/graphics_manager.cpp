@@ -1,4 +1,4 @@
-#include "scene_service.hpp"
+#include "graphics_manager.hpp"
 
 #include "actor.hpp"
 #include "block_physics_component.hpp"
@@ -17,7 +17,7 @@
 #include <fstream>
 
 namespace crust {
-    SceneService::SceneService(Game *game) :
+    GraphicsManager::GraphicsManager(Game *game) :
         game_(game),
         window_(game->getWindow()),
         windowWidth_(0),
@@ -44,7 +44,7 @@ namespace crust {
         initShaders();
     }
 
-    SceneService::~SceneService()
+    GraphicsManager::~GraphicsManager()
     {
         if (targetFramebuffer_) {
             glDeleteFramebuffers(1, &targetFramebuffer_);
@@ -74,14 +74,14 @@ namespace crust {
         }
     }
 
-    void SceneService::step(float dt)
+    void GraphicsManager::step(float dt)
     {
         for (TaskVector::iterator i = tasks_.begin(); i != tasks_.end(); ++i) {
             (*i)->step(dt);
         }
     }
     
-    void SceneService::draw()
+    void GraphicsManager::draw()
     {
         updateFrustum();
 
@@ -136,7 +136,7 @@ namespace crust {
         drawOverlay();
     }
     
-    Vector2 SceneService::getWorldPosition(Vector2 const &screenPosition) const
+    Vector2 GraphicsManager::getWorldPosition(Vector2 const &screenPosition) const
     {
         float invScale = 2.0f / cameraScale_ / float(windowHeight_);
         Vector2 worldPosition;
@@ -145,29 +145,29 @@ namespace crust {
         return worldPosition;
     }
 
-    void SceneService::addSprite(Sprite *sprite)
+    void GraphicsManager::addSprite(Sprite *sprite)
     {
         sprites_.push_back(sprite);
     }
 
-    void SceneService::removeSprite(Sprite *sprite)
+    void GraphicsManager::removeSprite(Sprite *sprite)
     {
         SpriteVector::iterator i = std::find(sprites_.begin(), sprites_.end(), sprite);
         sprites_.erase(i);
     }
 
-    void SceneService::addTask(Task *task)
+    void GraphicsManager::addTask(Task *task)
     {
         tasks_.push_back(task);
     }
     
-    void SceneService::removeTask(Task *task)
+    void GraphicsManager::removeTask(Task *task)
     {
         TaskVector::iterator i = std::find(tasks_.begin(), tasks_.end(), task);
         tasks_.erase(i);
     }
 
-    void SceneService::initFont()
+    void GraphicsManager::initFont()
     {
         font_.reset(new Font);
         std::ifstream in("../../../data/font.txt");
@@ -176,7 +176,7 @@ namespace crust {
         textRenderer_.reset(new TextRenderer(font_.get()));
     }
 
-    void SceneService::initTargetFramebuffer()
+    void GraphicsManager::initTargetFramebuffer()
     {
         if (game_->getConfig()->supersampling || game_->getConfig()->fxaa) {
             glGenTextures(1, &targetTexture_);
@@ -197,7 +197,7 @@ namespace crust {
         }
     }
 
-    void SceneService::initShaders()
+    void GraphicsManager::initShaders()
     {
         vertexShader_ = shaderFactory_.compileShader(GL_VERTEX_SHADER, "../../../data/vertex.glsl");
         fragmentShader_ = shaderFactory_.compileShader(GL_FRAGMENT_SHADER, "../../../data/fragment.glsl");
@@ -210,7 +210,7 @@ namespace crust {
         }
     }
 
-    void SceneService::updateFrustum()
+    void GraphicsManager::updateFrustum()
     {
         float invScale = 1.0f / cameraScale_;
         float aspectRatio = float(windowWidth_) / float(windowHeight_);
@@ -220,7 +220,7 @@ namespace crust {
                                 cameraPosition_.y + invScale));
     }
 
-    void SceneService::drawWorld()
+    void GraphicsManager::drawWorld()
     {
         setWorldProjection();
         if (drawEnabled_) {
@@ -244,7 +244,7 @@ namespace crust {
         }
     }
     
-    void SceneService::setLighting()
+    void GraphicsManager::setLighting()
     {
         if (lightingEnabled_) {
             GLfloat ambient[] = { 0.05f, 0.05f, 0.05f, 1.0f };
@@ -259,7 +259,7 @@ namespace crust {
         }
     }
     
-    void SceneService::setWorldLight()
+    void GraphicsManager::setWorldLight()
     { 
         glEnable(GL_LIGHT0);
         GLfloat diffuse[] = { 0.1f, 0.1f, 0.1f, 1.0f };
@@ -273,7 +273,7 @@ namespace crust {
         glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.0f);
     }
     
-    void SceneService::setCameraLight()
+    void GraphicsManager::setCameraLight()
     {
         glEnable(GL_LIGHT1);
         GLfloat diffuse[] = { 4.0f, 4.0f, 4.0f, 1.0f };
@@ -287,7 +287,7 @@ namespace crust {
         glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.0f);
     }
     
-    void SceneService::setTargetLight()
+    void GraphicsManager::setTargetLight()
     {
         if (game_->getPlayerActor()) {
             MonsterControlComponent *controlComponent = convert(game_->getPlayerActor()->getControlComponent());
@@ -306,7 +306,7 @@ namespace crust {
         }
     }
     
-    void SceneService::drawOverlay()
+    void GraphicsManager::drawOverlay()
     {
         setOverlayProjection();
         drawMode();
@@ -315,7 +315,7 @@ namespace crust {
         }
     }
     
-    void SceneService::drawMode()
+    void GraphicsManager::drawMode()
     {
         if (game_->getPlayerActor()) {
             MonsterControlComponent *controlComponent = convert(game_->getPlayerActor()->getControlComponent());
@@ -345,7 +345,7 @@ namespace crust {
         }
     }
     
-    void SceneService::drawFps()
+    void GraphicsManager::drawFps()
     {
         int scale = 3;
         glPushMatrix();
@@ -355,7 +355,7 @@ namespace crust {
         glPopMatrix();
     }
     
-    void SceneService::setWorldProjection()
+    void GraphicsManager::setWorldProjection()
     {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -364,7 +364,7 @@ namespace crust {
         glMatrixMode(GL_MODELVIEW);
     }
     
-    void SceneService::setOverlayProjection()
+    void GraphicsManager::setOverlayProjection()
     {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -373,7 +373,7 @@ namespace crust {
         glMatrixMode(GL_MODELVIEW);
     }
 
-    void SceneService::drawSprites()
+    void GraphicsManager::drawSprites()
     {
         GLint colorTexturelocation = glGetUniformLocation(shaderProgram_, "colorTexture");
         glUniform1i(colorTexturelocation, 0);

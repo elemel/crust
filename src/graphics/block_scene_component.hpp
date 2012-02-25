@@ -9,7 +9,7 @@
 namespace crust {
     class Actor;
     class BlockPhysicsComponent;
-    class SceneService;
+    class GraphicsManager;
     class Sprite;
     
     class BlockSceneComponent : public Component, public Task {
@@ -25,7 +25,7 @@ namespace crust {
     private:
         Actor *actor_;
         BlockPhysicsComponent *physicsComponent_;
-        SceneService *sceneService_;
+        GraphicsManager *graphicsManager_;
 
         std::auto_ptr<Sprite> sprite_;
         

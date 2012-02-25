@@ -9,11 +9,11 @@
 #include "dungeon_generator.hpp"
 #include "error.hpp"
 #include "geometry.hpp"
+#include "graphics_manager.hpp"
 #include "input_service.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
 #include "physics_service.hpp"
-#include "scene_service.hpp"
 
 #include <fstream>
 
@@ -53,7 +53,7 @@ namespace crust {
         inputService_.reset(new InputService(this));
         physicsService_.reset(new PhysicsService(this));
         controlService_.reset(new ControlService(this));
-        sceneService_.reset(new SceneService(this));
+        graphicsManager_.reset(new GraphicsManager(this));
         initBlocks();
         initDungeon();
         initMonsters();
@@ -245,7 +245,7 @@ namespace crust {
         SDL_GL_SwapWindow(window_);
         glClearColor(double(0x33) / 255.0, double(0x33) / 255.0, double(0x33) / 255.0, 0.0);
         glClear(GL_COLOR_BUFFER_BIT);
-        sceneService_->draw();
+        graphicsManager_->draw();
     }
 
     void Game::updateFps()
@@ -265,7 +265,7 @@ namespace crust {
     {
         MonsterPhysicsComponent *physicsComponent = convert(playerActor_->getPhysicsComponent());
         b2Vec2 position = physicsComponent->getMainBody()->GetPosition();
-        sceneService_->setCameraPosition(Vector2(position.x, position.y));
+        graphicsManager_->setCameraPosition(Vector2(position.x, position.y));
     }
     
     void Game::step(float dt)
@@ -283,7 +283,7 @@ namespace crust {
                 }
             }
         }
-        sceneService_->step(dt);
+        graphicsManager_->step(dt);
     }
 
     void Game::handleCollisions()

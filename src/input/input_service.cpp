@@ -4,8 +4,8 @@
 #include "config.hpp"
 #include "convert.hpp"
 #include "game.hpp"
+#include "graphics_manager.hpp"
 #include "monster_control_component.hpp"
-#include "scene_service.hpp"
 #include "task.hpp"
 
 #include <algorithm>
@@ -118,20 +118,20 @@ namespace crust {
                 
             case SDLK_PLUS:
             {
-                float scale = game_->getSceneService()->getCameraScale();
+                float scale = game_->getGraphicsManager()->getCameraScale();
                 scale *= game_->getConfig()->cameraZoom;
                 if (scale < game_->getConfig()->maxCameraScale) {
-                    game_->getSceneService()->setCameraScale(scale);
+                    game_->getGraphicsManager()->setCameraScale(scale);
                 }
             }
                 break;
                 
             case SDLK_MINUS:
             {
-                float scale = game_->getSceneService()->getCameraScale();
+                float scale = game_->getGraphicsManager()->getCameraScale();
                 scale /= game_->getConfig()->cameraZoom;
                 if (scale > game_->getConfig()->minCameraScale) {
-                    game_->getSceneService()->setCameraScale(scale);
+                    game_->getGraphicsManager()->setCameraScale(scale);
                 }
             }
                 break;
@@ -177,7 +177,7 @@ namespace crust {
             bool rightControl = bool(keyboardState[SDL_SCANCODE_D]);
             bool jumpControl = bool(keyboardState[SDL_SCANCODE_SPACE]);
             bool actionControl = bool(keyboardState[SDL_SCANCODE_LSHIFT] || (mouseButtons & SDL_BUTTON_LMASK));
-            Vector2 targetPosition = game_->getSceneService()->getWorldPosition(Vector2(float(x), float(y)));
+            Vector2 targetPosition = game_->getGraphicsManager()->getWorldPosition(Vector2(float(x), float(y)));
             
             controlComponent->setLeftControl(leftControl);
             controlComponent->setRightControl(rightControl);

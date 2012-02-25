@@ -1,5 +1,5 @@
-#ifndef CRUST_SCENE_SERVICE_HPP
-#define CRUST_SCENE_SERVICE_HPP
+#ifndef CRUST_GRAPHICS_MANAGER_HPP
+#define CRUST_GRAPHICS_MANAGER_HPP
 
 #include "geometry.hpp"
 #include "shader_factory.hpp"
@@ -15,13 +15,13 @@ namespace crust {
     class Task;
     class TextRenderer;
 
-    class SceneService {
+    class GraphicsManager {
     public:
         typedef std::vector<Sprite *> SpriteVector;
         typedef std::vector<Task *> TaskVector;
 
-        explicit SceneService(Game *game);
-        ~SceneService();
+        explicit GraphicsManager(Game *game);
+        ~GraphicsManager();
 
         void step(float dt);
         void draw();

@@ -8,9 +8,9 @@
 
 namespace crust {
     class Actor;
+    class GraphicsManager;
     class MonsterControlComponent;
     class MonsterPhysicsComponent;
-    class SceneService;
     class Sprite;
 
     class MonsterSceneComponent : public Component, public Task {
@@ -37,7 +37,7 @@ namespace crust {
         Actor *actor_;
         MonsterControlComponent *controlComponent_;
         MonsterPhysicsComponent *physicsComponent_;
-        SceneService *sceneService_;
+        GraphicsManager *graphicsManager_;
 
         int headDirection_;
         int trunkDirection_;

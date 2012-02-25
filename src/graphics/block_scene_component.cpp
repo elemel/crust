@@ -4,16 +4,16 @@
 #include "block_physics_component.hpp"
 #include "convert.hpp"
 #include "game.hpp"
+#include "graphics_manager.hpp"
 #include "grid.hpp"
 #include "hash.hpp"
-#include "scene_service.hpp"
 #include "sprite.hpp"
 
 namespace crust {
     BlockSceneComponent::BlockSceneComponent(Actor *actor) :
         actor_(actor),
         physicsComponent_(convert(actor->getPhysicsComponent())),
-        sceneService_(actor->getGame()->getSceneService())
+        graphicsManager_(actor->getGame()->getGraphicsManager())
     { }
 
     BlockSceneComponent::~BlockSceneComponent()
@@ -22,14 +22,14 @@ namespace crust {
     void BlockSceneComponent::create()
     {
         initSprite();
-        sceneService_->addSprite(sprite_.get());
-        sceneService_->addTask(this);
+        graphicsManager_->addSprite(sprite_.get());
+        graphicsManager_->addTask(this);
     }
     
     void BlockSceneComponent::destroy()
     {
-        sceneService_->removeTask(this);
-        sceneService_->removeSprite(sprite_.get());
+        graphicsManager_->removeTask(this);
+        graphicsManager_->removeSprite(sprite_.get());
     }
     
     void BlockSceneComponent::step(float dt)

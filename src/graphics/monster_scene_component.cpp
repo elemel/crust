@@ -3,9 +3,9 @@
 #include "actor.hpp"
 #include "convert.hpp"
 #include "game.hpp"
+#include "graphics_manager.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
-#include "scene_service.hpp"
 #include "sprite.hpp"
 
 #include <SDL/SDL_opengl.h>
@@ -15,7 +15,7 @@ namespace crust {
         actor_(actor),
         controlComponent_(convert(actor->getControlComponent())),
         physicsComponent_(convert(actor->getPhysicsComponent())),
-        sceneService_(actor->getGame()->getSceneService()),
+        graphicsManager_(actor->getGame()->getGraphicsManager()),
     
         headDirection_(1),
         trunkDirection_(1)
@@ -27,16 +27,16 @@ namespace crust {
     void MonsterSceneComponent::create()
     {
         initSprites();
-        sceneService_->addSprite(trunkSprite_.get());
-        sceneService_->addSprite(headSprite_.get());
-        sceneService_->addTask(this);
+        graphicsManager_->addSprite(trunkSprite_.get());
+        graphicsManager_->addSprite(headSprite_.get());
+        graphicsManager_->addTask(this);
     }
     
     void MonsterSceneComponent::destroy()
     {
-        sceneService_->removeTask(this);
-        sceneService_->removeSprite(headSprite_.get());
-        sceneService_->removeSprite(trunkSprite_.get());
+        graphicsManager_->removeTask(this);
+        graphicsManager_->removeSprite(headSprite_.get());
+        graphicsManager_->removeSprite(trunkSprite_.get());
     }
 
     void MonsterSceneComponent::step(float dt)
