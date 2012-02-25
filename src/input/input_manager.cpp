@@ -1,4 +1,4 @@
-#include "input_service.hpp"
+#include "input_manager.hpp"
 
 #include "actor.hpp"
 #include "config.hpp"
@@ -11,22 +11,22 @@
 #include <algorithm>
 
 namespace crust {
-    InputService::InputService(Game *game) :
+    InputManager::InputManager(Game *game) :
         game_(game)
     { }
     
-    void InputService::addTask(Task *task)
+    void InputManager::addTask(Task *task)
     {
         tasks_.push_back(task);
     }
     
-    void InputService::removeTask(Task *task)
+    void InputManager::removeTask(Task *task)
     {
         TaskVector::iterator i = std::find(tasks_.begin(), tasks_.end(), task);
         tasks_.erase(i);
     }
     
-    void InputService::step(float dt)
+    void InputManager::step(float dt)
     {
         for (TaskVector::iterator i = tasks_.begin(); i != tasks_.end(); ++i) {
             (*i)->step(dt);
@@ -35,7 +35,7 @@ namespace crust {
         handleInput();
     }
 
-    void InputService::handleEvents()
+    void InputManager::handleEvents()
     {
         SDL_Event event;
 #if 1
@@ -48,7 +48,7 @@ namespace crust {
 #endif
     }
     
-    void InputService::handleEvent(SDL_Event *event)
+    void InputManager::handleEvent(SDL_Event *event)
     {
         switch (event->type) {
             case SDL_QUIT:
@@ -73,7 +73,7 @@ namespace crust {
         }
     }
     
-    void InputService::handleKeyDownEvent(SDL_Event *event)
+    void InputManager::handleKeyDownEvent(SDL_Event *event)
     {
         switch (event->key.keysym.sym) {
             case SDLK_ESCAPE:                
@@ -139,16 +139,16 @@ namespace crust {
         }
     }
     
-    void InputService::handleKeyUpEvent(SDL_Event *event)
+    void InputManager::handleKeyUpEvent(SDL_Event *event)
     { }
     
-    void InputService::handleMouseButtonDownEvent(SDL_Event *event)
+    void InputManager::handleMouseButtonDownEvent(SDL_Event *event)
     { }
     
-    void InputService::handleMouseButtonUpEvent(SDL_Event *event)
+    void InputManager::handleMouseButtonUpEvent(SDL_Event *event)
     { }
     
-    void InputService::handleInput()
+    void InputManager::handleInput()
     {
         if (game_->getPlayerActor()) {
             MonsterControlComponent *controlComponent = convert(game_->getPlayerActor()->getControlComponent());

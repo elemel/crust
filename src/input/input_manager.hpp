@@ -1,5 +1,5 @@
-#ifndef CRUST_INPUT_SERVICE_HPP
-#define CRUST_INPUT_SERVICE_HPP
+#ifndef CRUST_INPUT_MANAGER_HPP
+#define CRUST_INPUT_MANAGER_HPP
 
 #include <vector>
 #include <SDL/SDL.h>
@@ -8,11 +8,11 @@ namespace crust {
     class Game;
     class Task;
     
-    class InputService {
+    class InputManager {
     public:
         typedef std::vector<Task *> TaskVector;
         
-        explicit InputService(Game *game);
+        explicit InputManager(Game *game);
         
         void addTask(Task *task);
         void removeTask(Task *task);

@@ -10,7 +10,7 @@
 #include "error.hpp"
 #include "geometry.hpp"
 #include "graphics_manager.hpp"
-#include "input_service.hpp"
+#include "input_manager.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
 #include "physics_manager.hpp"
@@ -50,7 +50,7 @@ namespace crust {
         initWindow();
         initContext();
         initVoronoiDiagram();
-        inputService_.reset(new InputService(this));
+        inputManager_.reset(new InputManager(this));
         physicsManager_.reset(new PhysicsManager(this));
         controlService_.reset(new ControlService(this));
         graphicsManager_.reset(new GraphicsManager(this));
@@ -260,7 +260,7 @@ namespace crust {
     
     void Game::step(float dt)
     {
-        inputService_->step(dt);
+        inputManager_->step(dt);
         controlService_->step(dt);
         physicsManager_->step(dt);
         handleCollisions();

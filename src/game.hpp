@@ -22,7 +22,7 @@ namespace crust {
     class ControlService;
     class Font;
     class GraphicsManager;
-    class InputService;
+    class InputManager;
     class PhysicsManager;
 
     class Game {
@@ -97,9 +97,14 @@ namespace crust {
             return &actors_[i];
         }
 
-        InputService *getInputService()
+        InputManager *getInputManager()
         {
-            return inputService_.get();
+            return inputManager_.get();
+        }
+
+        InputManager const *getInputManager() const
+        {
+            return inputManager_.get();
         }
 
         PhysicsManager *getPhysicsManager()
@@ -152,7 +157,7 @@ namespace crust {
         VoronoiDiagram voronoiDiagram_;
         DungeonGenerator dungeonGenerator_;
 
-        std::auto_ptr<InputService> inputService_;
+        std::auto_ptr<InputManager> inputManager_;
         std::auto_ptr<PhysicsManager> physicsManager_;
         std::auto_ptr<ControlService> controlService_;
         std::auto_ptr<GraphicsManager> graphicsManager_;
