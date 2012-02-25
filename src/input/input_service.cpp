@@ -80,21 +80,6 @@ namespace crust {
                 game_->setQuitting(true);
                 break;
                 
-#if 0
-            case SDLK_BACKSPACE:
-                playerActor_ = 0;
-                while (!actors_.empty()) {
-                    actors_.back().destroy();
-                    actors_.pop_back();
-                }
-                initVoronoiDiagram();
-                initBlocks();
-                initDungeon();
-                initMonsters();
-                // initChains();
-                break;
-#endif
-                
             case SDLK_1:
                 if (game_->getPlayerActor()) {
                     MonsterControlComponent *controlComponent = convert(game_->getPlayerActor()->getControlComponent());

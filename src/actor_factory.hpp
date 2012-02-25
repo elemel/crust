@@ -14,7 +14,6 @@ namespace crust {
         explicit ActorFactory(Game *game);
 
         std::auto_ptr<Actor> createBlock(Polygon2 const &polygon);
-        std::auto_ptr<Actor> createChain(Vector2 const &position, int linkCount);
         std::auto_ptr<Actor> createMonster(Vector2 const &position);
 
     private:

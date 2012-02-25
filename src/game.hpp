@@ -162,7 +162,6 @@ namespace crust {
         void initBlocks();
         void initDungeon();
         void initMonsters();
-        void initChains();
 
         void runStep(float dt);
         void updateFps();

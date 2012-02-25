@@ -57,7 +57,6 @@ namespace crust {
         initBlocks();
         initDungeon();
         initMonsters();
-        initChains();
     }
     
     Game::~Game()
@@ -224,15 +223,6 @@ namespace crust {
         }
     }
 
-    void Game::initChains()
-    {
-        if (dungeonGenerator_.getRoomBoxCount()) {
-            Box2 roomBox = dungeonGenerator_.getRoomBox(0);
-            Vector2 position(roomBox.getCenter().x, roomBox.p2.y);
-            addActor(actorFactory_->createChain(position, 20));
-        }
-    }
-                
     void Game::runStep(float dt)
     {
         appTime_ += dt;
