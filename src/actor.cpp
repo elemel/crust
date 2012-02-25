@@ -20,9 +20,9 @@ namespace crust {
         controlComponent_ = component;
     }
 
-    void Actor::setSceneComponent(std::auto_ptr<Component> component)
+    void Actor::setGraphicsComponent(std::auto_ptr<Component> component)
     {
-        sceneComponent_ = component;
+        graphicsComponent_ = component;
     }
 
     void Actor::create()
@@ -33,15 +33,15 @@ namespace crust {
         if (controlComponent_.get()) {
             controlComponent_->create();
         }
-        if (sceneComponent_.get()) {
-            sceneComponent_->create();
+        if (graphicsComponent_.get()) {
+            graphicsComponent_->create();
         }
     }
 
     void Actor::destroy()
     {
-        if (sceneComponent_.get()) {
-            sceneComponent_->destroy();
+        if (graphicsComponent_.get()) {
+            graphicsComponent_->destroy();
         }
         if (controlComponent_.get()) {
             controlComponent_->destroy();

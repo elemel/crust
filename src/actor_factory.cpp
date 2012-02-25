@@ -1,12 +1,12 @@
 #include "actor_factory.hpp"
 
 #include "actor.hpp"
+#include "block_graphics_component.hpp"
 #include "block_physics_component.hpp"
-#include "block_scene_component.hpp"
 #include "component.hpp"
 #include "monster_control_component.hpp"
+#include "monster_graphics_component.hpp"
 #include "monster_physics_component.hpp"
-#include "monster_scene_component.hpp"
 
 namespace crust {
     ActorFactory::ActorFactory(Game *game) :
@@ -17,7 +17,7 @@ namespace crust {
     {
         std::auto_ptr<Actor> actor(new Actor(game_));
         actor->setPhysicsComponent(std::auto_ptr<Component>(new BlockPhysicsComponent(actor.get(), polygon)));
-        actor->setSceneComponent(std::auto_ptr<Component>(new BlockSceneComponent(actor.get())));
+        actor->setGraphicsComponent(std::auto_ptr<Component>(new BlockGraphicsComponent(actor.get())));
         return actor;
     }
 
@@ -26,7 +26,7 @@ namespace crust {
         std::auto_ptr<Actor> actor(new Actor(game_));
         actor->setPhysicsComponent(std::auto_ptr<Component>(new MonsterPhysicsComponent(actor.get(), position)));
         actor->setControlComponent(std::auto_ptr<Component>(new MonsterControlComponent(actor.get())));
-        actor->setSceneComponent(std::auto_ptr<Component>(new MonsterSceneComponent(actor.get())));
+        actor->setGraphicsComponent(std::auto_ptr<Component>(new MonsterGraphicsComponent(actor.get())));
         return actor;
     }
 }

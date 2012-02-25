@@ -1,5 +1,5 @@
-#ifndef CRUST_BLOCK_SCENE_COMPONENT_HPP
-#define CRUST_BLOCK_SCENE_COMPONENT_HPP
+#ifndef CRUST_BLOCK_GRAPHICS_COMPONENT_HPP
+#define CRUST_BLOCK_GRAPHICS_COMPONENT_HPP
 
 #include "component.hpp"
 #include "task.hpp"
@@ -12,10 +12,10 @@ namespace crust {
     class GraphicsManager;
     class Sprite;
     
-    class BlockSceneComponent : public Component, public Task {
+    class BlockGraphicsComponent : public Component, public Task {
     public:
-        explicit BlockSceneComponent(Actor *actor);
-        ~BlockSceneComponent();
+        explicit BlockGraphicsComponent(Actor *actor);
+        ~BlockGraphicsComponent();
 
         void create();
         void destroy();

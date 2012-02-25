@@ -1,4 +1,4 @@
-#include "block_scene_component.hpp"
+#include "block_graphics_component.hpp"
 
 #include "actor.hpp"
 #include "block_physics_component.hpp"
@@ -10,29 +10,29 @@
 #include "sprite.hpp"
 
 namespace crust {
-    BlockSceneComponent::BlockSceneComponent(Actor *actor) :
+    BlockGraphicsComponent::BlockGraphicsComponent(Actor *actor) :
         actor_(actor),
         physicsComponent_(convert(actor->getPhysicsComponent())),
         graphicsManager_(actor->getGame()->getGraphicsManager())
     { }
 
-    BlockSceneComponent::~BlockSceneComponent()
+    BlockGraphicsComponent::~BlockGraphicsComponent()
     { }
 
-    void BlockSceneComponent::create()
+    void BlockGraphicsComponent::create()
     {
         initSprite();
         graphicsManager_->addSprite(sprite_.get());
         graphicsManager_->addTask(this);
     }
     
-    void BlockSceneComponent::destroy()
+    void BlockGraphicsComponent::destroy()
     {
         graphicsManager_->removeTask(this);
         graphicsManager_->removeSprite(sprite_.get());
     }
     
-    void BlockSceneComponent::step(float dt)
+    void BlockGraphicsComponent::step(float dt)
     {
         float duration = physicsComponent_->getMineDuration();
 
@@ -45,7 +45,7 @@ namespace crust {
         sprite_->setAngle(angle);
     }
     
-    void BlockSceneComponent::initSprite()
+    void BlockGraphicsComponent::initSprite()
     {
         Grid<unsigned char> const &grid = physicsComponent_->getGrid();
 

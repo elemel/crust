@@ -1,5 +1,5 @@
-#ifndef CRUST_MONSTER_SCENE_COMPONENT_HPP
-#define CRUST_MONSTER_SCENE_COMPONENT_HPP
+#ifndef CRUST_MONSTER_GRAPHICS_COMPONENT_HPP
+#define CRUST_MONSTER_GRAPHICS_COMPONENT_HPP
 
 #include "component.hpp"
 #include "task.hpp"
@@ -13,10 +13,10 @@ namespace crust {
     class MonsterPhysicsComponent;
     class Sprite;
 
-    class MonsterSceneComponent : public Component, public Task {
+    class MonsterGraphicsComponent : public Component, public Task {
     public:
-        explicit MonsterSceneComponent(Actor *actor);
-        ~MonsterSceneComponent();
+        explicit MonsterGraphicsComponent(Actor *actor);
+        ~MonsterGraphicsComponent();
 
         void create();
         void destroy();

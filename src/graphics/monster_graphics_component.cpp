@@ -1,4 +1,4 @@
-#include "monster_scene_component.hpp"
+#include "monster_graphics_component.hpp"
 
 #include "actor.hpp"
 #include "convert.hpp"
@@ -11,7 +11,7 @@
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
-    MonsterSceneComponent::MonsterSceneComponent(Actor *actor) :
+    MonsterGraphicsComponent::MonsterGraphicsComponent(Actor *actor) :
         actor_(actor),
         controlComponent_(convert(actor->getControlComponent())),
         physicsComponent_(convert(actor->getPhysicsComponent())),
@@ -21,10 +21,10 @@ namespace crust {
         trunkDirection_(1)
     { }
 
-    MonsterSceneComponent::~MonsterSceneComponent()
+    MonsterGraphicsComponent::~MonsterGraphicsComponent()
     { }
 
-    void MonsterSceneComponent::create()
+    void MonsterGraphicsComponent::create()
     {
         initSprites();
         graphicsManager_->addSprite(trunkSprite_.get());
@@ -32,14 +32,14 @@ namespace crust {
         graphicsManager_->addTask(this);
     }
     
-    void MonsterSceneComponent::destroy()
+    void MonsterGraphicsComponent::destroy()
     {
         graphicsManager_->removeTask(this);
         graphicsManager_->removeSprite(headSprite_.get());
         graphicsManager_->removeSprite(trunkSprite_.get());
     }
 
-    void MonsterSceneComponent::step(float dt)
+    void MonsterGraphicsComponent::step(float dt)
     {
         b2Vec2 mainBodyPosition = physicsComponent_->getMainBody()->GetPosition();
         int xControl = int(controlComponent_->getRightControl()) - int(controlComponent_->getLeftControl());
@@ -70,7 +70,7 @@ namespace crust {
         headSprite_->setScale(Vector2(0.1f * float(headDirection_), 0.1f));
     }
     
-    void MonsterSceneComponent::initSprites()
+    void MonsterGraphicsComponent::initSprites()
     {
         headSprite_.reset(new Sprite);
         trunkSprite_.reset(new Sprite);
