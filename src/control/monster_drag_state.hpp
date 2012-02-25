@@ -10,7 +10,7 @@ namespace crust {
     class Actor;
     class Game;
     class MonsterControlComponent;
-    class PhysicsService;
+    class PhysicsManager;
 
     class MonsterDragState : public State, public Task {
     public:
@@ -37,7 +37,7 @@ namespace crust {
         Actor *actor_;
         MonsterControlComponent *controlComponent_;
         Game *game_;
-        PhysicsService *physicsService_;
+        PhysicsManager *physicsManager_;
 
         Actor *targetActor_;
         b2MouseJoint *joint_;

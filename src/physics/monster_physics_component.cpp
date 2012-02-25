@@ -2,13 +2,13 @@
 
 #include "actor.hpp"
 #include "game.hpp"
-#include "physics_service.hpp"
+#include "physics_manager.hpp"
 
 namespace crust {
     MonsterPhysicsComponent::MonsterPhysicsComponent(Actor *actor,
                                                      Vector2 const &position) :
         actor_(actor),
-        physicsService_(actor->getGame()->getPhysicsService()),
+        physicsManager_(actor->getGame()->getPhysicsManager()),
         position_(position),
     
         wheelRadius_(0.4f),
@@ -34,7 +34,7 @@ namespace crust {
         mainBodyDef.fixedRotation = true;
         mainBodyDef.position.Set(position_.x, position_.y);
         mainBodyDef.userData = actor_;
-        mainBody_ = physicsService_->getWorld()->CreateBody(&mainBodyDef);
+        mainBody_ = physicsManager_->getWorld()->CreateBody(&mainBodyDef);
         
         b2CircleShape shape;
         shape.m_radius = 0.5f;
@@ -44,7 +44,7 @@ namespace crust {
         wheelBodyDef.type = b2_dynamicBody;
         wheelBodyDef.position.Set(position_.x, position_.y - 0.4f);
         wheelBodyDef.userData = actor_;
-        wheelBody_ = physicsService_->getWorld()->CreateBody(&wheelBodyDef);
+        wheelBody_ = physicsManager_->getWorld()->CreateBody(&wheelBodyDef);
         
         b2CircleShape wheelShape;
         wheelShape.m_radius = wheelRadius_;
@@ -56,7 +56,7 @@ namespace crust {
         wheelJointDef.Initialize(wheelBody_, mainBody_, wheelBody_->GetPosition());
         wheelJointDef.enableMotor = true;
         wheelJointDef.maxMotorTorque = 10.0f;
-        wheelJoint_ = static_cast<b2RevoluteJoint *>(physicsService_->getWorld()->CreateJoint(&wheelJointDef));
+        wheelJoint_ = static_cast<b2RevoluteJoint *>(physicsManager_->getWorld()->CreateJoint(&wheelJointDef));
         
         b2CircleShape topSensorShape;
         topSensorShape.m_p.Set(0.0f, 0.2f);
@@ -85,9 +85,9 @@ namespace crust {
     
     void MonsterPhysicsComponent::destroy()
     {
-        physicsService_->getWorld()->DestroyJoint(wheelJoint_);
-        physicsService_->getWorld()->DestroyBody(wheelBody_);
-        physicsService_->getWorld()->DestroyBody(mainBody_);
+        physicsManager_->getWorld()->DestroyJoint(wheelJoint_);
+        physicsManager_->getWorld()->DestroyBody(wheelBody_);
+        physicsManager_->getWorld()->DestroyBody(mainBody_);
     }
     
     bool MonsterPhysicsComponent::isStanding() const

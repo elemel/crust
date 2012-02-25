@@ -1,9 +1,9 @@
-#include "physics_service.hpp"
+#include "physics_manager.hpp"
 
 #include "physics_draw_callback.hpp"
 
 namespace crust {
-    PhysicsService::PhysicsService(Game *game) :
+    PhysicsManager::PhysicsManager(Game *game) :
         game_(game)
     {
         b2Vec2 gravity(0.0f, -10.0f);
@@ -13,10 +13,10 @@ namespace crust {
         world_->SetDebugDraw(drawCallback_.get());
     }
 
-    PhysicsService::~PhysicsService()
+    PhysicsManager::~PhysicsManager()
     { }
 
-    void PhysicsService::step(float dt)
+    void PhysicsManager::step(float dt)
     {
         world_->Step(dt, 10, 10);
     }

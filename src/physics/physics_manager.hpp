@@ -1,5 +1,5 @@
-#ifndef CRUST_PHYSICS_SERVICE_HPP
-#define CRUST_PHYSICS_SERVICE_HPP
+#ifndef CRUST_PHYSICS_MANAGER_HPP
+#define CRUST_PHYSICS_MANAGER_HPP
 
 #include <memory>
 #include <Box2D/Box2D.h>
@@ -8,10 +8,10 @@ namespace crust {
     class Game;
     class PhysicsDrawCallback;
 
-    class PhysicsService : public b2ContactListener {
+    class PhysicsManager : public b2ContactListener {
     public:
-        explicit PhysicsService(Game *game);
-        ~PhysicsService();
+        explicit PhysicsManager(Game *game);
+        ~PhysicsManager();
 
         void step(float dt);
 

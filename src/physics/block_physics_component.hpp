@@ -9,7 +9,7 @@
 
 namespace crust {
     class Actor;
-    class PhysicsService;
+    class PhysicsManager;
     
     class BlockPhysicsComponent : public Component {
     public:
@@ -56,7 +56,7 @@ namespace crust {
         
     private:
         Actor *actor_;
-        PhysicsService *physicsService_;
+        PhysicsManager *physicsManager_;
 
         Polygon2 polygon_;
 

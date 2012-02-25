@@ -9,7 +9,7 @@ namespace crust {
     class BlockPhysicsComponent;
     class MonsterControlComponent;
     class MonsterPhysicsComponent;
-    class PhysicsService;
+    class PhysicsManager;
 
     class MonsterMineState : public State, public Task {
     public:
@@ -39,7 +39,7 @@ namespace crust {
         Actor *actor_;
         MonsterControlComponent *controlComponent_;
         MonsterPhysicsComponent *physicsComponent_;
-        PhysicsService *physicsService_;
+        PhysicsManager *physicsManager_;
 
         Actor *targetActor_;
         BlockPhysicsComponent *targetPhysicsComponent_;

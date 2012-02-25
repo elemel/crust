@@ -2,12 +2,12 @@
 
 #include "actor.hpp"
 #include "game.hpp"
-#include "physics_service.hpp"
+#include "physics_manager.hpp"
 
 namespace crust {
     BlockPhysicsComponent::BlockPhysicsComponent(Actor *actor, Polygon2 const &polygon) :
         actor_(actor),
-        physicsService_(actor->getGame()->getPhysicsService()),
+        physicsManager_(actor->getGame()->getPhysicsManager()),
         polygon_(polygon),
         body_(0),
         mineDuration_(0.0f)
@@ -25,7 +25,7 @@ namespace crust {
         bodyDef.position.Set(centroid.x, centroid.y);
         bodyDef.angle = angle;
         bodyDef.userData = actor_;
-        body_ = physicsService_->getWorld()->CreateBody(&bodyDef);
+        body_ = physicsManager_->getWorld()->CreateBody(&bodyDef);
         
         b2Vec2 vertices[b2_maxPolygonVertices];
         int32 vertexCount = std::min(int32(polygon_.vertices.size()),
@@ -59,7 +59,7 @@ namespace crust {
 
     void BlockPhysicsComponent::destroy()
     {
-        physicsService_->getWorld()->DestroyBody(body_);
+        physicsManager_->getWorld()->DestroyBody(body_);
     }
 
     int BlockPhysicsComponent::getElement(int x, int y)

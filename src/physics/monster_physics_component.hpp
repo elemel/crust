@@ -9,7 +9,7 @@
 
 namespace crust {
     class Actor;
-    class PhysicsService;
+    class PhysicsManager;
     
     class MonsterPhysicsComponent : public Component {
     public:
@@ -43,7 +43,7 @@ namespace crust {
 
     private:
         Actor *actor_;
-        PhysicsService *physicsService_;
+        PhysicsManager *physicsManager_;
         Vector2 position_;
 
         float wheelRadius_;

@@ -7,7 +7,7 @@
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
 #include "monster_idle_state.hpp"
-#include "physics_service.hpp"
+#include "physics_manager.hpp"
 
 #include <Box2D/Box2D.h>
 
@@ -45,7 +45,7 @@ namespace crust {
         actor_(actor),
         controlComponent_(convert(actor->getControlComponent())),
         physicsComponent_(convert(actor->getPhysicsComponent())),
-        physicsService_(actor->getGame()->getPhysicsService()),
+        physicsManager_(actor->getGame()->getPhysicsManager()),
 
         targetActor_(0),
         targetPhysicsComponent_(0)
@@ -65,8 +65,8 @@ namespace crust {
         Vector2 p1(p1Vec2.x, p1Vec2.y);
         Vector2 p2 = p1 + clampLength(controlComponent_->getTargetPosition() - p1, 1.5f);
         MineCallback callback;
-        physicsService_->getWorld()->RayCast(&callback, b2Vec2(p1.x, p1.y),
-                                            b2Vec2(p2.x, p2.y));
+        physicsManager_->getWorld()->RayCast(&callback, b2Vec2(p1.x, p1.y),
+                                             b2Vec2(p2.x, p2.y));
         if (callback.actor && callback.actor == targetActor_) {
             float duration = targetPhysicsComponent_->getMineDuration();
             duration += dt;

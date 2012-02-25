@@ -13,7 +13,7 @@
 #include "input_service.hpp"
 #include "monster_control_component.hpp"
 #include "monster_physics_component.hpp"
-#include "physics_service.hpp"
+#include "physics_manager.hpp"
 
 #include <fstream>
 
@@ -51,7 +51,7 @@ namespace crust {
         initContext();
         initVoronoiDiagram();
         inputService_.reset(new InputService(this));
-        physicsService_.reset(new PhysicsService(this));
+        physicsManager_.reset(new PhysicsManager(this));
         controlService_.reset(new ControlService(this));
         graphicsManager_.reset(new GraphicsManager(this));
         initBlocks();
@@ -262,7 +262,7 @@ namespace crust {
     {
         inputService_->step(dt);
         controlService_->step(dt);
-        physicsService_->step(dt);
+        physicsManager_->step(dt);
         handleCollisions();
         for (ActorIterator i = actors_.begin(); i != actors_.end(); ++i) {
             Actor *actor = &*i;
