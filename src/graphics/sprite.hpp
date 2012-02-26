@@ -11,19 +11,6 @@
 namespace crust {
     class Sprite {
     public:
-        struct Vertex {
-            GLfloat red;
-            GLfloat green;
-            GLfloat blue;
-            
-            GLfloat normalX;
-            GLfloat normalY;
-            GLfloat normalZ;
-            
-            GLfloat x;
-            GLfloat y;
-        };
-
         Sprite();
         ~Sprite();
 
@@ -77,8 +64,6 @@ namespace crust {
             pixels_.setElement(x, y, color);
             size_.x = pixels_.getWidth() + 4;
             size_.y = pixels_.getHeight() + 4;
-            verticesDirty_ = true;
-            bufferDirty_ = true;
             textureDirty_ = true;
         }
         
@@ -93,24 +78,11 @@ namespace crust {
 
         Grid<Color4> pixels_;
 
-        mutable bool verticesDirty_;
-        mutable std::vector<Vertex> vertices_;
-
-        mutable bool bufferDirty_;
-        mutable GLuint bufferName_;
-        mutable GLsizei bufferCount_;
-
         mutable bool textureDirty_;
         mutable GLuint texture_;
         mutable GLuint shadowTexture_;
         
-        void drawDirectMode() const;
-        void drawVertices() const;
-        void drawBuffer() const;
         void drawTexture() const;
-
-        void updateVertices() const;
-        void updateBuffer() const;
         void updateTexture() const;
     };
 }
