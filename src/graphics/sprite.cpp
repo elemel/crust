@@ -116,7 +116,7 @@ namespace crust {
                 // TODO: Normals.
                 normalAndShadowData.push_back(0);
                 normalAndShadowData.push_back(0);
-                normalAndShadowData.push_back(0);
+                normalAndShadowData.push_back(127);
 
                 unsigned char shadow = pixels_.getElement(x + dx, y + dy).alpha;
                 unsigned char neighborShadow = std::max(std::max(pixels_.getElement(x + dx - 1, y + dy).alpha,
