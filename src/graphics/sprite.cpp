@@ -13,7 +13,9 @@ namespace crust {
 
         texturesDirty_(true),
         colorTexture_(0),
-        normalAndShadowTexture_(0)
+        normalAndShadowTexture_(0),
+
+        arraysDirty_(true)
     { }
 
     Sprite::~Sprite()
@@ -29,47 +31,30 @@ namespace crust {
     void Sprite::draw() const
     {
         updateTextures();
-        drawTextures();
-    }
-
-    void Sprite::drawTextures() const
-    {
-        glPushMatrix();
-        glTranslatef(position_.x, position_.y, 0.0f);
-        glRotatef((180.0f / M_PI) * angle_, 0.0f, 0.0f, 1.0f);
-        glScalef(scale_.x, scale_.y, 1.0f);
-        glTranslatef(-0.5f, -0.5f, 0.0f);
-
-        float x1 = float(pixels_.getX());
-        float y1 = float(pixels_.getY());
-        float x2 = float(pixels_.getX() + pixels_.getWidth());
-        float y2 = float(pixels_.getY() + pixels_.getHeight());
+        updateArrays();
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, colorTexture_);
-
+        glBindTexture(GL_TEXTURE_2D, colorTexture_);        
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, normalAndShadowTexture_);
 
-        glColor4ub(color_.red, color_.green, color_.blue, color_.alpha);
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f);
-        glVertex2f(x1 - 2.0f, y1 - 2.0f);
-        glTexCoord2f(1.0f, 0.0f);
-        glVertex2f(x2 + 2.0f, y1 - 2.0f);
-        glTexCoord2f(1.0f, 1.0f);
-        glVertex2f(x2 + 2.0f, y2 + 2.0f);
-        glTexCoord2f(0.0f, 1.0f);
-        glVertex2f(x1 - 2.0f, y2 + 2.0f);
-        glEnd();
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(2, GL_FLOAT, 0, vertexArray_);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glTexCoordPointer(2, GL_FLOAT, 0, texCoordArray_);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colorArray_);
 
+        glDrawArrays(GL_QUADS, 0, 4);
+
+        glDisableClientState(GL_COLOR_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
+        
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, 0);
-        
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);
-
-        glPopMatrix();
     }
     
     void Sprite::updateTextures() const
@@ -139,5 +124,53 @@ namespace crust {
         glBindTexture(GL_TEXTURE_2D, 0);
 
         texturesDirty_ = false;
+    }
+
+    void Sprite::updateArrays() const
+    {
+        if (!arraysDirty_) {
+            return;
+        }
+
+        Matrix3 transform;
+        transform.translate(position_);
+        transform.rotate(angle_);
+        transform.scale(scale_);
+        transform.translate(Vector2(-0.5f, -0.5f));
+
+        float x1 = float(pixels_.getX() - 2);
+        float y1 = float(pixels_.getY() - 2);
+        float x2 = float(pixels_.getX() + pixels_.getWidth() + 2);
+        float y2 = float(pixels_.getY() + pixels_.getHeight() + 2);
+
+        Vector2 vertices[] = {
+            transformPoint(transform, Vector2(x1, y1)),
+            transformPoint(transform, Vector2(x2, y1)),
+            transformPoint(transform, Vector2(x2, y2)),
+            transformPoint(transform, Vector2(x1, y2))
+        };
+
+        for (int i = 0; i < 4; ++i) {
+            vertexArray_[i * 2 + 0] = vertices[i].x;
+            vertexArray_[i * 2 + 1] = vertices[i].y;
+        }
+
+        texCoordArray_[0] = 0.0f;
+        texCoordArray_[1] = 0.0f;
+        texCoordArray_[2] = 1.0f;
+        texCoordArray_[3] = 0.0f;
+        texCoordArray_[4] = 1.0f;
+        texCoordArray_[5] = 1.0f;
+        texCoordArray_[6] = 0.0f;
+        texCoordArray_[7] = 1.0f;
+
+        for (int i = 0; i < 4; ++i) {
+            colorArray_[i * 4 + 0] = color_.red;
+            colorArray_[i * 4 + 1] = color_.green;
+            colorArray_[i * 4 + 2] = color_.blue;
+            colorArray_[i * 4 + 3] = color_.alpha;
+        }
+
+        arraysDirty_ = false;
     }
 }

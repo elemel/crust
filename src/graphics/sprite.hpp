@@ -27,6 +27,7 @@ namespace crust {
         void setPosition(Vector2 const &position)
         {
             position_ = position;
+            arraysDirty_ = true;
         }
 
         float getAngle() const
@@ -37,6 +38,7 @@ namespace crust {
         void setAngle(float angle)
         {
             angle_ = angle;
+            arraysDirty_ = true;
         }
 
         Vector2 const &getScale() const
@@ -47,6 +49,7 @@ namespace crust {
         void setScale(Vector2 const &scale)
         {
             scale_ = scale;
+            arraysDirty_ = true;
         }
 
         Color4 const &getColor() const
@@ -57,6 +60,7 @@ namespace crust {
         void setColor(Color4 const &color)
         {
             color_ = color;
+            arraysDirty_ = true;
         }
         
         void setPixel(int x, int y, Color4 const &color)
@@ -65,6 +69,7 @@ namespace crust {
             size_.x = pixels_.getWidth() + 4;
             size_.y = pixels_.getHeight() + 4;
             texturesDirty_ = true;
+            arraysDirty_ = true;
         }
         
         void draw() const;
@@ -81,9 +86,14 @@ namespace crust {
         mutable bool texturesDirty_;
         mutable GLuint colorTexture_;
         mutable GLuint normalAndShadowTexture_;
+
+        mutable bool arraysDirty_;
+        mutable GLfloat vertexArray_[8];
+        mutable GLfloat texCoordArray_[8];
+        mutable GLubyte colorArray_[16];
         
-        void drawTextures() const;
         void updateTextures() const;
+        void updateArrays() const;
     };
 }
 
