@@ -136,7 +136,7 @@ namespace crust {
         transform.translate(position_);
         transform.rotate(angle_);
         transform.scale(scale_);
-        transform.translate(Vector2(-0.5f, -0.5f));
+        transform.translate(Vector2(-0.5f) - anchor_);
 
         float x1 = float(pixels_.getX() - 2);
         float y1 = float(pixels_.getY() - 2);

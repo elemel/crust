@@ -62,7 +62,18 @@ namespace crust {
             color_ = color;
             arraysDirty_ = true;
         }
+
+        Vector2 const &getAnchor() const
+        {
+            return anchor_;
+        }
         
+        void setAnchor(Vector2 const &anchor)
+        {
+            anchor_ = anchor;
+            arraysDirty_ = true;
+        }
+
         void setPixel(int x, int y, Color4 const &color)
         {
             pixels_.setElement(x, y, color);
@@ -80,6 +91,7 @@ namespace crust {
         float angle_;
         Vector2 scale_;
         Color4 color_;
+        Vector2 anchor_;
 
         Grid<Color4> pixels_;
 
