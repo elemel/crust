@@ -64,7 +64,7 @@ namespace crust {
             pixels_.setElement(x, y, color);
             size_.x = pixels_.getWidth() + 4;
             size_.y = pixels_.getHeight() + 4;
-            textureDirty_ = true;
+            texturesDirty_ = true;
         }
         
         void draw() const;
@@ -78,12 +78,12 @@ namespace crust {
 
         Grid<Color4> pixels_;
 
-        mutable bool textureDirty_;
-        mutable GLuint texture_;
-        mutable GLuint shadowTexture_;
+        mutable bool texturesDirty_;
+        mutable GLuint colorTexture_;
+        mutable GLuint normalAndShadowTexture_;
         
-        void drawTexture() const;
-        void updateTexture() const;
+        void drawTextures() const;
+        void updateTextures() const;
     };
 }
 

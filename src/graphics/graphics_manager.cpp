@@ -377,8 +377,8 @@ namespace crust {
     {
         GLint colorTexturelocation = glGetUniformLocation(shaderProgram_, "colorTexture");
         glUniform1i(colorTexturelocation, 0);
-        GLint shadowTexturelocation = glGetUniformLocation(shaderProgram_, "shadowTexture");
-        glUniform1i(shadowTexturelocation, 1);
+        GLint normalAndShadowTexturelocation = glGetUniformLocation(shaderProgram_, "normalAndShadowTexture");
+        glUniform1i(normalAndShadowTexturelocation, 1);
         GLint offsetLocation = glGetUniformLocation(shaderProgram_, "offset");
         for (SpriteVector::iterator i = sprites_.begin(); i != sprites_.end(); ++i) {
             float scale = 0.25 * 10.0f * frustum_.getHeight() / float(windowHeight_);
