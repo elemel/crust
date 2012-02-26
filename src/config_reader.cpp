@@ -30,12 +30,6 @@ namespace crust {
         if (key_ == "fullscreen") {
             target_->fullscreen = parseBool(value_.c_str());
         }
-        if (key_ == "multisampling") {
-            target_->multisampling = parseBool(value_.c_str());
-        }
-        if (key_ == "supersampling") {
-            target_->supersampling = parseBool(value_.c_str());
-        }
         if (key_ == "window_width") {
             target_->windowWidth = parseInt(value_.c_str());
         }
@@ -59,9 +53,6 @@ namespace crust {
         }
         if (key_ == "fps") {
             target_->fps = parseInt(value_.c_str());
-        }
-        if (key_ == "fxaa") {
-            target_->fxaa = parseBool(value_.c_str());
         }
     }
 

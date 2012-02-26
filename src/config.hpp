@@ -7,8 +7,6 @@ namespace crust {
         int windowWidth;
         int windowHeight;
         bool fullscreen;
-        bool multisampling;
-        bool supersampling;
         bool vsync;
         float cameraScale;
         float cameraPan;
@@ -17,7 +15,6 @@ namespace crust {
         float maxCameraScale;
         bool drawFps;
         int fps;
-        bool fxaa;
 
         Config();
     };

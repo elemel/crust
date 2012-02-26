@@ -5,8 +5,6 @@ namespace crust {
         windowWidth(800),
         windowHeight(600),
         fullscreen(false),
-        multisampling(false),
-        supersampling(true),
         vsync(true),
         cameraScale(0.15f),
         cameraPan(0.1f),
@@ -14,7 +12,6 @@ namespace crust {
         minCameraScale(0.02f),
         maxCameraScale(1.0f),
         drawFps(true),
-        fps(60),
-        fxaa(false)
+        fps(60)
     { }
 }

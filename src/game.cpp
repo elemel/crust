@@ -155,21 +155,8 @@ namespace crust {
 
     void Game::initContext()
     {
-        if (config_->multisampling) {
-            if (SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1) == -1 ||
-                SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4) == -1)
-            {
-                std::stringstream message;
-                message << "Failed to enable multisampling: "
-                        << SDL_GetError();
-                throw Error(message.str());
-            }
-        }
         context_ = SDL_GL_CreateContext(window_);
         SDL_GL_SetSwapInterval(config_->vsync ? 1 : 0);
-        if (config_->multisampling) {
-            glEnable(GL_MULTISAMPLE);
-        }
     }
     
     void Game::initVoronoiDiagram()
