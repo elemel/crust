@@ -129,7 +129,7 @@ namespace crust {
         if (drawEnabled_) {
             // glEnable(GL_LIGHTING);
             glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
             // setLighting();
             glUseProgram(shaderProgram_);
             drawSprites();
@@ -284,7 +284,7 @@ namespace crust {
         glUniform1i(normalAndShadowTexturelocation, 1);
         GLint textureSizeLocation = glGetUniformLocation(shaderProgram_, "textureSize");
         GLint smoothDistanceLocation = glGetUniformLocation(shaderProgram_, "smoothDistance");
-        float smoothDistance = 1.0f / (0.1f * cameraScale_ * float(windowHeight_));
+        float smoothDistance = 1.25f / (0.1f * cameraScale_ * float(windowHeight_));
         glUniform1f(smoothDistanceLocation, GLfloat(smoothDistance));
         for (SpriteVector::iterator i = sprites_.begin(); i != sprites_.end(); ++i) {
             IntVector2 size = (*i)->getSize();

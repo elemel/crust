@@ -77,9 +77,9 @@ namespace crust {
         for (int dy = -2; dy < height + 2; ++dy) {
             for (int dx = -2; dx < width + 2; ++dx) {
                 Color4 const &color = pixels_.getElement(x + dx, y + dy);
-                data.push_back(color.red);
-                data.push_back(color.green);
-                data.push_back(color.blue);
+                data.push_back(color.red * color.alpha / 255);
+                data.push_back(color.green * color.alpha / 255);
+                data.push_back(color.blue * color.alpha / 255);
                 data.push_back(color.alpha);
             }
         }
