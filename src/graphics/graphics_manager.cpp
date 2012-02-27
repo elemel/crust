@@ -282,12 +282,13 @@ namespace crust {
         glUniform1i(colorTexturelocation, 0);
         GLint normalAndShadowTexturelocation = glGetUniformLocation(shaderProgram_, "normalAndShadowTexture");
         glUniform1i(normalAndShadowTexturelocation, 1);
-        GLint offsetLocation = glGetUniformLocation(shaderProgram_, "offset");
+        GLint textureSizeLocation = glGetUniformLocation(shaderProgram_, "textureSize");
+        GLint smoothDistanceLocation = glGetUniformLocation(shaderProgram_, "smoothDistance");
+        float smoothDistance = 1.0f / (0.1f * cameraScale_ * float(windowHeight_));
+        glUniform1f(smoothDistanceLocation, GLfloat(smoothDistance));
         for (SpriteVector::iterator i = sprites_.begin(); i != sprites_.end(); ++i) {
-            float scale = 0.25 * 10.0f * frustum_.getHeight() / float(windowHeight_);
             IntVector2 size = (*i)->getSize();
-            Vector2 offset(scale / float(size.x), scale / float(size.y));
-            glUniform2f(offsetLocation, GLfloat(offset.x), GLfloat(offset.y));
+            glUniform2f(textureSizeLocation, GLfloat(size.x), GLfloat(size.y));
             (*i)->draw();
         }
     }
