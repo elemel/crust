@@ -112,7 +112,7 @@ namespace crust {
                                                                  pixels_.getElement(x + dx + 1, y + dy - 1).alpha),
                                                         std::max(pixels_.getElement(x + dx + 1, y + dy + 1).alpha,
                                                                  pixels_.getElement(x + dx - 1, y + dy + 1).alpha));
-                unsigned char combinedShadow = std::max(shadow / 1, std::max(neighborShadow / 3, diagonalShadow / 9));
+                unsigned char combinedShadow = std::max(shadow / 1, std::max(neighborShadow / 2, diagonalShadow / 4));
                 normalAndShadowData.push_back(combinedShadow / 2);
             }
         }

@@ -1,3 +1,5 @@
+#define PI 3.14159265358979323846264
+
 uniform sampler2D colorTexture;
 uniform sampler2D normalAndShadowTexture;
 uniform vec2 textureSize;
@@ -19,10 +21,6 @@ void main()
     vec3 normal = normalAndShadow.xyz;
     float shadow = normalAndShadow.w;
 
-    if (color.a < 0.001) {
-        gl_FragColor = vec4(0.0, 0.0, 0.0, shadow);
-    } else {
-        gl_FragColor.rgb = color.rgb;
-        gl_FragColor.a = color.a + shadow * (1.0 - color.a);
-    }
+    gl_FragColor.rgb = color.rgb;
+    gl_FragColor.a = color.a + shadow * (1.0 - color.a);
 }

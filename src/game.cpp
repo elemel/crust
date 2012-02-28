@@ -220,7 +220,7 @@ namespace crust {
         updateCamera();
 
         SDL_GL_SwapWindow(window_);
-        glClearColor(double(0x33) / 255.0, double(0x33) / 255.0, double(0x33) / 255.0, 0.0);
+        glClearColor(double(0x44) / 255.0, double(0x33) / 255.0, double(0x22) / 255.0, 0.0);
         glClear(GL_COLOR_BUFFER_BIT);
         graphicsManager_->draw();
     }
