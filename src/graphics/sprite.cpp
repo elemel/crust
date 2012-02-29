@@ -106,29 +106,32 @@ namespace crust {
                 normalAndShadowData.push_back(127);
                 
                 float shadow = 0.0f;
+                Vector2 position = Vector2(0.5f * float(dx), 0.5f * float(dy));
                 for (int ddy = 0; ddy < 6; ++ddy) {
                     for (int ddx = 0; ddx < 6; ++ddx) {
                         if (ddy * ddy + ddx * ddx < 6 * 6) {
-                            Vector2 position = Vector2(0.5f * float(dx), 0.5f * float(dy));
                             Vector2 samplePosition = position + Vector2(0.5f * float(ddx) - 1.25f, 0.5f * float(ddy) - 1.25f);
-                            float alpha = float(pixels_.getElement(x + int(samplePosition.x + 1.5f) - 1, y + int(samplePosition.y + 1.5f) - 1).alpha) / 255.0f;
-                            float distance = std::min(std::min(getDistance(position, samplePosition + Vector2(-0.25, -0.25f)),
-                                                               getDistance(position, samplePosition + Vector2(0.25, -0.25f))),
-                                                      std::min(getDistance(position, samplePosition + Vector2(0.25, 0.25f)),
-                                                               getDistance(position, samplePosition + Vector2(-0.25, 0.25f))));
-                            shadow += square(std::min(10.0f, alpha / (0.001f + distance * distance)));
+                            float alpha = float(pixels_.getElement(x + int(samplePosition.x + 1.5f) - 1,
+                                                                   y + int(samplePosition.y + 1.5f) - 1).alpha) / 255.0f;
+                            float minSquaredDistance = std::min(std::min(getSquaredDistance(position,
+                                                                                            samplePosition + Vector2(-0.25, -0.25f)),
+                                                                         getSquaredDistance(position,
+                                                                                            samplePosition + Vector2(0.25, -0.25f))),
+                                                                std::min(getSquaredDistance(position,
+                                                                                            samplePosition + Vector2(0.25, 0.25f)),
+                                                                         getSquaredDistance(position,
+                                                                                            samplePosition + Vector2(-0.25, 0.25f))));
+                            shadow = std::max(shadow, alpha / std::max(1.0f, 10.0f * minSquaredDistance));
                         }
                     }
                 }
-                shadow = 0.045f * std::sqrt(shadow);
+                shadow = 0.7f * shadow;
                 normalAndShadowData.push_back(std::min(127, int(shadow * 128.0)));
             }
         }
 
         glBindTexture(GL_TEXTURE_2D, normalAndShadowTexture_);
         glTexImage2D(GL_TEXTURE_2D, 0, 4, 2 * (width + 4), 2 * (height + 4), 0, GL_RGBA, GL_BYTE, &normalAndShadowData.front());
-        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);
