@@ -17,7 +17,7 @@ void main()
     vec2 smoothPosition = nearestPosition + smoothOffset;
     vec4 color = texture2D(colorTexture, smoothPosition / textureSize);
 
-    vec4 normalAndShadow = texture2D(normalAndShadowTexture, texCoord);
+    vec4 normalAndShadow = texture2D(normalAndShadowTexture, texCoord - 0.25 / textureSize);
     vec3 normal = normalAndShadow.xyz;
     float shadow = normalAndShadow.w;
 

@@ -1,5 +1,6 @@
 #include "sprite.hpp"
 
+#include <cassert>
 #include <cmath>
 #include <SDL/SDL_opengl.h>
 
@@ -73,7 +74,7 @@ namespace crust {
         }
         glGenTextures(1, &colorTexture_);
 
-        std::vector<unsigned char> data;
+        std::vector<GLubyte> data;
         for (int dy = -2; dy < height + 2; ++dy) {
             for (int dx = -2; dx < width + 2; ++dx) {
                 Color4 const &color = pixels_.getElement(x + dx, y + dy);
@@ -85,7 +86,7 @@ namespace crust {
         }
         
         glBindTexture(GL_TEXTURE_2D, colorTexture_);
-        glTexImage2D(GL_TEXTURE_2D, 0, 4, width + 4, height + 4, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data.front());
+        glTexImage2D(GL_TEXTURE_2D, 0, 4, width + 2 * 2, height + 2 * 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data.front());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -95,30 +96,39 @@ namespace crust {
         }
         glGenTextures(1, &normalAndShadowTexture_);
         
-        std::vector<signed char> normalAndShadowData;
-        for (int dy = -2; dy < height + 2; ++dy) {
-            for (int dx = -2; dx < width + 2; ++dx) {
+        std::vector<GLbyte> normalAndShadowData;
+        for (int dy = -4; dy < 2 * height + 4; ++dy) {
+            for (int dx = -4; dx < 2 * width + 4; ++dx) {
+
                 // TODO: Normals.
                 normalAndShadowData.push_back(0);
                 normalAndShadowData.push_back(0);
                 normalAndShadowData.push_back(127);
-
-                unsigned char shadow = pixels_.getElement(x + dx, y + dy).alpha;
-                unsigned char neighborShadow = std::max(std::max(pixels_.getElement(x + dx - 1, y + dy).alpha,
-                                                                 pixels_.getElement(x + dx + 1, y + dy).alpha),
-                                                        std::max(pixels_.getElement(x + dx, y + dy - 1).alpha,
-                                                                 pixels_.getElement(x + dx, y + dy + 1).alpha));
-                unsigned char diagonalShadow = std::max(std::max(pixels_.getElement(x + dx - 1, y + dy - 1).alpha,
-                                                                 pixels_.getElement(x + dx + 1, y + dy - 1).alpha),
-                                                        std::max(pixels_.getElement(x + dx + 1, y + dy + 1).alpha,
-                                                                 pixels_.getElement(x + dx - 1, y + dy + 1).alpha));
-                unsigned char combinedShadow = std::max(shadow / 1, std::max(neighborShadow / 2, diagonalShadow / 4));
-                normalAndShadowData.push_back(combinedShadow / 2);
+                
+                float shadow = 0.0f;
+                for (int ddy = 0; ddy < 6; ++ddy) {
+                    for (int ddx = 0; ddx < 6; ++ddx) {
+                        if (ddy * ddy + ddx * ddx < 6 * 6) {
+                            Vector2 position = Vector2(0.5f * float(dx), 0.5f * float(dy));
+                            Vector2 samplePosition = position + Vector2(0.5f * float(ddx) - 1.25f, 0.5f * float(ddy) - 1.25f);
+                            float alpha = float(pixels_.getElement(x + int(samplePosition.x + 1.5f) - 1, y + int(samplePosition.y + 1.5f) - 1).alpha) / 255.0f;
+                            float distance = std::min(std::min(getDistance(position, samplePosition + Vector2(-0.25, -0.25f)),
+                                                               getDistance(position, samplePosition + Vector2(0.25, -0.25f))),
+                                                      std::min(getDistance(position, samplePosition + Vector2(0.25, 0.25f)),
+                                                               getDistance(position, samplePosition + Vector2(-0.25, 0.25f))));
+                            shadow += square(std::min(10.0f, alpha / (0.001f + distance * distance)));
+                        }
+                    }
+                }
+                shadow = 0.045f * std::sqrt(shadow);
+                normalAndShadowData.push_back(std::min(127, int(shadow * 128.0)));
             }
         }
 
         glBindTexture(GL_TEXTURE_2D, normalAndShadowTexture_);
-        glTexImage2D(GL_TEXTURE_2D, 0, 4, width + 4, height + 4, 0, GL_RGBA, GL_BYTE, &normalAndShadowData.front());
+        glTexImage2D(GL_TEXTURE_2D, 0, 4, 2 * (width + 4), 2 * (height + 4), 0, GL_RGBA, GL_BYTE, &normalAndShadowData.front());
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);
