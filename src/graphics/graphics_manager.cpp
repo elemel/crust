@@ -130,10 +130,12 @@ namespace crust {
             // glEnable(GL_LIGHTING);
             glEnable(GL_BLEND);
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+            glEnable(GL_FRAMEBUFFER_SRGB);
             // setLighting();
             glUseProgram(shaderProgram_);
             drawSprites();
             glUseProgram(0);
+            glDisable(GL_FRAMEBUFFER_SRGB);
             glDisable(GL_BLEND);
             // glDisable(GL_LIGHTING);
         }

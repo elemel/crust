@@ -86,7 +86,7 @@ namespace crust {
         }
         
         glBindTexture(GL_TEXTURE_2D, colorTexture_);
-        glTexImage2D(GL_TEXTURE_2D, 0, 4, width + 2 * 2, height + 2 * 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data.front());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width + 2 * 2, height + 2 * 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data.front());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -109,7 +109,7 @@ namespace crust {
                         shadow = std::max(shadow, alpha);
                     }
                 }
-                shadowData.push_back(0.8f * shadow);
+                shadowData.push_back(0.9f * shadow);
             }
         }
 
@@ -121,30 +121,30 @@ namespace crust {
                 if (0.001f < shadow) {
                     smoothShadowData[dy * pitch + dx] = std::max(shadow, smoothShadowData[dy * pitch + dx]);
 
-                    smoothShadowData[dy * pitch + dx + 1] = std::max(0.5f * shadow, smoothShadowData[dy * pitch + dx + 1]);
-                    smoothShadowData[dy * pitch + dx - 1] = std::max(0.5f * shadow, smoothShadowData[dy * pitch + dx - 1]);
-                    smoothShadowData[(dy + 1) * pitch + dx] = std::max(0.5f * shadow, smoothShadowData[(dy + 1) * pitch + dx]);
-                    smoothShadowData[(dy - 1) * pitch + dx] = std::max(0.5f * shadow, smoothShadowData[(dy - 1) * pitch + dx]);
+                    smoothShadowData[dy * pitch + dx + 1] = std::max(0.8f * shadow, smoothShadowData[dy * pitch + dx + 1]);
+                    smoothShadowData[dy * pitch + dx - 1] = std::max(0.8f * shadow, smoothShadowData[dy * pitch + dx - 1]);
+                    smoothShadowData[(dy + 1) * pitch + dx] = std::max(0.8f * shadow, smoothShadowData[(dy + 1) * pitch + dx]);
+                    smoothShadowData[(dy - 1) * pitch + dx] = std::max(0.8f * shadow, smoothShadowData[(dy - 1) * pitch + dx]);
 
-                    smoothShadowData[(dy - 1) * pitch + dx - 1] = std::max(0.3f * shadow, smoothShadowData[(dy - 1) * pitch + dx - 1]);
-                    smoothShadowData[(dy - 1) * pitch + dx + 1] = std::max(0.3f * shadow, smoothShadowData[(dy - 1) * pitch + dx + 1]);
-                    smoothShadowData[(dy + 1) * pitch + dx + 1] = std::max(0.3f * shadow, smoothShadowData[(dy + 1) * pitch + dx + 1]);
-                    smoothShadowData[(dy + 1) * pitch + dx - 1] = std::max(0.3f * shadow, smoothShadowData[(dy + 1) * pitch + dx - 1]);
+                    smoothShadowData[(dy - 1) * pitch + dx - 1] = std::max(0.6f * shadow, smoothShadowData[(dy - 1) * pitch + dx - 1]);
+                    smoothShadowData[(dy - 1) * pitch + dx + 1] = std::max(0.6f * shadow, smoothShadowData[(dy - 1) * pitch + dx + 1]);
+                    smoothShadowData[(dy + 1) * pitch + dx + 1] = std::max(0.6f * shadow, smoothShadowData[(dy + 1) * pitch + dx + 1]);
+                    smoothShadowData[(dy + 1) * pitch + dx - 1] = std::max(0.6f * shadow, smoothShadowData[(dy + 1) * pitch + dx - 1]);
 
-                    smoothShadowData[dy * pitch + dx + 2] = std::max(0.2f * shadow, smoothShadowData[dy * pitch + dx + 2]);
-                    smoothShadowData[dy * pitch + dx - 2] = std::max(0.2f * shadow, smoothShadowData[dy * pitch + dx - 2]);
-                    smoothShadowData[(dy + 2) * pitch + dx] = std::max(0.2f * shadow, smoothShadowData[(dy + 2) * pitch + dx]);
-                    smoothShadowData[(dy - 2) * pitch + dx] = std::max(0.2f * shadow, smoothShadowData[(dy - 2) * pitch + dx]);
+                    smoothShadowData[dy * pitch + dx + 2] = std::max(0.4f * shadow, smoothShadowData[dy * pitch + dx + 2]);
+                    smoothShadowData[dy * pitch + dx - 2] = std::max(0.4f * shadow, smoothShadowData[dy * pitch + dx - 2]);
+                    smoothShadowData[(dy + 2) * pitch + dx] = std::max(0.4f * shadow, smoothShadowData[(dy + 2) * pitch + dx]);
+                    smoothShadowData[(dy - 2) * pitch + dx] = std::max(0.4f * shadow, smoothShadowData[(dy - 2) * pitch + dx]);
 
-                    smoothShadowData[(dy - 1) * pitch + dx - 2] = std::max(0.1f * shadow, smoothShadowData[(dy - 1) * pitch + dx - 2]);
-                    smoothShadowData[(dy - 1) * pitch + dx + 2] = std::max(0.1f * shadow, smoothShadowData[(dy - 1) * pitch + dx + 2]);
-                    smoothShadowData[(dy + 1) * pitch + dx + 2] = std::max(0.1f * shadow, smoothShadowData[(dy + 1) * pitch + dx + 2]);
-                    smoothShadowData[(dy + 1) * pitch + dx - 2] = std::max(0.1f * shadow, smoothShadowData[(dy + 1) * pitch + dx - 2]);
+                    smoothShadowData[(dy - 1) * pitch + dx - 2] = std::max(0.2f * shadow, smoothShadowData[(dy - 1) * pitch + dx - 2]);
+                    smoothShadowData[(dy - 1) * pitch + dx + 2] = std::max(0.2f * shadow, smoothShadowData[(dy - 1) * pitch + dx + 2]);
+                    smoothShadowData[(dy + 1) * pitch + dx + 2] = std::max(0.2f * shadow, smoothShadowData[(dy + 1) * pitch + dx + 2]);
+                    smoothShadowData[(dy + 1) * pitch + dx - 2] = std::max(0.2f * shadow, smoothShadowData[(dy + 1) * pitch + dx - 2]);
 
-                    smoothShadowData[(dy - 2) * pitch + dx - 1] = std::max(0.1f * shadow, smoothShadowData[(dy - 2) * pitch + dx - 1]);
-                    smoothShadowData[(dy - 2) * pitch + dx + 1] = std::max(0.1f * shadow, smoothShadowData[(dy - 2) * pitch + dx + 1]);
-                    smoothShadowData[(dy + 2) * pitch + dx + 1] = std::max(0.1f * shadow, smoothShadowData[(dy + 2) * pitch + dx + 1]);
-                    smoothShadowData[(dy + 2) * pitch + dx - 1] = std::max(0.1f * shadow, smoothShadowData[(dy + 2) * pitch + dx - 1]);
+                    smoothShadowData[(dy - 2) * pitch + dx - 1] = std::max(0.2f * shadow, smoothShadowData[(dy - 2) * pitch + dx - 1]);
+                    smoothShadowData[(dy - 2) * pitch + dx + 1] = std::max(0.2f * shadow, smoothShadowData[(dy - 2) * pitch + dx + 1]);
+                    smoothShadowData[(dy + 2) * pitch + dx + 1] = std::max(0.2f * shadow, smoothShadowData[(dy + 2) * pitch + dx + 1]);
+                    smoothShadowData[(dy + 2) * pitch + dx - 1] = std::max(0.2f * shadow, smoothShadowData[(dy + 2) * pitch + dx - 1]);
                 }
             }
         }
@@ -158,7 +158,7 @@ namespace crust {
         }
 
         glBindTexture(GL_TEXTURE_2D, normalAndShadowTexture_);
-        glTexImage2D(GL_TEXTURE_2D, 0, 4, 2 * (width + 4), 2 * (height + 4), 0, GL_RGBA, GL_BYTE, &normalAndShadowData.front());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, 2 * (width + 4), 2 * (height + 4), 0, GL_RGBA, GL_BYTE, &normalAndShadowData.front());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);
