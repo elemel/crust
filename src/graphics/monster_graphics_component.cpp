@@ -64,7 +64,7 @@ namespace crust {
         }
         b2Vec2 eyeToTargetOffset = localTargetPosition - localEyePosition;
         float targetAngle = std::atan2(eyeToTargetOffset.y, eyeToTargetOffset.x);
-        float headAngle = 0.5f * float(headDirection_) * targetAngle;
+        float headAngle = clamp(0.5f * float(headDirection_) * targetAngle, -M_PI_4, M_PI_4);
         headSprite_->setPosition(Vector2(mainBodyPosition.x, mainBodyPosition.y + 0.25f));
         headSprite_->setAngle(headAngle);
         headSprite_->setScale(Vector2(0.1f * float(headDirection_), 0.1f));
