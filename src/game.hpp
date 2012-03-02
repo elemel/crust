@@ -55,6 +55,11 @@ namespace crust {
         {
             return time_;
         }
+
+        Random *getRandom()
+        {
+            return &random_;
+        }
         
         float getRandomFloat();
         int getRandomInt(int size);

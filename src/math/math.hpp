@@ -28,6 +28,11 @@ namespace crust {
         return std::min(std::max(f, minValue), maxValue);
     }
 
+    inline float mix(float f1, float f2, float x)
+    {
+        return f1 * (1.0f - x) + f2 * x;
+    }
+    
     class Vector2 {
     public:
         float x, y;
