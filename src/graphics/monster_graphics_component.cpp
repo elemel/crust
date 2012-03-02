@@ -78,16 +78,16 @@ namespace crust {
         headSprite_->setScale(Vector2(0.1f));
         trunkSprite_->setScale(Vector2(0.1f));
         
-        Color4 skinColor = parseColor4("#fc9");
+        Color4 skinColor = parseColor4("#c96");
         Color4 eyeColor = parseColor4("#000");
-        Color4 noseColor = parseColor4("#f96");
-        Color4 earColor = parseColor4("#f96");
-        Color4 hairColor = parseColor4("#996");
-        Color4 beardColor = parseColor4("#663");
-        Color4 shirtColor = parseColor4("#6cf");
+        Color4 noseColor = parseColor4("#c63");
+        Color4 earColor = parseColor4("#c96");
+        Color4 hairColor = parseColor4("#c30");
+        Color4 beardColor = parseColor4("#930");
+        Color4 shirtColor = parseColor4("#993");
         Color4 beltColor = parseColor4("#630");
         Color4 buckleColor = parseColor4("#fc3");
-        Color4 trouserColor = parseColor4("#069");
+        Color4 trouserColor = parseColor4("#996");
         Color4 bootColor = parseColor4("#960");
         
         headSprite_->setPixel(-2, 2, skinColor);
