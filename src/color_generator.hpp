@@ -13,6 +13,9 @@ namespace crust {
 
     private:
         Random *random_;
+        float meanHue_;
+        float meanSaturation_;
+        float meanLightness_;
     };
 }
 
