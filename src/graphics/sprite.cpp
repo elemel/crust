@@ -109,7 +109,7 @@ namespace crust {
                         shadow = std::max(shadow, alpha);
                     }
                 }
-                shadowData.push_back(0.9f * shadow);
+                shadowData.push_back(0.8f * shadow);
             }
         }
 
