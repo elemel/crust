@@ -77,7 +77,7 @@ namespace crust {
         std::vector<GLubyte> data;
         for (int dy = -2; dy < height + 2; ++dy) {
             for (int dx = -2; dx < width + 2; ++dx) {
-                Color4 const &color = pixels_.getElement(x + dx, y + dy);
+                Color4 color = pixels_.getElement(x + dx, y + dy);
                 data.push_back(color.red * color.alpha / 255);
                 data.push_back(color.green * color.alpha / 255);
                 data.push_back(color.blue * color.alpha / 255);
@@ -99,17 +99,19 @@ namespace crust {
         std::vector<float> shadowData;
         for (int dy = -4; dy < 2 * height + 4; ++dy) {
             for (int dx = -4; dx < 2 * width + 4; ++dx) {
-                float shadow = 0.0f;
+                float minShadow = 1.0f;
+                float maxShadow = 0.0f;
                 Vector2 position = Vector2(0.5f * float(dx), 0.5f * float(dy));
                 for (int ddy = 0; ddy < 2; ++ddy) {
                     for (int ddx = 0; ddx < 2; ++ddx) {
                         Vector2 samplePosition = position + Vector2(0.5f * float(ddx) - 0.25f, 0.5f * float(ddy) - 0.25f);
                         float alpha = float(pixels_.getElement(x + int(samplePosition.x + 1.5f) - 1,
                                                                y + int(samplePosition.y + 1.5f) - 1).alpha) / 255.0f;
-                        shadow = std::max(shadow, alpha);
+                        minShadow = std::min(minShadow, alpha);
+                        maxShadow = std::max(maxShadow, alpha);
                     }
                 }
-                shadowData.push_back(0.8f * shadow);
+                shadowData.push_back(minShadow < 0.001f ? maxShadow : 0.0f);
             }
         }
 
@@ -149,12 +151,12 @@ namespace crust {
             }
         }
 
-        std::vector<GLbyte> normalAndShadowData(4 * smoothShadowData.size());
-        for (std::size_t i = 0; i < smoothShadowData.size(); ++i) {
+        std::vector<GLbyte> normalAndShadowData(4 * shadowData.size());
+        for (std::size_t i = 0; i < shadowData.size(); ++i) {
             normalAndShadowData[4 * i + 0] = 0;
             normalAndShadowData[4 * i + 1] = 0;
             normalAndShadowData[4 * i + 2] = 127;
-            normalAndShadowData[4 * i + 3] = std::min(127, int(smoothShadowData[i] * 128.0));
+            normalAndShadowData[4 * i + 3] = std::min(127, int(shadowData[i] * 128.0));
         }
 
         glBindTexture(GL_TEXTURE_2D, normalAndShadowTexture_);

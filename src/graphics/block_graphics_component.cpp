@@ -60,7 +60,7 @@ namespace crust {
         int height = grid.getHeight();
 
         ColorGenerator colorGenerator(actor_->getGame()->getRandom());
-        
+
         for (int dy = 0; dy < height; ++dy) {
             for (int dx = 0; dx < width; ++dx) {
                 int type = grid.getElement(x + dx, y + dy);
