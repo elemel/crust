@@ -44,6 +44,10 @@ namespace crust {
 
         std::auto_ptr<Sprite> headSprite_;
         std::auto_ptr<Sprite> trunkSprite_;
+        std::auto_ptr<Sprite> leftArmSprite_;
+        std::auto_ptr<Sprite> rightArmSprite_;
+        std::auto_ptr<Sprite> leftLegSprite_;
+        std::auto_ptr<Sprite> rightLegSprite_;
 
         void initSprites();
     };

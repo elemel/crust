@@ -27,8 +27,12 @@ namespace crust {
     void MonsterGraphicsComponent::create()
     {
         initSprites();
+        graphicsManager_->addSprite(rightArmSprite_.get());
+        graphicsManager_->addSprite(rightLegSprite_.get());
         graphicsManager_->addSprite(trunkSprite_.get());
         graphicsManager_->addSprite(headSprite_.get());
+        graphicsManager_->addSprite(leftLegSprite_.get());
+        graphicsManager_->addSprite(leftArmSprite_.get());
         graphicsManager_->addTask(this);
     }
     
@@ -37,6 +41,10 @@ namespace crust {
         graphicsManager_->removeTask(this);
         graphicsManager_->removeSprite(headSprite_.get());
         graphicsManager_->removeSprite(trunkSprite_.get());
+        graphicsManager_->removeSprite(leftArmSprite_.get());
+        graphicsManager_->removeSprite(rightArmSprite_.get());
+        graphicsManager_->removeSprite(leftLegSprite_.get());
+        graphicsManager_->removeSprite(rightLegSprite_.get());
     }
 
     void MonsterGraphicsComponent::step(float dt)
@@ -50,6 +58,7 @@ namespace crust {
             trunkTurned = true;
         }
         trunkSprite_->setPosition(Vector2(mainBodyPosition.x, mainBodyPosition.y - 0.15f));
+
         Vector2 const &targetPosition = controlComponent_->getTargetPosition();
         b2Vec2 localEyePosition = b2Vec2(0.0f, 0.35f);
         b2Vec2 localTargetPosition = physicsComponent_->getMainBody()->GetLocalPoint(b2Vec2(targetPosition.x, targetPosition.y));
@@ -68,15 +77,35 @@ namespace crust {
         headSprite_->setPosition(Vector2(mainBodyPosition.x, mainBodyPosition.y + 0.25f));
         headSprite_->setAngle(headAngle);
         headSprite_->setScale(Vector2(0.1f * float(headDirection_), 0.1f));
+
+        leftArmSprite_->setPosition(Vector2(mainBodyPosition.x - 0.3f * float(trunkDirection_), mainBodyPosition.y + 0.05f));
+        leftArmSprite_->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
+
+        rightArmSprite_->setPosition(Vector2(mainBodyPosition.x + 0.3f * float(trunkDirection_), mainBodyPosition.y + 0.05f));
+        rightArmSprite_->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
+
+        leftLegSprite_->setPosition(Vector2(mainBodyPosition.x - 0.2f * float(trunkDirection_), mainBodyPosition.y - 0.45f));
+        leftLegSprite_->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
+
+        rightLegSprite_->setPosition(Vector2(mainBodyPosition.x + 0.2f * float(trunkDirection_), mainBodyPosition.y - 0.45f));
+        rightLegSprite_->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
     }
     
     void MonsterGraphicsComponent::initSprites()
     {
         headSprite_.reset(new Sprite);
         trunkSprite_.reset(new Sprite);
+        leftArmSprite_.reset(new Sprite);
+        rightArmSprite_.reset(new Sprite);
+        leftLegSprite_.reset(new Sprite);
+        rightLegSprite_.reset(new Sprite);
 
         headSprite_->setScale(Vector2(0.1f));
         trunkSprite_->setScale(Vector2(0.1f));
+        leftArmSprite_->setScale(Vector2(0.1f));
+        rightArmSprite_->setScale(Vector2(0.1f));
+        leftLegSprite_->setScale(Vector2(0.1f));
+        rightLegSprite_->setScale(Vector2(0.1f));
         
         Color4 skinColor = parseColor4("#c96");
         Color4 eyeColor = parseColor4("#000");
@@ -160,7 +189,6 @@ namespace crust {
         trunkSprite_->setPixel(0, 3, skinColor);
         trunkSprite_->setPixel(1, 3, skinColor);
         
-        trunkSprite_->setPixel(-4, 2, shirtColor);
         trunkSprite_->setPixel(-3, 2, shirtColor);
         trunkSprite_->setPixel(-2, 2, shirtColor);
         trunkSprite_->setPixel(-1, 2, skinColor);
@@ -168,10 +196,7 @@ namespace crust {
         trunkSprite_->setPixel(1, 2, skinColor);
         trunkSprite_->setPixel(2, 2, shirtColor);
         trunkSprite_->setPixel(3, 2, shirtColor);
-        trunkSprite_->setPixel(4, 2, shirtColor);
         
-        trunkSprite_->setPixel(-5, 1, shirtColor);
-        trunkSprite_->setPixel(-4, 1, shirtColor);
         trunkSprite_->setPixel(-3, 1, shirtColor);
         trunkSprite_->setPixel(-2, 1, shirtColor);
         trunkSprite_->setPixel(-1, 1, shirtColor);
@@ -179,10 +204,7 @@ namespace crust {
         trunkSprite_->setPixel(1, 1, shirtColor);
         trunkSprite_->setPixel(2, 1, shirtColor);
         trunkSprite_->setPixel(3, 1, shirtColor);
-        trunkSprite_->setPixel(4, 1, shirtColor);
-        trunkSprite_->setPixel(5, 1, shirtColor);
         
-        trunkSprite_->setPixel(-5, 0, shirtColor);
         trunkSprite_->setPixel(-3, 0, shirtColor);
         trunkSprite_->setPixel(-2, 0, shirtColor);
         trunkSprite_->setPixel(-1, 0, shirtColor);
@@ -190,9 +212,7 @@ namespace crust {
         trunkSprite_->setPixel(1, 0, shirtColor);
         trunkSprite_->setPixel(2, 0, shirtColor);
         trunkSprite_->setPixel(3, 0, shirtColor);
-        trunkSprite_->setPixel(5, 0, shirtColor);
         
-        trunkSprite_->setPixel(-5, -1, shirtColor);
         trunkSprite_->setPixel(-3, -1, shirtColor);
         trunkSprite_->setPixel(-2, -1, shirtColor);
         trunkSprite_->setPixel(-1, -1, shirtColor);
@@ -200,7 +220,6 @@ namespace crust {
         trunkSprite_->setPixel(1, -1, shirtColor);
         trunkSprite_->setPixel(2, -1, shirtColor);
         trunkSprite_->setPixel(3, -1, shirtColor);
-        trunkSprite_->setPixel(5, -1, shirtColor);
         
         trunkSprite_->setPixel(-3, -2, beltColor);
         trunkSprite_->setPixel(-2, -2, beltColor);
@@ -210,38 +229,63 @@ namespace crust {
         trunkSprite_->setPixel(2, -2, beltColor);
         trunkSprite_->setPixel(3, -2, beltColor);
         
-        trunkSprite_->setPixel(0, -2, buckleColor);
         trunkSprite_->setPixel(1, -2, buckleColor);
+        trunkSprite_->setPixel(2, -2, buckleColor);
         
-        trunkSprite_->setPixel(-5, -2, skinColor);
-        trunkSprite_->setPixel(-5, -3, skinColor);
-        
-        trunkSprite_->setPixel(5, -2, skinColor);
-        trunkSprite_->setPixel(5, -3, skinColor);
-        
-        trunkSprite_->setPixel(-3, -3, trouserColor);
         trunkSprite_->setPixel(-2, -3, trouserColor);
         trunkSprite_->setPixel(-1, -3, trouserColor);
         trunkSprite_->setPixel(0, -3, trouserColor);
         trunkSprite_->setPixel(1, -3, trouserColor);
         trunkSprite_->setPixel(2, -3, trouserColor);
-        trunkSprite_->setPixel(3, -3, trouserColor);
         
-        trunkSprite_->setPixel(-3, -4, trouserColor);
-        trunkSprite_->setPixel(-2, -4, trouserColor);
-        trunkSprite_->setPixel(2, -4, trouserColor);
-        trunkSprite_->setPixel(3, -4, trouserColor);
+        leftArmSprite_->setPixel(-1, 0, shirtColor);
+        leftArmSprite_->setPixel(0, 0, shirtColor);
+        leftArmSprite_->setPixel(-1, -1, shirtColor);
+        leftArmSprite_->setPixel(0, -1, shirtColor);
+        leftArmSprite_->setPixel(-1, -2, shirtColor);
+        leftArmSprite_->setPixel(0, -2, shirtColor);
+        leftArmSprite_->setPixel(-1, -3, skinColor);
+        leftArmSprite_->setPixel(0, -3, skinColor);
+        leftArmSprite_->setPixel(-1, -4, skinColor);
+        leftArmSprite_->setPixel(0, -4, skinColor);
         
-        trunkSprite_->setPixel(-3, -5, bootColor);
-        trunkSprite_->setPixel(-2, -5, bootColor);
-        trunkSprite_->setPixel(2, -5, bootColor);
-        trunkSprite_->setPixel(3, -5, bootColor);
+        rightArmSprite_->setPixel(0, 0, shirtColor);
+        rightArmSprite_->setPixel(1, 0, shirtColor);
+        rightArmSprite_->setPixel(0, -1, shirtColor);
+        rightArmSprite_->setPixel(1, -1, shirtColor);
+        rightArmSprite_->setPixel(0, -2, shirtColor);
+        rightArmSprite_->setPixel(1, -2, shirtColor);
+        rightArmSprite_->setPixel(0, -3, skinColor);
+        rightArmSprite_->setPixel(1, -3, skinColor);
+        rightArmSprite_->setPixel(0, -4, skinColor);
+        rightArmSprite_->setPixel(1, -4, skinColor);
+
+        leftLegSprite_->setPixel(-1, 0, trouserColor);
+        leftLegSprite_->setPixel(0, 0, trouserColor);
+        leftLegSprite_->setPixel(1, 0, trouserColor);
+        leftLegSprite_->setPixel(-1, -1, trouserColor);
+        leftLegSprite_->setPixel(0, -1, trouserColor);
+        leftLegSprite_->setPixel(1, -1, trouserColor);
+        leftLegSprite_->setPixel(-1, -2, bootColor);
+        leftLegSprite_->setPixel(0, -2, bootColor);
+        leftLegSprite_->setPixel(1, -2, bootColor);
+        leftLegSprite_->setPixel(-1, -3, bootColor);
+        leftLegSprite_->setPixel(0, -3, bootColor);
+        leftLegSprite_->setPixel(1, -3, bootColor);
+        leftLegSprite_->setPixel(2, -3, bootColor);
         
-        trunkSprite_->setPixel(-3, -6, bootColor);
-        trunkSprite_->setPixel(-2, -6, bootColor);
-        trunkSprite_->setPixel(-1, -6, bootColor);
-        trunkSprite_->setPixel(2, -6, bootColor);
-        trunkSprite_->setPixel(3, -6, bootColor);
-        trunkSprite_->setPixel(4, -6, bootColor);
+        rightLegSprite_->setPixel(-1, 0, trouserColor);
+        rightLegSprite_->setPixel(0, 0, trouserColor);
+        rightLegSprite_->setPixel(1, 0, trouserColor);
+        rightLegSprite_->setPixel(-1, -1, trouserColor);
+        rightLegSprite_->setPixel(0, -1, trouserColor);
+        rightLegSprite_->setPixel(1, -1, trouserColor);
+        rightLegSprite_->setPixel(-1, -2, bootColor);
+        rightLegSprite_->setPixel(0, -2, bootColor);
+        rightLegSprite_->setPixel(1, -2, bootColor);
+        rightLegSprite_->setPixel(-1, -3, bootColor);
+        rightLegSprite_->setPixel(0, -3, bootColor);
+        rightLegSprite_->setPixel(1, -3, bootColor);
+        rightLegSprite_->setPixel(2, -3, bootColor);
     }
 }
