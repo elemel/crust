@@ -79,29 +79,29 @@ namespace crust {
         b2Vec2 eyeToTargetOffset = localTargetPosition - localEyePosition;
         float targetAngle = std::atan2(eyeToTargetOffset.y, eyeToTargetOffset.x);
         float headAngle = clamp(0.5f * float(headDirection_) * targetAngle, -M_PI_4, M_PI_4);
-        headSprite_->setPosition(Vector2(mainBodyPosition.x, mainBodyPosition.y + 0.25f));
+        headSprite_->setPosition(trunkPosition + Vector2(0.0f, 0.3f));
         headSprite_->setAngle(headAngle);
         headSprite_->setScale(Vector2(0.1f * float(headDirection_), 0.1f));
 
-        Vector2 leftArmPosition = trunkPosition + Vector2(-0.3f * float(trunkDirection_), 0.1f);
+        Vector2 leftArmPosition = trunkPosition + Vector2(-0.3f * float(trunkDirection_), 0.0f);
         float leftArmAngle = float(anyXControl) * std::sin(1.5f * 2.0f * M_PI * time + M_PI);
         leftArmSprite_->setPosition(leftArmPosition);
         leftArmSprite_->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
         leftArmSprite_->setAngle(leftArmAngle);
 
-        Vector2 rightArmPosition = trunkPosition + Vector2(0.3f * float(trunkDirection_), 0.1f);
+        Vector2 rightArmPosition = trunkPosition + Vector2(0.3f * float(trunkDirection_), 0.0f);
         float rightArmAngle = float(anyXControl) * M_PI_4 * std::sin(1.5f * 2.0f * M_PI * time);
         rightArmSprite_->setPosition(rightArmPosition);
         rightArmSprite_->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
         rightArmSprite_->setAngle(rightArmAngle);
 
-        Vector2 leftLegPosition = trunkPosition + Vector2(-0.2f * float(trunkDirection_), -0.3f);
+        Vector2 leftLegPosition = trunkPosition + Vector2(-0.2f * float(trunkDirection_), -0.4f);
         float leftLegAngle = float(anyXControl) * M_PI_4 * std::sin(1.5f * 2.0f * M_PI * time);
         leftLegSprite_->setPosition(leftLegPosition);
         leftLegSprite_->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
         leftLegSprite_->setAngle(leftLegAngle);
         
-        Vector2 rightLegPosition = trunkPosition + Vector2(0.2f * float(trunkDirection_), -0.3f);
+        Vector2 rightLegPosition = trunkPosition + Vector2(0.2f * float(trunkDirection_), -0.4f);
         float rightLegAngle = float(anyXControl) * M_PI_4 * std::sin(1.5f * 2.0f * M_PI * time + M_PI);
         rightLegSprite_->setPosition(rightLegPosition);
         rightLegSprite_->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
@@ -198,27 +198,19 @@ namespace crust {
         headSprite_->setPixel(-3, 1, earColor);
         headSprite_->setPixel(-3, 0, earColor);
         
-        trunkSprite_->setPixel(-1, 4, skinColor);
-        trunkSprite_->setPixel(0, 4, skinColor);
-        trunkSprite_->setPixel(1, 4, skinColor);
-        
         trunkSprite_->setPixel(-1, 3, skinColor);
         trunkSprite_->setPixel(0, 3, skinColor);
         trunkSprite_->setPixel(1, 3, skinColor);
         
-        trunkSprite_->setPixel(-3, 2, shirtColor);
-        trunkSprite_->setPixel(-2, 2, shirtColor);
         trunkSprite_->setPixel(-1, 2, skinColor);
         trunkSprite_->setPixel(0, 2, skinColor);
         trunkSprite_->setPixel(1, 2, skinColor);
-        trunkSprite_->setPixel(2, 2, shirtColor);
-        trunkSprite_->setPixel(3, 2, shirtColor);
-        
+
         trunkSprite_->setPixel(-3, 1, shirtColor);
         trunkSprite_->setPixel(-2, 1, shirtColor);
-        trunkSprite_->setPixel(-1, 1, shirtColor);
-        trunkSprite_->setPixel(0, 1, shirtColor);
-        trunkSprite_->setPixel(1, 1, shirtColor);
+        trunkSprite_->setPixel(-1, 1, skinColor);
+        trunkSprite_->setPixel(0, 1, skinColor);
+        trunkSprite_->setPixel(1, 1, skinColor);
         trunkSprite_->setPixel(2, 1, shirtColor);
         trunkSprite_->setPixel(3, 1, shirtColor);
         
@@ -257,6 +249,7 @@ namespace crust {
         trunkSprite_->setPixel(2, -3, trouserColor);
         trunkSprite_->setPixel(3, -3, trouserColor);
 
+        trunkSprite_->setPixel(-3, -4, trouserColor);
         trunkSprite_->setPixel(-2, -4, trouserColor);
         trunkSprite_->setPixel(-1, -4, trouserColor);
         trunkSprite_->setPixel(0, -4, trouserColor);
@@ -271,8 +264,6 @@ namespace crust {
         leftArmSprite_->setPixel(0, -2, shirtColor);
         leftArmSprite_->setPixel(-1, -3, skinColor);
         leftArmSprite_->setPixel(0, -3, skinColor);
-        leftArmSprite_->setPixel(-1, -4, skinColor);
-        leftArmSprite_->setPixel(0, -4, skinColor);
         
         rightArmSprite_->setPixel(0, 0, shirtColor);
         rightArmSprite_->setPixel(1, 0, shirtColor);
@@ -282,35 +273,27 @@ namespace crust {
         rightArmSprite_->setPixel(1, -2, shirtColor);
         rightArmSprite_->setPixel(0, -3, skinColor);
         rightArmSprite_->setPixel(1, -3, skinColor);
-        rightArmSprite_->setPixel(0, -4, skinColor);
-        rightArmSprite_->setPixel(1, -4, skinColor);
 
         leftLegSprite_->setPixel(-1, 0, trouserColor);
         leftLegSprite_->setPixel(0, 0, trouserColor);
         leftLegSprite_->setPixel(1, 0, trouserColor);
-        leftLegSprite_->setPixel(-1, -1, trouserColor);
-        leftLegSprite_->setPixel(0, -1, trouserColor);
-        leftLegSprite_->setPixel(1, -1, trouserColor);
+        leftLegSprite_->setPixel(-1, -1, bootColor);
+        leftLegSprite_->setPixel(0, -1, bootColor);
+        leftLegSprite_->setPixel(1, -1, bootColor);
         leftLegSprite_->setPixel(-1, -2, bootColor);
         leftLegSprite_->setPixel(0, -2, bootColor);
         leftLegSprite_->setPixel(1, -2, bootColor);
-        leftLegSprite_->setPixel(-1, -3, bootColor);
-        leftLegSprite_->setPixel(0, -3, bootColor);
-        leftLegSprite_->setPixel(1, -3, bootColor);
-        leftLegSprite_->setPixel(2, -3, bootColor);
+        leftLegSprite_->setPixel(2, -2, bootColor);
         
         rightLegSprite_->setPixel(-1, 0, trouserColor);
         rightLegSprite_->setPixel(0, 0, trouserColor);
         rightLegSprite_->setPixel(1, 0, trouserColor);
-        rightLegSprite_->setPixel(-1, -1, trouserColor);
-        rightLegSprite_->setPixel(0, -1, trouserColor);
-        rightLegSprite_->setPixel(1, -1, trouserColor);
+        rightLegSprite_->setPixel(-1, -1, bootColor);
+        rightLegSprite_->setPixel(0, -1, bootColor);
+        rightLegSprite_->setPixel(1, -1, bootColor);
         rightLegSprite_->setPixel(-1, -2, bootColor);
         rightLegSprite_->setPixel(0, -2, bootColor);
         rightLegSprite_->setPixel(1, -2, bootColor);
-        rightLegSprite_->setPixel(-1, -3, bootColor);
-        rightLegSprite_->setPixel(0, -3, bootColor);
-        rightLegSprite_->setPixel(1, -3, bootColor);
-        rightLegSprite_->setPixel(2, -3, bootColor);
+        rightLegSprite_->setPixel(2, -2, bootColor);
     }
 }
