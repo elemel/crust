@@ -172,14 +172,14 @@ namespace crust {
         float y2 = float(pixels_.getY() + pixels_.getHeight() + 2);
         float width = x2 - x1;
         float height = y2 - y1;
-        float halfTexWidth = 0.5f / width;
-        float halfTexHeight = 0.5f / height;
+        float texWidth = 1.0f / width;
+        float texHeight = 1.0f / height;
         
         Vector2 vertices[] = {
-            transformPoint(transform, Vector2(x1 + 0.5f, y1 + 0.5f)),
-            transformPoint(transform, Vector2(x2 - 0.5f, y1 + 0.5f)),
-            transformPoint(transform, Vector2(x2 - 0.5f, y2 - 0.5f)),
-            transformPoint(transform, Vector2(x1 + 0.5f, y2 - 0.5f))
+            transformPoint(transform, Vector2(x1 + 1.0f, y1 + 1.0f)),
+            transformPoint(transform, Vector2(x2 - 1.0f, y1 + 1.0f)),
+            transformPoint(transform, Vector2(x2 - 1.0f, y2 - 1.0f)),
+            transformPoint(transform, Vector2(x1 + 1.0f, y2 - 1.0f))
         };
 
         for (int i = 0; i < 4; ++i) {
@@ -187,14 +187,14 @@ namespace crust {
             vertexArray_[i * 2 + 1] = vertices[i].y;
         }
 
-        texCoordArray_[0] = 0.0f + halfTexWidth;
-        texCoordArray_[1] = 0.0f + halfTexHeight;
-        texCoordArray_[2] = 1.0f - halfTexWidth;
-        texCoordArray_[3] = 0.0f + halfTexHeight;
-        texCoordArray_[4] = 1.0f - halfTexWidth;
-        texCoordArray_[5] = 1.0f - halfTexHeight;
-        texCoordArray_[6] = 0.0f + halfTexWidth;
-        texCoordArray_[7] = 1.0f - halfTexHeight;
+        texCoordArray_[0] = 0.0f + texWidth;
+        texCoordArray_[1] = 0.0f + texHeight;
+        texCoordArray_[2] = 1.0f - texWidth;
+        texCoordArray_[3] = 0.0f + texHeight;
+        texCoordArray_[4] = 1.0f - texWidth;
+        texCoordArray_[5] = 1.0f - texHeight;
+        texCoordArray_[6] = 0.0f + texWidth;
+        texCoordArray_[7] = 1.0f - texHeight;
         
         for (int i = 0; i < 4; ++i) {
             colorArray_[i * 4 + 0] = color_.red;
