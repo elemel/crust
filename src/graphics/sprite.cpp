@@ -112,7 +112,6 @@ namespace crust {
                     }
                 }
                 shadowData.push_back(minShadow < 0.001f ? maxShadow : 0.0f);
-                // shadowData.push_back(0.0f);
             }
         }
 
@@ -129,10 +128,10 @@ namespace crust {
                     smoothShadowData[(dy + 1) * pitch + dx] = std::max(0.5f * shadow, smoothShadowData[(dy + 1) * pitch + dx]);
                     smoothShadowData[(dy - 1) * pitch + dx] = std::max(0.5f * shadow, smoothShadowData[(dy - 1) * pitch + dx]);
 
-                    smoothShadowData[(dy - 1) * pitch + dx - 1] = std::max(0.2f * shadow, smoothShadowData[(dy - 1) * pitch + dx - 1]);
-                    smoothShadowData[(dy - 1) * pitch + dx + 1] = std::max(0.2f * shadow, smoothShadowData[(dy - 1) * pitch + dx + 1]);
-                    smoothShadowData[(dy + 1) * pitch + dx + 1] = std::max(0.2f * shadow, smoothShadowData[(dy + 1) * pitch + dx + 1]);
-                    smoothShadowData[(dy + 1) * pitch + dx - 1] = std::max(0.2f * shadow, smoothShadowData[(dy + 1) * pitch + dx - 1]);
+                    smoothShadowData[(dy - 1) * pitch + dx - 1] = std::max(0.3f * shadow, smoothShadowData[(dy - 1) * pitch + dx - 1]);
+                    smoothShadowData[(dy - 1) * pitch + dx + 1] = std::max(0.3f * shadow, smoothShadowData[(dy - 1) * pitch + dx + 1]);
+                    smoothShadowData[(dy + 1) * pitch + dx + 1] = std::max(0.3f * shadow, smoothShadowData[(dy + 1) * pitch + dx + 1]);
+                    smoothShadowData[(dy + 1) * pitch + dx - 1] = std::max(0.3f * shadow, smoothShadowData[(dy + 1) * pitch + dx - 1]);
                 }
             }
         }

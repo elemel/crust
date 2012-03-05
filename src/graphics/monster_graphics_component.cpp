@@ -54,7 +54,8 @@ namespace crust {
         b2Vec2 mainBodyPosition = physicsComponent_->getMainBody()->GetPosition();
         int xControl = int(controlComponent_->getRightControl()) - int(controlComponent_->getLeftControl());
         bool anyXControl = controlComponent_->getRightControl() || controlComponent_->getLeftControl();
-
+        bool standing = physicsComponent_->isStanding();
+        
         bool trunkTurned = false;
         if (xControl && xControl != trunkDirection_) {
             trunkDirection_ = xControl;
@@ -83,26 +84,34 @@ namespace crust {
         headSprite_->setAngle(headAngle);
         headSprite_->setScale(Vector2(0.1f * float(headDirection_), 0.1f));
 
-        Vector2 leftArmPosition = trunkPosition + Vector2(-0.3f * float(trunkDirection_), 0.0f);
-        float leftArmAngle = float(anyXControl) * std::sin(1.5f * 2.0f * M_PI * time + M_PI);
+        float leftArmAngle = 0.0f;
+        float rightArmAngle = 0.0f;
+        float leftLegAngle = 0.0f;
+        float rightLegAngle = 0.0f;
+
+        if (!standing || anyXControl) {
+            leftArmAngle = M_PI_4 * std::sin(1.5f * 2.0f * M_PI * time + M_PI);
+            rightArmAngle = M_PI_4 * std::sin(1.5f * 2.0f * M_PI * time);
+            leftLegAngle = M_PI_4 * std::sin(1.5f * 2.0f * M_PI * time);
+            rightLegAngle = M_PI_4 * std::sin(1.5f * 2.0f * M_PI * time + M_PI);
+        }
+
+        Vector2 leftArmPosition = trunkPosition + Vector2(-0.3f * float(trunkDirection_), 0.0f);        
         leftArmSprite_->setPosition(leftArmPosition);
         leftArmSprite_->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
         leftArmSprite_->setAngle(leftArmAngle);
 
         Vector2 rightArmPosition = trunkPosition + Vector2(0.3f * float(trunkDirection_), 0.0f);
-        float rightArmAngle = float(anyXControl) * M_PI_4 * std::sin(1.5f * 2.0f * M_PI * time);
         rightArmSprite_->setPosition(rightArmPosition);
         rightArmSprite_->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
         rightArmSprite_->setAngle(rightArmAngle);
 
         Vector2 leftLegPosition = trunkPosition + Vector2(-0.2f * float(trunkDirection_), -0.4f);
-        float leftLegAngle = float(anyXControl) * M_PI_4 * std::sin(1.5f * 2.0f * M_PI * time);
         leftLegSprite_->setPosition(leftLegPosition);
         leftLegSprite_->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
         leftLegSprite_->setAngle(leftLegAngle);
         
         Vector2 rightLegPosition = trunkPosition + Vector2(0.2f * float(trunkDirection_), -0.4f);
-        float rightLegAngle = float(anyXControl) * M_PI_4 * std::sin(1.5f * 2.0f * M_PI * time + M_PI);
         rightLegSprite_->setPosition(rightLegPosition);
         rightLegSprite_->setScale(Vector2(0.1f * float(trunkDirection_), 0.1f));
         rightLegSprite_->setAngle(rightLegAngle);
