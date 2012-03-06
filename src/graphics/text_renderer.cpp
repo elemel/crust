@@ -1,6 +1,7 @@
 #include "text_renderer.hpp"
 
 #include "font.hpp"
+#include "sprite.hpp"
 
 #include <SDL/SDL_opengl.h>
 
@@ -66,6 +67,28 @@ namespace crust {
             x += width;
         }
         glEnd();
+    }
+
+    void TextRenderer::draw(char const *text, Sprite *target)
+    {
+        int x = 0;
+        int y = 0;
+        Color4 color(255);
+        for (char const *glyph = text; *glyph; ++glyph) {
+            if (glyph != text) {
+                x += 1;
+            }
+            int width = font_->getGlyphWidth(*glyph);
+            int height = font_->getGlyphHeight(*glyph);
+            for (int dy = 0; dy < height; ++dy) {
+                for (int dx = 0; dx < width; ++dx) {
+                    if (font_->getGlyphPixel(*glyph, dx, dy)) {
+                        target->setPixel(x + dx, y + dy, color);
+                    }
+                }
+            }
+            x += width;
+        }
     }
 
     int TextRenderer::getWidth(char const *text)

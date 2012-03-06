@@ -3,6 +3,7 @@
 
 namespace crust {
     class Font;
+    class Sprite;
     
     class TextRenderer {
     public:
@@ -11,6 +12,7 @@ namespace crust {
         { }
 
         void draw(char const *text);
+        void draw(char const *text, Sprite *target);
 
         int getWidth(char const *text);
         int getHeight(char const *text);
