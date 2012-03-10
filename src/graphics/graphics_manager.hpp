@@ -2,7 +2,7 @@
 #define CRUST_GRAPHICS_MANAGER_HPP
 
 #include "geometry.hpp"
-#include "shader_factory.hpp"
+#include "shader_program.hpp"
 
 #include <vector>
 #include <SDL/SDL.h>
@@ -74,11 +74,7 @@ namespace crust {
         SpriteVector sprites_;
         TaskVector tasks_;
 
-        ShaderFactory shaderFactory_;
-
-        GLuint vertexShader_;
-        GLuint fragmentShader_;
-        GLuint shaderProgram_;
+        ShaderProgram shaderProgram_;
 
         void initFont();
         void initShaders();

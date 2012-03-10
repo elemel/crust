@@ -1,6 +1,7 @@
 #include "shader_factory.hpp"
 
 #include "error.hpp"
+#include "scoped_handle.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -11,6 +12,7 @@ namespace crust {
     {
         GLchar const *source = loadSource(file);
         GLuint shader = glCreateShader(type);
+        ScopedHandle<GLuint> scopedShader(shader, glDeleteShader);
         glShaderSource(shader, 1, &source, 0);
         glCompileShader(shader);
         GLint compileStatus = GL_FALSE;
@@ -22,12 +24,13 @@ namespace crust {
             message << "Failed to compile shader from file: " << file;
             throw Error(message.str());            
         }
-        return shader;
+        return scopedShader.release();
     }
 
     GLuint ShaderFactory::linkProgram(GLuint shader1, GLuint shader2, GLuint shader3)
     {
         GLuint program = glCreateProgram();
+        ScopedHandle<GLuint> scopedProgram(program, glDeleteProgram);
         glAttachShader(program, shader1);
         if (shader2) {
             glAttachShader(program, shader2);
@@ -45,7 +48,7 @@ namespace crust {
             message << "Failed to link shader program";
             throw Error(message.str());
         }
-        return program;
+        return scopedProgram.release();
     }
 
     GLchar const *ShaderFactory::loadSource(char const *file)

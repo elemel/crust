@@ -27,9 +27,7 @@ namespace crust {
     
         drawEnabled_(true),
         debugDrawEnabled_(false),
-        lightingEnabled_(true),
-
-        shaderProgram_(0)
+        lightingEnabled_(true)
     {
         SDL_GetWindowSize(window_, &windowWidth_, &windowHeight_);
 
@@ -38,17 +36,7 @@ namespace crust {
     }
 
     GraphicsManager::~GraphicsManager()
-    {
-        if (shaderProgram_) {
-            glDeleteProgram(shaderProgram_);
-        }
-        if (vertexShader_) {
-            glDeleteShader(vertexShader_);
-        }
-        if (fragmentShader_) {
-            glDeleteShader(fragmentShader_);
-        }
-    }
+    { }
 
     void GraphicsManager::step(float dt)
     {
@@ -108,9 +96,9 @@ namespace crust {
 
     void GraphicsManager::initShaders()
     {
-        vertexShader_ = shaderFactory_.compileShader(GL_VERTEX_SHADER, "../../../data/vertex.glsl");
-        fragmentShader_ = shaderFactory_.compileShader(GL_FRAGMENT_SHADER, "../../../data/fragment.glsl");
-        shaderProgram_ = shaderFactory_.linkProgram(vertexShader_, fragmentShader_);
+        shaderProgram_.setVertexShaderPath("../../../data/vertex.glsl");
+        shaderProgram_.setFragmentShaderPath("../../../data/fragment.glsl");
+        shaderProgram_.create();
     }
 
     void GraphicsManager::updateFrustum()
@@ -132,7 +120,7 @@ namespace crust {
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
             glEnable(GL_FRAMEBUFFER_SRGB);
             // setLighting();
-            glUseProgram(shaderProgram_);
+            glUseProgram(shaderProgram_.getHandle());
             drawSprites();
             glUseProgram(0);
             glDisable(GL_FRAMEBUFFER_SRGB);
@@ -280,12 +268,12 @@ namespace crust {
 
     void GraphicsManager::drawSprites()
     {
-        GLint colorTexturelocation = glGetUniformLocation(shaderProgram_, "colorTexture");
+        GLint colorTexturelocation = glGetUniformLocation(shaderProgram_.getHandle(), "colorTexture");
         glUniform1i(colorTexturelocation, 0);
-        GLint normalAndShadowTexturelocation = glGetUniformLocation(shaderProgram_, "normalAndShadowTexture");
+        GLint normalAndShadowTexturelocation = glGetUniformLocation(shaderProgram_.getHandle(), "normalAndShadowTexture");
         glUniform1i(normalAndShadowTexturelocation, 1);
-        GLint textureSizeLocation = glGetUniformLocation(shaderProgram_, "textureSize");
-        GLint smoothDistanceLocation = glGetUniformLocation(shaderProgram_, "smoothDistance");
+        GLint textureSizeLocation = glGetUniformLocation(shaderProgram_.getHandle(), "textureSize");
+        GLint smoothDistanceLocation = glGetUniformLocation(shaderProgram_.getHandle(), "smoothDistance");
         float smoothDistance = 1.25f / (0.1f * cameraScale_ * float(windowHeight_));
         glUniform1f(smoothDistanceLocation, GLfloat(smoothDistance));
         for (SpriteVector::iterator i = sprites_.begin(); i != sprites_.end(); ++i) {
