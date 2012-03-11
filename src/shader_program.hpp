@@ -45,6 +45,38 @@ namespace crust {
             programHandle_ = 0;
         }
 
+        void bind()
+        {
+            glUseProgram(programHandle_);
+        }
+
+        void unbind()
+        {
+            glUseProgram(0);
+        }
+
+        GLint getUniformLocation(GLchar const *name)
+        {
+            return glGetUniformLocation(programHandle_, name);
+        }
+        
+        void setUniform(GLint location, GLint value)
+        {
+            glUniform1i(location, value);
+        }
+
+        void setUniform(GLint location, GLfloat value)
+        {
+            glUniform1f(location, value);
+        }
+
+        template <typename T>
+        void setUniform(GLchar const *name, T value)
+        {
+            GLint location = getUniformLocation(name);
+            setUniform(location, value);
+        }
+
         GLuint getHandle() const
         {
             return programHandle_;
@@ -61,10 +93,6 @@ namespace crust {
         // Noncopyable.
         ShaderProgram(ShaderProgram const &other);
         ShaderProgram &operator=(ShaderProgram const &other);
-
-        void createVertexShader();
-        void createFragmentShader();
-        void createProgram();
     };
 }
 

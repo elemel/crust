@@ -5,22 +5,21 @@
 namespace crust {
     ShaderProgram::~ShaderProgram()
     {
-        if (programHandle_ != 0) {
-            glDeleteProgram(programHandle_);
-        }
-        if (fragmentShaderHandle_ != 0) {
-            glDeleteShader(fragmentShaderHandle_);
-        }
-        if (vertexShaderHandle_ != 0) {
-            glDeleteShader(vertexShaderHandle_);
-        }
+        destroy();
     }
 
     void ShaderProgram::create()
     {
-        createVertexShader();
-        createFragmentShader();
-        createProgram();
+        ShaderFactory factory;
+        if (vertexShaderHandle_ == 0) {
+            vertexShaderHandle_ = factory.compileShader(GL_VERTEX_SHADER, vertexShaderPath_.c_str());
+        }
+        if (fragmentShaderHandle_ == 0) {
+            fragmentShaderHandle_ = factory.compileShader(GL_FRAGMENT_SHADER, fragmentShaderPath_.c_str());
+        }
+        if (programHandle_ == 0) {
+            programHandle_ = factory.linkProgram(vertexShaderHandle_, fragmentShaderHandle_);
+        }
     }
 
     void ShaderProgram::destroy()
@@ -36,30 +35,6 @@ namespace crust {
         if (vertexShaderHandle_ != 0) {
             glDeleteShader(vertexShaderHandle_);
             vertexShaderHandle_ = 0;
-        }
-    }
-
-    void ShaderProgram::createVertexShader()
-    {
-        if (vertexShaderHandle_ == 0) {
-            ShaderFactory factory;
-            vertexShaderHandle_ = factory.compileShader(GL_VERTEX_SHADER, vertexShaderPath_.c_str());
-        }
-    }
-
-    void ShaderProgram::createFragmentShader()
-    {
-        if (fragmentShaderHandle_ == 0) {
-            ShaderFactory factory;
-            fragmentShaderHandle_ = factory.compileShader(GL_FRAGMENT_SHADER, fragmentShaderPath_.c_str());
-        }
-    }
-
-    void ShaderProgram::createProgram()
-    {
-        if (programHandle_ == 0) {
-            ShaderFactory factory;
-            programHandle_ = factory.linkProgram(vertexShaderHandle_, fragmentShaderHandle_);
         }
     }
 }

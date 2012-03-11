@@ -120,9 +120,9 @@ namespace crust {
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
             glEnable(GL_FRAMEBUFFER_SRGB);
             // setLighting();
-            glUseProgram(shaderProgram_.getHandle());
+            shaderProgram_.bind();
             drawSprites();
-            glUseProgram(0);
+            shaderProgram_.unbind();
             glDisable(GL_FRAMEBUFFER_SRGB);
             glDisable(GL_BLEND);
             // glDisable(GL_LIGHTING);
@@ -268,14 +268,11 @@ namespace crust {
 
     void GraphicsManager::drawSprites()
     {
-        GLint colorTexturelocation = glGetUniformLocation(shaderProgram_.getHandle(), "colorTexture");
-        glUniform1i(colorTexturelocation, 0);
-        GLint normalAndShadowTexturelocation = glGetUniformLocation(shaderProgram_.getHandle(), "normalAndShadowTexture");
-        glUniform1i(normalAndShadowTexturelocation, 1);
-        GLint textureSizeLocation = glGetUniformLocation(shaderProgram_.getHandle(), "textureSize");
-        GLint smoothDistanceLocation = glGetUniformLocation(shaderProgram_.getHandle(), "smoothDistance");
+        shaderProgram_.setUniform("colorTexture", 0);
+        shaderProgram_.setUniform("normalAndShadowTexture", 1);
         float smoothDistance = 1.25f / (0.1f * cameraScale_ * float(windowHeight_));
-        glUniform1f(smoothDistanceLocation, GLfloat(smoothDistance));
+        shaderProgram_.setUniform("smoothDistance", smoothDistance);
+        GLint textureSizeLocation = shaderProgram_.getUniformLocation("textureSize");
         for (SpriteVector::iterator i = sprites_.begin(); i != sprites_.end(); ++i) {
             IntVector2 size = (*i)->getSize();
             glUniform2f(textureSizeLocation, GLfloat(size.x), GLfloat(size.y));
