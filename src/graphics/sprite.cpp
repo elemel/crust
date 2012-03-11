@@ -13,31 +13,18 @@ namespace crust {
         pixels_(Color4(0, 0)),
 
         texturesDirty_(true),
-        colorTexture_(0),
-        normalAndShadowTexture_(0),
-
         arraysDirty_(true)
     { }
 
-    Sprite::~Sprite()
-    {
-        if (colorTexture_) {
-            glDeleteTextures(1, &colorTexture_);
-        }
-        if (normalAndShadowTexture_) {
-            glDeleteTextures(1, &normalAndShadowTexture_);
-        }
-    }
-    
     void Sprite::draw() const
     {
         updateTextures();
         updateArrays();
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, colorTexture_);        
+        colorTexture_.bind();
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, normalAndShadowTexture_);
+        normalAndShadowTexture_.bind();
 
         glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(2, GL_FLOAT, 0, vertexArray_);
@@ -53,9 +40,9 @@ namespace crust {
         glDisableClientState(GL_VERTEX_ARRAY);
         
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        normalAndShadowTexture_.unbind();
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        colorTexture_.unbind();
     }
     
     void Sprite::updateTextures() const
@@ -68,11 +55,9 @@ namespace crust {
         int y = pixels_.getY();
         int width = pixels_.getWidth();
         int height = pixels_.getHeight();
-        
-        if (colorTexture_) {
-            glDeleteTextures(1, &colorTexture_);
-        }
-        glGenTextures(1, &colorTexture_);
+
+        colorTexture_.destroy();
+        colorTexture_.create();
 
         std::vector<GLubyte> data;
         for (int dy = -2; dy < height + 2; ++dy) {
@@ -84,17 +69,15 @@ namespace crust {
                 data.push_back(color.alpha);
             }
         }
-        
-        glBindTexture(GL_TEXTURE_2D, colorTexture_);
+
+        colorTexture_.bind();
         glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width + 2 * 2, height + 2 * 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data.front());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        colorTexture_.unbind();
 
-        if (normalAndShadowTexture_) {
-            glDeleteTextures(1, &normalAndShadowTexture_);
-        }
-        glGenTextures(1, &normalAndShadowTexture_);
+        normalAndShadowTexture_.destroy();
+        normalAndShadowTexture_.create();
 
         std::vector<float> shadowData;
         for (int dy = -4; dy < 2 * height + 4; ++dy) {
@@ -144,11 +127,11 @@ namespace crust {
             normalAndShadowData[4 * i + 3] = std::min(127, int(smoothShadowData[i] * 128.0));
         }
 
-        glBindTexture(GL_TEXTURE_2D, normalAndShadowTexture_);
+        normalAndShadowTexture_.bind();
         glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, 2 * (width + 4), 2 * (height + 4), 0, GL_RGBA, GL_BYTE, &normalAndShadowData.front());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        normalAndShadowTexture_.unbind();
 
         texturesDirty_ = false;
     }

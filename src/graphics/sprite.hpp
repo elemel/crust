@@ -5,6 +5,7 @@
 #include "geometry.hpp"
 #include "grid.hpp"
 #include "int_geometry.hpp"
+#include "texture.hpp"
 
 #include <SDL/SDL_opengl.h>
 
@@ -12,7 +13,6 @@ namespace crust {
     class Sprite {
     public:
         Sprite();
-        ~Sprite();
 
         IntVector2 const &getSize() const
         {
@@ -96,8 +96,8 @@ namespace crust {
         Grid<Color4> pixels_;
 
         mutable bool texturesDirty_;
-        mutable GLuint colorTexture_;
-        mutable GLuint normalAndShadowTexture_;
+        mutable Texture colorTexture_;
+        mutable Texture normalAndShadowTexture_;
 
         mutable bool arraysDirty_;
         mutable GLfloat vertexArray_[8];
