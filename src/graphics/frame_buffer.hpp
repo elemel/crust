@@ -4,17 +4,27 @@
 #include <SDL/SDL_opengl.h>
 
 namespace crust {
+    class Texture;
+
     class FrameBuffer {
     public:
-        FrameBuffer() :
-            handle_(0)
-        { }
+        FrameBuffer();
 
         ~FrameBuffer()
         {
             destroy();
         }
 
+        Texture *getColorTexture()
+        {
+            return colorTexture_;
+        }
+
+        void setColorTexture(Texture *texture)
+        {
+            colorTexture_ = texture;
+        }
+        
         void create();
         void destroy();
 
@@ -40,6 +50,7 @@ namespace crust {
         
     private:
         GLuint handle_;
+        Texture *colorTexture_;
         
         // Noncopyable.
         FrameBuffer(FrameBuffer const &other);
