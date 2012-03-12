@@ -103,8 +103,11 @@ namespace crust {
         mutable GLfloat vertexArray_[8];
         mutable GLfloat texCoordArray_[8];
         mutable GLubyte colorArray_[16];
-        
+
         void updateTextures() const;
+        void updateColorTexture() const;
+        void updateNormalAndShadowTexture() const;
+
         void updateArrays() const;
     };
 }

@@ -47,38 +47,48 @@ namespace crust {
     
     void Sprite::updateTextures() const
     {
-        if (!texturesDirty_) {
-            return;
+        if (texturesDirty_) {
+            updateColorTexture();
+            updateNormalAndShadowTexture();
+            texturesDirty_ = false;
         }
+    }
+
+    void Sprite::updateColorTexture() const
+    {
+        colorTexture_.destroy();
 
         int x = pixels_.getX();
         int y = pixels_.getY();
         int width = pixels_.getWidth();
         int height = pixels_.getHeight();
-
-        colorTexture_.destroy();
-        colorTexture_.create();
-
-        std::vector<GLubyte> data;
+        
+        std::vector<GLubyte> pixels;
         for (int dy = -2; dy < height + 2; ++dy) {
             for (int dx = -2; dx < width + 2; ++dx) {
                 Color4 color = pixels_.getElement(x + dx, y + dy);
-                data.push_back(color.red * color.alpha / 255);
-                data.push_back(color.green * color.alpha / 255);
-                data.push_back(color.blue * color.alpha / 255);
-                data.push_back(color.alpha);
+                pixels.push_back(color.red * color.alpha / 255);
+                pixels.push_back(color.green * color.alpha / 255);
+                pixels.push_back(color.blue * color.alpha / 255);
+                pixels.push_back(color.alpha);
             }
         }
 
-        colorTexture_.bind();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width + 2 * 2, height + 2 * 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data.front());
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        colorTexture_.unbind();
+        colorTexture_.setInternalFormat(GL_SRGB_ALPHA);
+        colorTexture_.setSize(width + 4, height + 4);
+        colorTexture_.setPixels(&pixels.front(), pixels.size());
+        colorTexture_.create();
+    }
 
+    void Sprite::updateNormalAndShadowTexture() const
+    {
         normalAndShadowTexture_.destroy();
-        normalAndShadowTexture_.create();
 
+        int x = pixels_.getX();
+        int y = pixels_.getY();
+        int width = pixels_.getWidth();
+        int height = pixels_.getHeight();
+        
         std::vector<float> shadowData;
         for (int dy = -4; dy < 2 * height + 4; ++dy) {
             for (int dx = -4; dx < 2 * width + 4; ++dx) {
@@ -97,7 +107,7 @@ namespace crust {
                 shadowData.push_back(minShadow < 0.001f ? maxShadow : 0.0f);
             }
         }
-
+        
         std::vector<float> smoothShadowData(shadowData.size(), 0.0f);
         int pitch = 2 * width + 8;
         for (int dy = 2; dy < 2 * height + 8 - 2; ++dy) {
@@ -105,12 +115,12 @@ namespace crust {
                 float shadow = shadowData[dy * pitch + dx];
                 if (0.001f < shadow) {
                     smoothShadowData[dy * pitch + dx] = std::max(shadow, smoothShadowData[dy * pitch + dx]);
-
+                    
                     smoothShadowData[dy * pitch + dx + 1] = std::max(0.5f * shadow, smoothShadowData[dy * pitch + dx + 1]);
                     smoothShadowData[dy * pitch + dx - 1] = std::max(0.5f * shadow, smoothShadowData[dy * pitch + dx - 1]);
                     smoothShadowData[(dy + 1) * pitch + dx] = std::max(0.5f * shadow, smoothShadowData[(dy + 1) * pitch + dx]);
                     smoothShadowData[(dy - 1) * pitch + dx] = std::max(0.5f * shadow, smoothShadowData[(dy - 1) * pitch + dx]);
-
+                    
                     smoothShadowData[(dy - 1) * pitch + dx - 1] = std::max(0.3f * shadow, smoothShadowData[(dy - 1) * pitch + dx - 1]);
                     smoothShadowData[(dy - 1) * pitch + dx + 1] = std::max(0.3f * shadow, smoothShadowData[(dy - 1) * pitch + dx + 1]);
                     smoothShadowData[(dy + 1) * pitch + dx + 1] = std::max(0.3f * shadow, smoothShadowData[(dy + 1) * pitch + dx + 1]);
@@ -118,24 +128,22 @@ namespace crust {
                 }
             }
         }
-
-        std::vector<GLbyte> normalAndShadowData(4 * smoothShadowData.size());
+        
+        std::vector<GLbyte> pixels(4 * smoothShadowData.size());
         for (std::size_t i = 0; i < smoothShadowData.size(); ++i) {
-            normalAndShadowData[4 * i + 0] = 0;
-            normalAndShadowData[4 * i + 1] = 0;
-            normalAndShadowData[4 * i + 2] = 127;
-            normalAndShadowData[4 * i + 3] = std::min(127, int(smoothShadowData[i] * 128.0));
+            pixels[4 * i + 0] = 0;
+            pixels[4 * i + 1] = 0;
+            pixels[4 * i + 2] = 127;
+            pixels[4 * i + 3] = std::min(127, int(smoothShadowData[i] * 128.0));
         }
-
-        normalAndShadowTexture_.bind();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, 2 * (width + 4), 2 * (height + 4), 0, GL_RGBA, GL_BYTE, &normalAndShadowData.front());
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        normalAndShadowTexture_.unbind();
-
-        texturesDirty_ = false;
+        
+        normalAndShadowTexture_.setInternalFormat(GL_SRGB_ALPHA);
+        normalAndShadowTexture_.setSize(2 * (width + 4), 2 * (height + 4));
+        normalAndShadowTexture_.setType(GL_BYTE);
+        normalAndShadowTexture_.setPixels(&pixels.front(), pixels.size());
+        normalAndShadowTexture_.create();
     }
-
+    
     void Sprite::updateArrays() const
     {
         if (!arraysDirty_) {
