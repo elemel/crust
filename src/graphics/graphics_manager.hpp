@@ -78,7 +78,6 @@ namespace crust {
 
         void initFont();
         void initShaders();
-        GLchar const *loadShaderSource(char const *file);
 
         void updateFrustum();
         void drawWorld();
