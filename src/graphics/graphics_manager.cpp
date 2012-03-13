@@ -26,13 +26,13 @@ namespace crust {
         cameraScale_(game->getConfig()->cameraScale),
     
         drawEnabled_(true),
-        debugDrawEnabled_(false),
-        lightingEnabled_(true)
+        debugDrawEnabled_(false)
     {
         SDL_GetWindowSize(window_, &windowWidth_, &windowHeight_);
 
         initFont();
         initShaders();
+        initFrameBuffer();
     }
 
     GraphicsManager::~GraphicsManager()
@@ -48,10 +48,8 @@ namespace crust {
     void GraphicsManager::draw()
     {
         updateFrustum();
-
         drawWorld();
-
-        drawOverlay();
+        drawHud();
     }
     
     Vector2 GraphicsManager::getWorldPosition(Vector2 const &screenPosition) const
@@ -101,6 +99,14 @@ namespace crust {
         shaderProgram_.create();
     }
 
+    void GraphicsManager::initFrameBuffer()
+    {
+        colorTexture_.setSize(windowWidth_, windowHeight_);
+        colorTexture_.create();
+        frameBuffer_.setColorTexture(&colorTexture_);
+        frameBuffer_.create();
+    }
+    
     void GraphicsManager::updateFrustum()
     {
         float invScale = 1.0f / cameraScale_;
@@ -113,21 +119,40 @@ namespace crust {
 
     void GraphicsManager::drawWorld()
     {
-        setWorldProjection();
         if (drawEnabled_) {
-            // glEnable(GL_LIGHTING);
+            setWorldProjection();
+            frameBuffer_.bind();
+            glClearColor(0.0, 0.0, 0.0, 0.0);
+            glClear(GL_COLOR_BUFFER_BIT);
             glEnable(GL_BLEND);
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-            glEnable(GL_FRAMEBUFFER_SRGB);
-            // setLighting();
             shaderProgram_.bind();
             drawSprites();
             shaderProgram_.unbind();
-            glDisable(GL_FRAMEBUFFER_SRGB);
             glDisable(GL_BLEND);
-            // glDisable(GL_LIGHTING);
+            frameBuffer_.unbind();
+
+            setPixelProjection();
+            glEnable(GL_FRAMEBUFFER_SRGB);
+            glEnable(GL_TEXTURE_2D);
+            colorTexture_.bind();
+            glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex2f(0.0f, 0.0f);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex2f(float(windowWidth_), 0.0f);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex2f(float(windowWidth_), float(windowHeight_));
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex2f(0.0f, float(windowHeight_));
+            glEnd();
+            colorTexture_.unbind();
+            glDisable(GL_TEXTURE_2D);
+            glDisable(GL_FRAMEBUFFER_SRGB);
         }
+
         if (debugDrawEnabled_) {
+            setWorldProjection();
             glColor3f(0.0f, 1.0f, 0.0f);
             game_->getPhysicsManager()->getWorld()->DrawDebugData();
             // glColor3f(0.0f, 0.5f, 1.0f);
@@ -137,71 +162,9 @@ namespace crust {
         }
     }
     
-    void GraphicsManager::setLighting()
+    void GraphicsManager::drawHud()
     {
-        if (lightingEnabled_) {
-            GLfloat ambient[] = { 0.05f, 0.05f, 0.05f, 1.0f };
-            glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient);
-            glEnable(GL_COLOR_MATERIAL);
-            glColorMaterial(GL_FRONT, GL_DIFFUSE);
-            glEnable(GL_NORMALIZE);
-            
-            setWorldLight();
-            setCameraLight();
-            setTargetLight();
-        }
-    }
-    
-    void GraphicsManager::setWorldLight()
-    { 
-        glEnable(GL_LIGHT0);
-        GLfloat diffuse[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-        GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-        glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
-        GLfloat position[] = { 0.0f, 0.0f, 1.0f, 0.0f };
-        glLightfv(GL_LIGHT0, GL_POSITION, position);
-        glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.0f);
-        glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.0f);
-        glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.0f);
-    }
-    
-    void GraphicsManager::setCameraLight()
-    {
-        glEnable(GL_LIGHT1);
-        GLfloat diffuse[] = { 4.0f, 4.0f, 4.0f, 1.0f };
-        GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-        glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
-        glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
-        GLfloat position[] = { cameraPosition_.x, cameraPosition_.y, 5.0f, 1.0f };
-        glLightfv(GL_LIGHT1, GL_POSITION, position);
-        glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.0f);
-        glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 1.0f);
-        glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.0f);
-    }
-    
-    void GraphicsManager::setTargetLight()
-    {
-        if (game_->getPlayerActor()) {
-            MonsterControlComponent *controlComponent = convert(game_->getPlayerActor()->getControlComponent());
-
-            glEnable(GL_LIGHT2);
-            GLfloat diffuse[] = { 2.0f, 2.0f, 2.0f, 1.0f };
-            GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-            glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse);
-            glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
-            Vector2 const &targetPosition = controlComponent->getTargetPosition();
-            GLfloat position[] = { targetPosition.x, targetPosition.y, 1.0f, 1.0f };
-            glLightfv(GL_LIGHT2, GL_POSITION, position);
-            glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1.0f);
-            glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 1.0f);
-            glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0f);
-        }
-    }
-    
-    void GraphicsManager::drawOverlay()
-    {
-        setOverlayProjection();
+        setPixelProjection();
         drawMode();
         if (game_->getConfig()->drawFps) {
             drawFps();
@@ -257,7 +220,7 @@ namespace crust {
         glMatrixMode(GL_MODELVIEW);
     }
     
-    void GraphicsManager::setOverlayProjection()
+    void GraphicsManager::setPixelProjection()
     {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();

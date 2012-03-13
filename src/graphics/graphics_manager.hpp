@@ -1,8 +1,10 @@
 #ifndef CRUST_GRAPHICS_MANAGER_HPP
 #define CRUST_GRAPHICS_MANAGER_HPP
 
+#include "frame_buffer.hpp"
 #include "geometry.hpp"
 #include "shader_program.hpp"
+#include "texture.hpp"
 
 #include <vector>
 #include <SDL/SDL.h>
@@ -66,7 +68,6 @@ namespace crust {
         
         bool drawEnabled_;
         bool debugDrawEnabled_;
-        bool lightingEnabled_;
 
         std::auto_ptr<Font> font_;
         std::auto_ptr<TextRenderer> textRenderer_;
@@ -76,20 +77,20 @@ namespace crust {
 
         ShaderProgram shaderProgram_;
 
+        Texture colorTexture_;
+        FrameBuffer frameBuffer_;
+
         void initFont();
         void initShaders();
+        void initFrameBuffer();
 
         void updateFrustum();
         void drawWorld();
-        void setLighting();
-        void setWorldLight();
-        void setCameraLight();
-        void setTargetLight();
-        void drawOverlay();
+        void drawHud();
         void drawMode();
         void drawFps();
         void setWorldProjection();
-        void setOverlayProjection();
+        void setPixelProjection();
         void drawSprites();
     };
 }

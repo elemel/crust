@@ -14,8 +14,8 @@ namespace crust {
             glGenFramebuffers(1, &handle_);
             bind();
             GLuint colorTextureHandle = (colorTexture_ != 0) ? colorTexture_->getHandle() : 0;
-            glFramebufferTexture(GL_TEXTURE_2D, GL_COLOR_ATTACHMENT0,
-                                 colorTextureHandle, 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                   GL_TEXTURE_2D, colorTextureHandle, 0);
             unbind();
         }
     }

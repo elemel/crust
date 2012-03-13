@@ -75,7 +75,7 @@ namespace crust {
 
     void Game::run()
     {
-        glClearColor(double(0x33) / 255.0, double(0x33) / 255.0, double(0x33) / 255.0, 0.0);
+        glClearColor(0.0, 0.0, 0.0, 0.0);
         glClear(GL_COLOR_BUFFER_BIT);
         while (!quitting_) {
             double newAppTime = 0.001 * double(SDL_GetTicks());
